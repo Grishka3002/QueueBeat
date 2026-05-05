@@ -48,7 +48,7 @@ export function TrackPickerForm({ venueId, selectedTrackIds, allTracks }: TrackP
         throw new Error(payload.error ?? "Could not save track selection.");
       }
 
-      setState(payload.message ?? "Разрешенные треки обновлены.");
+      setState(payload.message ?? "Approved tracks updated.");
       router.refresh();
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "Unknown error.");
@@ -68,7 +68,7 @@ export function TrackPickerForm({ venueId, selectedTrackIds, allTracks }: TrackP
       <input
         value={query}
         onChange={(event) => setQuery(event.target.value)}
-        placeholder="Поиск по библиотеке"
+        placeholder="Search the music library"
         className="w-full rounded-[1.2rem] border border-white/10 bg-white/5 px-4 py-3 text-white outline-none placeholder:text-white/30"
       />
       <div className="max-h-[28rem] space-y-2 overflow-auto pr-1 scrollbar-thin">
@@ -79,12 +79,20 @@ export function TrackPickerForm({ venueId, selectedTrackIds, allTracks }: TrackP
               key={track.id}
               className="flex items-center gap-3 rounded-[1.2rem] border border-white/10 bg-white/[0.03] px-4 py-3 text-sm"
             >
-              <input type="checkbox" checked={checked} onChange={() => toggleTrack(track.id)} className="h-4 w-4" />
+              <input
+                type="checkbox"
+                checked={checked}
+                onChange={() => toggleTrack(track.id)}
+                className="h-4 w-4"
+              />
               <div className="flex-1">
                 <div className="font-medium text-white">{track.title}</div>
                 <div className="text-white/45">{track.artist}</div>
               </div>
-              <div className="text-white/35">{Math.floor(track.durationSec / 60)}:{String(track.durationSec % 60).padStart(2, "0")}</div>
+              <div className="text-white/35">
+                {Math.floor(track.durationSec / 60)}:
+                {String(track.durationSec % 60).padStart(2, "0")}
+              </div>
             </label>
           );
         })}
@@ -97,7 +105,7 @@ export function TrackPickerForm({ venueId, selectedTrackIds, allTracks }: TrackP
         disabled={isSubmitting}
         className="rounded-full bg-white/10 px-5 py-3 text-sm font-semibold text-white hover:bg-white/15 disabled:opacity-60"
       >
-        {isSubmitting ? "Сохраняем..." : "Сохранить разрешенные треки"}
+        {isSubmitting ? "Saving..." : "Save approved tracks"}
       </button>
     </div>
   );

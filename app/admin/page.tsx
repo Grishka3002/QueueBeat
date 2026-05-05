@@ -14,7 +14,7 @@ export default async function AdminPage() {
   return (
     <AdminShell
       title="Venues overview"
-      description="Управляйте ценой музыкального запроса, разрешенной библиотекой треков, очередью и QR-кодом для каждого заведения."
+      description="Manage request pricing, approved track libraries, live queues, and QR codes for every venue."
     >
       <div className="grid gap-5 lg:grid-cols-[0.85fr_1.15fr]">
         <SectionCard>
@@ -36,30 +36,36 @@ export default async function AdminPage() {
 
         <SectionCard>
           <div className="space-y-4">
-            {dashboard.venues.map((venue) => (
-              <Link
-                key={venue.id}
-                href={`/admin/venues/${venue.id}`}
-                className="flex flex-col gap-4 rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-5 transition hover:border-white/20 hover:bg-white/[0.05] md:flex-row md:items-center md:justify-between"
-              >
-                <div className="space-y-2">
-                  <div className="flex flex-wrap items-center gap-3">
-                    <div className="text-xl font-semibold">{venue.name}</div>
-                    <Badge tone={venue.isAcceptingRequests ? "success" : "warning"}>
-                      {venue.isAcceptingRequests ? "Open" : "Paused"}
-                    </Badge>
+            {dashboard.venues.length === 0 ? (
+              <div className="rounded-[1.5rem] border border-dashed border-white/10 p-5 text-sm text-white/45">
+                No venues yet. Run the Prisma seed command or create venues in the database.
+              </div>
+            ) : (
+              dashboard.venues.map((venue) => (
+                <Link
+                  key={venue.id}
+                  href={`/admin/venues/${venue.id}`}
+                  className="flex flex-col gap-4 rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-5 transition hover:border-white/20 hover:bg-white/[0.05] md:flex-row md:items-center md:justify-between"
+                >
+                  <div className="space-y-2">
+                    <div className="flex flex-wrap items-center gap-3">
+                      <div className="text-xl font-semibold">{venue.name}</div>
+                      <Badge tone={venue.isAcceptingRequests ? "success" : "warning"}>
+                        {venue.isAcceptingRequests ? "Open" : "Paused"}
+                      </Badge>
+                    </div>
+                    <div className="text-sm text-white/45">
+                      /v/{venue.slug} - {formatPrice(venue.requestPriceCents)}
+                    </div>
                   </div>
-                  <div className="text-sm text-white/45">
-                    /v/{venue.slug} • {formatPrice(venue.requestPriceCents)}
+                  <div className="flex flex-wrap gap-3 text-sm text-white/55">
+                    <span>{venue._count.venueTracks} tracks</span>
+                    <span>{venue._count.queueItems} queue items</span>
+                    <span>{venue._count.orders} orders</span>
                   </div>
-                </div>
-                <div className="flex flex-wrap gap-3 text-sm text-white/55">
-                  <span>{venue._count.venueTracks} tracks</span>
-                  <span>{venue._count.queueItems} queue items</span>
-                  <span>{venue._count.orders} orders</span>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              ))
+            )}
           </div>
         </SectionCard>
       </div>

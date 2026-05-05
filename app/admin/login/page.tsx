@@ -12,12 +12,12 @@ export default function AdminLoginPage() {
             <div className="text-xs uppercase tracking-[0.35em] text-white/35">Admin access</div>
             <h1 className="text-3xl font-semibold text-white">QueueBeat dashboard</h1>
             <p className="text-sm leading-6 text-white/60">
-              Закрытый вход для администратора заведения. Гостевые страницы и API не дают доступа к этим данным.
+              Private access for venue administrators. Guest pages and public APIs do not expose admin data.
             </p>
           </div>
           <LoginForm />
           <Link href="/" className="inline-flex text-sm text-white/45 hover:text-white/70">
-            Вернуться на главную
+            Back to home
           </Link>
         </div>
       </SectionCard>

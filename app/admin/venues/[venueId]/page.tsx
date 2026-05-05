@@ -23,15 +23,15 @@ export default async function AdminVenuePage({
   return (
     <AdminShell
       title={venue.name}
-      description="Редактируйте настройки заведения, управляйте доступными треками и очередью заказов."
+      description="Edit venue settings, manage approved tracks, and keep the live request queue tidy."
     >
       <div className="grid gap-5 xl:grid-cols-[0.7fr_0.7fr_1fr]">
         <SectionCard>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold">Настройки</h2>
+              <h2 className="text-xl font-semibold">Settings</h2>
               <Badge tone={venue.isAcceptingRequests ? "success" : "warning"}>
-                {venue.isAcceptingRequests ? "Прием открыт" : "Прием выключен"}
+                {venue.isAcceptingRequests ? "Accepting requests" : "Requests paused"}
               </Badge>
             </div>
             <VenueSettingsForm
@@ -44,11 +44,11 @@ export default async function AdminVenuePage({
               }}
             />
             <div className="rounded-[1.2rem] border border-white/10 bg-black/25 p-4 text-sm text-white/55">
-              Гостевая ссылка:{" "}
+              Guest link:{" "}
               <Link href={`/v/${venue.slug}`} className="text-white underline underline-offset-4">
                 /v/{venue.slug}
               </Link>
-              <div className="mt-2">Цена запроса: {formatPrice(venue.requestPriceCents)}</div>
+              <div className="mt-2">Request price: {formatPrice(venue.requestPriceCents)}</div>
             </div>
           </div>
         </SectionCard>
@@ -61,7 +61,7 @@ export default async function AdminVenuePage({
                 href={`/api/admin/venues/${venue.id}/qr?download=1`}
                 className="rounded-full border border-white/10 px-4 py-2 text-sm text-white/75 hover:bg-white/5"
               >
-                Скачать PNG
+                Download PNG
               </a>
             </div>
             <div className="rounded-[1.6rem] border border-white/10 bg-white p-5">
@@ -75,14 +75,14 @@ export default async function AdminVenuePage({
               />
             </div>
             <div className="text-sm leading-6 text-white/55">
-              QR-код ведет на публичную страницу заведения. Его можно распечатать или разместить на столах.
+              This QR code opens the public guest page. Print it or place it on tables.
             </div>
           </div>
         </SectionCard>
 
         <SectionCard>
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold">Разрешенные треки</h2>
+            <h2 className="text-xl font-semibold">Approved tracks</h2>
             <TrackPickerForm
               venueId={venue.id}
               selectedTrackIds={venue.venueTracks.map((item) => item.trackId)}
@@ -94,10 +94,10 @@ export default async function AdminVenuePage({
 
       <SectionCard>
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Очередь заведения</h2>
+          <h2 className="text-xl font-semibold">Venue queue</h2>
           {venue.queueItems.length === 0 ? (
             <div className="rounded-[1.4rem] border border-dashed border-white/10 p-5 text-sm text-white/45">
-              Очередь пока пуста.
+              The queue is empty for now.
             </div>
           ) : (
             <div className="overflow-hidden rounded-[1.5rem] border border-white/10">

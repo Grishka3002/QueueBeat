@@ -39,7 +39,7 @@ export default function HomePage() {
             <div className="rounded-[1.5rem] border border-white/10 bg-gradient-to-br from-white/10 to-white/5 p-5">
               <div className="mb-4 flex items-center justify-between text-sm text-white/60">
                 <span>Velvet Room</span>
-                <span>900 ₽ / request</span>
+                <span>900 RUB / request</span>
               </div>
               <div className="space-y-3">
                 {["Blinding Lights", "One More Time", "Midnight City"].map((track, index) => (
@@ -64,7 +64,7 @@ export default function HomePage() {
                   </div>
                   <div className="text-right">
                     <div className="text-sm text-white/50">Payment</div>
-                    <div className="font-semibold">900 ₽</div>
+                    <div className="font-semibold">900 RUB</div>
                   </div>
                 </div>
                 <div className="mt-4 rounded-full bg-gradient-to-r from-accent to-accentBlue px-5 py-3 text-center text-sm font-semibold">
