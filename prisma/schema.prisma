@@ -1,0 +1,103 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  FAILED
+}
+
+enum QueueItemStatus {
+  QUEUED
+  PLAYED
+  REMOVED
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  role      UserRole @default(ADMIN)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Venue {
+  id                  String      @id @default(cuid())
+  name                String
+  slug                String      @unique
+  requestPriceCents   Int
+  isAcceptingRequests Boolean     @default(true)
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+  venueTracks         VenueTrack[]
+  orders              Order[]
+  queueItems          QueueItem[]
+}
+
+model Track {
+  id          String      @id @default(cuid())
+  title       String
+  artist      String
+  durationSec Int
+  coverUrl    String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  venueTracks VenueTrack[]
+  orders      Order[]
+  queueItems  QueueItem[]
+}
+
+model VenueTrack {
+  id        String   @id @default(cuid())
+  venueId   String
+  trackId   String
+  createdAt DateTime @default(now())
+  venue      Venue   @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  track      Track   @relation(fields: [trackId], references: [id], onDelete: Cascade)
+
+  @@unique([venueId, trackId])
+}
+
+model Order {
+  id               String      @id @default(cuid())
+  venueId          String
+  trackId          String
+  amountCents      Int
+  status           OrderStatus @default(PENDING)
+  paymentReference String?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  paidAt           DateTime?
+  venue            Venue       @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  track            Track       @relation(fields: [trackId], references: [id], onDelete: Restrict)
+  queueItem        QueueItem?
+}
+
+model QueueItem {
+  id          String          @id @default(cuid())
+  venueId     String
+  trackId     String
+  orderId     String          @unique
+  status      QueueItemStatus @default(QUEUED)
+  position    Int
+  createdAt   DateTime        @default(now())
+  playedAt    DateTime?
+  removedAt   DateTime?
+  venue       Venue           @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  track       Track           @relation(fields: [trackId], references: [id], onDelete: Restrict)
+  order       Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([venueId, status, position])
+  @@unique([venueId, position])
+}
