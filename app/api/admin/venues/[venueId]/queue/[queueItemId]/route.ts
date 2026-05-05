@@ -1,7 +1,7 @@
 import { QueueItemStatus } from "@prisma/client";
 import { NextResponse } from "next/server";
 
-import { isAdminAuthenticated } from "@/lib/auth";
+import { canManageVerifiedVenue } from "@/lib/auth";
 import { updateDemoQueueItem } from "@/lib/demo-store";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
@@ -10,11 +10,11 @@ export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ venueId: string; queueItemId: string }> }
 ) {
-  if (!(await isAdminAuthenticated())) {
+  const { venueId, queueItemId } = await params;
+  if (!(await canManageVerifiedVenue(venueId))) {
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   }
 
-  const { venueId, queueItemId } = await params;
   const body = (await request.json()) as { status?: QueueItemStatus };
   if (body.status !== "PLAYED" && body.status !== "REMOVED") {
     return NextResponse.json({ error: "Invalid queue status." }, { status: 400 });

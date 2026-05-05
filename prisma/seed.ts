@@ -1,6 +1,13 @@
+import { randomBytes, scryptSync } from "node:crypto";
 import { PrismaClient, QueueItemStatus } from "@prisma/client";
 
 const prisma = new PrismaClient();
+
+function hashPassword(password: string) {
+  const salt = randomBytes(16).toString("hex");
+  const hash = scryptSync(password, salt, 64).toString("hex");
+  return `${salt}:${hash}`;
+}
 
 const tracks: [string, string, number][] = [
   ["Blinding Lights", "The Weeknd", 200],
@@ -64,9 +71,20 @@ async function main() {
 
   await prisma.user.create({
     data: {
-      email: "admin@queuebeat.local",
-      name: "QueueBeat Admin"
+      email: "platform@queuebeat.local",
+      name: "QueueBeat Platform",
+      passwordHash: hashPassword("queuebeat-admin"),
+      role: "PLATFORM_ADMIN"
     }
+  });
+
+  const venueOwners = await prisma.user.createManyAndReturn({
+    data: venues.map((venue) => ({
+      email: `${venue.slug}@queuebeat.local`,
+      name: `${venue.name} Owner`,
+      passwordHash: hashPassword("queuebeat-admin"),
+      role: "VENUE_OWNER" as const
+    }))
   });
 
   await prisma.track.createMany({
@@ -82,7 +100,11 @@ async function main() {
   });
 
   await prisma.venue.createMany({
-    data: venues
+    data: venues.map((venue, index) => ({
+      ...venue,
+      ownerId: venueOwners[index]?.id,
+      verificationStatus: "VERIFIED"
+    }))
   });
 
   const createdVenues = await prisma.venue.findMany({

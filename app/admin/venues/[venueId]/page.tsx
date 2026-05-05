@@ -1,5 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { Route } from "next";
+import { redirect } from "next/navigation";
 
 import { AdminShell } from "@/components/admin/admin-shell";
 import { QueueControls } from "@/components/admin/queue-controls";
@@ -7,7 +9,7 @@ import { TrackPickerForm } from "@/components/admin/track-picker-form";
 import { VenueSettingsForm } from "@/components/admin/venue-settings-form";
 import { Badge } from "@/components/ui/badge";
 import { SectionCard } from "@/components/ui/section-card";
-import { requireAdmin } from "@/lib/auth";
+import { canManageVerifiedVenue, isAdminAuthenticated } from "@/lib/auth";
 import { getAdminVenueById } from "@/lib/data";
 import { formatDateTime, formatPrice } from "@/lib/utils";
 
@@ -16,14 +18,22 @@ export default async function AdminVenuePage({
 }: {
   params: Promise<{ venueId: string }>;
 }) {
-  await requireAdmin();
   const { venueId } = await params;
+  if (!(await canManageVerifiedVenue(venueId))) {
+    redirect("/login");
+  }
+
   const { venue, allTracks } = await getAdminVenueById(venueId);
+  const isPlatform = await isAdminAuthenticated();
 
   return (
     <AdminShell
+      badge="Venue"
       title={venue.name}
       description="Edit venue settings, manage approved tracks, and keep the live request queue tidy."
+      homeHref={isPlatform ? "/platform" : "/dashboard"}
+      homeLabel={isPlatform ? "Platform" : "Dashboard"}
+      previewHref={`/v/${venue.slug}` as Route}
     >
       <div className="grid gap-5 xl:grid-cols-[0.7fr_0.7fr_1fr]">
         <SectionCard>

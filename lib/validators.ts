@@ -78,3 +78,54 @@ export function parseTrackIdsInput(input: unknown) {
   );
   return { trackIds };
 }
+
+export function parseLoginInput(input: unknown) {
+  if (!input || typeof input !== "object") {
+    throw new ValidationError("Invalid login payload.");
+  }
+
+  const data = input as Record<string, unknown>;
+  const email = ensureString(data.email, "email").toLowerCase();
+  const password = ensureString(data.password, "password");
+
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+    throw new ValidationError("Enter a valid email.");
+  }
+
+  if (password.length < 8 || password.length > 120) {
+    throw new ValidationError("Password must be at least 8 characters.");
+  }
+
+  return { email, password };
+}
+
+export function parseVenueRegistrationInput(input: unknown) {
+  if (!input || typeof input !== "object") {
+    throw new ValidationError("Invalid registration payload.");
+  }
+
+  const data = input as Record<string, unknown>;
+  const account = parseLoginInput(data);
+  const ownerName = ensureString(data.ownerName, "ownerName");
+  const venueName = ensureString(data.venueName, "venueName");
+  const slug = ensureString(data.slug, "slug").toLowerCase();
+
+  if (ownerName.length < 2 || ownerName.length > 80) {
+    throw new ValidationError("Owner name must be between 2 and 80 characters.");
+  }
+
+  if (venueName.length < 2 || venueName.length > 80) {
+    throw new ValidationError("Venue name must be between 2 and 80 characters.");
+  }
+
+  if (!/^[a-z0-9-]{3,40}$/.test(slug)) {
+    throw new ValidationError("Slug must be 3-40 chars and use lowercase letters, numbers, or dashes.");
+  }
+
+  return {
+    ...account,
+    ownerName,
+    venueName,
+    slug
+  };
+}

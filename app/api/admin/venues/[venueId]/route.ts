@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 
-import { isAdminAuthenticated } from "@/lib/auth";
+import { canManageVerifiedVenue } from "@/lib/auth";
 import { updateDemoVenueSettings } from "@/lib/demo-store";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
@@ -11,12 +11,12 @@ export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ venueId: string }> }
 ) {
-  if (!(await isAdminAuthenticated())) {
-    return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
-  }
-
   try {
     const { venueId } = await params;
+    if (!(await canManageVerifiedVenue(venueId))) {
+      return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    }
+
     const data = parseVenueSettingsInput(await request.json());
 
     if (env.demoMode) {
@@ -37,7 +37,10 @@ export async function PATCH(
 
     await prisma.venue.update({
       where: { id: venueId },
-      data
+      data: {
+        ...data,
+        isAcceptingRequests: data.isAcceptingRequests
+      }
     });
 
     return NextResponse.json({ message: "Venue settings updated." });

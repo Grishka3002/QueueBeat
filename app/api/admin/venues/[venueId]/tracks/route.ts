@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { isAdminAuthenticated } from "@/lib/auth";
+import { canManageVerifiedVenue } from "@/lib/auth";
 import { replaceDemoVenueTracks } from "@/lib/demo-store";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
@@ -10,12 +10,12 @@ export async function PUT(
   request: Request,
   { params }: { params: Promise<{ venueId: string }> }
 ) {
-  if (!(await isAdminAuthenticated())) {
-    return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
-  }
-
   try {
     const { venueId } = await params;
+    if (!(await canManageVerifiedVenue(venueId))) {
+      return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    }
+
     const { trackIds } = parseTrackIdsInput(await request.json());
 
     if (env.demoMode) {

@@ -49,13 +49,23 @@ powershell -ExecutionPolicy Bypass -File .\scripts\build-local.ps1
 Open:
 
 - `http://localhost:3000`
+- `http://localhost:3000/register`
+- `http://localhost:3000/login`
+- `http://localhost:3000/dashboard`
+- `http://localhost:3000/platform/login`
+- `http://localhost:3000/platform`
 - `http://localhost:3000/v/velvet-room`
-- `http://localhost:3000/admin/login`
 
-Default local admin password:
+Default local platform password and seeded venue-owner password:
 
 ```text
 queuebeat-admin
+```
+
+Seeded venue-owner emails use the venue slug, for example:
+
+```text
+velvet-room@queuebeat.local
 ```
 
 ## Database
@@ -66,6 +76,7 @@ For a real PostgreSQL database, set:
 DATABASE_URL="postgresql://..."
 DEMO_MODE="false"
 ADMIN_PASSWORD="a-strong-password"
+AUTH_SECRET="a-long-random-secret"
 NEXT_PUBLIC_APP_URL="https://your-app.up.railway.app"
 ```
 
@@ -102,6 +113,7 @@ Recommended environment variables:
 DATABASE_URL="railway-postgres-url"
 NEXT_PUBLIC_APP_URL="https://your-app.up.railway.app"
 ADMIN_PASSWORD="strong-admin-password"
+AUTH_SECRET="long-random-auth-secret"
 DEMO_MODE="false"
 ```
 
@@ -131,6 +143,7 @@ On this Windows machine, `npm run build` may fail because the native Next SWC bi
 ## MVP Notes
 
 - Payment is currently a mock provider behind a small provider interface.
-- Admin auth is password-cookie based and should be replaced with real auth before a public launch.
+- Platform owner auth is still password-cookie based.
+- Venue accounts use email/password cookies and should move to full production auth before a public launch.
 - Demo mode is intentionally isolated from production paths.
 - Queue positions are protected by a per-venue unique constraint and serializable payment finalization.

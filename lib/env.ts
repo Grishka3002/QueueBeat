@@ -7,5 +7,10 @@ export const env = {
     process.env.ADMIN_PASSWORD ?? (process.env.NODE_ENV === "production" ? "" : "queuebeat-admin"),
   hasAdminPassword: Boolean(process.env.ADMIN_PASSWORD) || process.env.NODE_ENV !== "production",
   adminCookieName: "queuebeat-admin-session",
+  sessionCookieName: "queuebeat-session",
+  authSecret:
+    process.env.AUTH_SECRET ??
+    process.env.ADMIN_PASSWORD ??
+    (process.env.NODE_ENV === "production" ? "" : "queuebeat-local-secret"),
   demoMode: process.env.DEMO_MODE === "true"
 };
