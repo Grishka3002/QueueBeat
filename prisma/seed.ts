@@ -14,7 +14,7 @@ const tracks: [string, string, number][] = [
   ["As It Was", "Harry Styles", 167],
   ["Starboy", "The Weeknd ft. Daft Punk", 230],
   ["Bad Guy", "Billie Eilish", 194],
-  ["Can’t Hold Us", "Macklemore & Ryan Lewis", 258],
+  ["Can't Hold Us", "Macklemore & Ryan Lewis", 258],
   ["On The Floor", "Jennifer Lopez", 266],
   ["Freed From Desire", "Gala", 214],
   ["Adventure of a Lifetime", "Coldplay", 264],
@@ -24,13 +24,34 @@ const tracks: [string, string, number][] = [
   ["Houdini", "Dua Lipa", 185],
   ["Dance The Night", "Dua Lipa", 176],
   ["Firestone", "Kygo", 273],
-  ["Don’t Start Now", "Dua Lipa", 183],
+  ["Don't Start Now", "Dua Lipa", 183],
   ["Rather Be", "Clean Bandit", 227],
   ["Lean On", "Major Lazer", 176],
   ["Latch", "Disclosure ft. Sam Smith", 255],
   ["Summer", "Calvin Harris", 223],
   ["Sweet Dreams", "Eurythmics", 233],
   ["Rhythm Is A Dancer", "Snap!", 231]
+];
+
+const venues = [
+  {
+    name: "Velvet Room",
+    slug: "velvet-room",
+    requestPriceCents: 90000,
+    isAcceptingRequests: true
+  },
+  {
+    name: "Luna Rooftop",
+    slug: "luna-rooftop",
+    requestPriceCents: 120000,
+    isAcceptingRequests: true
+  },
+  {
+    name: "Noir Bar",
+    slug: "noir-bar",
+    requestPriceCents: 70000,
+    isAcceptingRequests: false
+  }
 ];
 
 async function main() {
@@ -48,57 +69,40 @@ async function main() {
     }
   });
 
-  const createdTracks = await Promise.all(
-    tracks.map(([title, artist, durationSec]) =>
-      prisma.track.create({
-        data: { title, artist, durationSec }
-      })
+  await prisma.track.createMany({
+    data: tracks.map(([title, artist, durationSec]) => ({
+      title,
+      artist,
+      durationSec
+    }))
+  });
+
+  const createdTracks = await prisma.track.findMany({
+    orderBy: [{ artist: "asc" }, { title: "asc" }]
+  });
+
+  await prisma.venue.createMany({
+    data: venues
+  });
+
+  const createdVenues = await prisma.venue.findMany({
+    orderBy: { createdAt: "asc" }
+  });
+
+  await prisma.venueTrack.createMany({
+    data: createdVenues.flatMap((venue, index) =>
+      createdTracks.slice(index * 8, index * 8 + 12).map((track) => ({
+        venueId: venue.id,
+        trackId: track.id
+      }))
     )
-  );
+  });
 
-  const venues = await Promise.all([
-    prisma.venue.create({
-      data: {
-        name: "Velvet Room",
-        slug: "velvet-room",
-        requestPriceCents: 90000,
-        isAcceptingRequests: true
-      }
-    }),
-    prisma.venue.create({
-      data: {
-        name: "Luna Rooftop",
-        slug: "luna-rooftop",
-        requestPriceCents: 120000,
-        isAcceptingRequests: true
-      }
-    }),
-    prisma.venue.create({
-      data: {
-        name: "Noir Bar",
-        slug: "noir-bar",
-        requestPriceCents: 70000,
-        isAcceptingRequests: false
-      }
-    })
-  ]);
+  const firstVenue = createdVenues[0];
+  if (!firstVenue) {
+    throw new Error("Seed failed: no venues were created.");
+  }
 
-  await Promise.all(
-    venues.flatMap((venue, index) =>
-      createdTracks
-        .slice(index * 8, index * 8 + 12)
-        .map((track) =>
-          prisma.venueTrack.create({
-            data: {
-              venueId: venue.id,
-              trackId: track.id
-            }
-          })
-        )
-    )
-  );
-
-  const firstVenue = venues[0];
   const seededTracks = createdTracks.slice(0, 3);
 
   for (const [index, track] of seededTracks.entries()) {
