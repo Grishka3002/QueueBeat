@@ -12,8 +12,7 @@ export default function RegisterPage() {
             <div className="text-xs uppercase tracking-[0.35em] text-white/35">Venue onboarding</div>
             <h1 className="text-3xl font-semibold">Register your venue</h1>
             <p className="text-sm leading-6 text-white/60">
-              Fill in venue and business details like a payment service onboarding flow. Once approved, you can publish
-              your playlist and QR code.
+              Add only the basics now. Payment and payout details can be completed later after platform verification.
             </p>
           </div>
           <VenueRegisterForm />

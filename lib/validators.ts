@@ -119,9 +119,9 @@ export function parseVenueRegistrationInput(input: unknown) {
   const kpp = optionalString(data.kpp)?.replace(/\D/g, "") ?? null;
   const ogrn = optionalString(data.ogrn)?.replace(/\D/g, "") ?? null;
   const ogrnip = optionalString(data.ogrnip)?.replace(/\D/g, "") ?? null;
-  const legalAddress = ensureString(data.legalAddress, "legalAddress");
+  const legalAddress = optionalString(data.legalAddress) ?? "Not provided during quick signup";
   const actualAddress = optionalString(data.actualAddress);
-  const contactName = ensureString(data.contactName, "contactName");
+  const contactName = optionalString(data.contactName) ?? ownerName;
   const contactPhone = ensureString(data.contactPhone, "contactPhone");
   const bankName = optionalString(data.bankName);
   const bankBik = optionalString(data.bankBik)?.replace(/\D/g, "") ?? null;
@@ -154,24 +154,27 @@ export function parseVenueRegistrationInput(input: unknown) {
     if (!/^\d{12}$/.test(inn)) {
       throw new ValidationError("IP INN must contain 12 digits.");
     }
-    if (!ogrnip || !/^\d{15}$/.test(ogrnip)) {
-      throw new ValidationError("OGRNIP must contain 15 digits.");
-    }
   }
 
   if (businessType === "LLC") {
     if (!/^\d{10}$/.test(inn)) {
       throw new ValidationError("LLC INN must contain 10 digits.");
     }
-    if (!kpp || !/^\d{9}$/.test(kpp)) {
-      throw new ValidationError("KPP must contain 9 digits for LLC.");
-    }
-    if (!ogrn || !/^\d{13}$/.test(ogrn)) {
-      throw new ValidationError("OGRN must contain 13 digits for LLC.");
-    }
   }
 
-  if (legalAddress.length < 10 || legalAddress.length > 240) {
+  if (kpp && !/^\d{9}$/.test(kpp)) {
+    throw new ValidationError("KPP must contain 9 digits.");
+  }
+
+  if (ogrn && !/^\d{13}$/.test(ogrn)) {
+    throw new ValidationError("OGRN must contain 13 digits.");
+  }
+
+  if (ogrnip && !/^\d{15}$/.test(ogrnip)) {
+    throw new ValidationError("OGRNIP must contain 15 digits.");
+  }
+
+  if (legalAddress && (legalAddress.length < 10 || legalAddress.length > 240)) {
     throw new ValidationError("Legal address must be between 10 and 240 characters.");
   }
 
