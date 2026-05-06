@@ -404,6 +404,26 @@ export function replaceDemoVenueTracks(venueId: string, trackIds: string[]) {
   return { venue };
 }
 
+export function addDemoCustomTrack(
+  venueId: string,
+  payload: Pick<DemoTrack, "title" | "artist" | "durationSec" | "coverUrl">
+) {
+  const store = getStore();
+  const venue = store.venues.find((item) => item.id === venueId);
+  if (!venue) {
+    return { error: "Заведение не найдено." as const };
+  }
+
+  const track: DemoTrack = {
+    id: randomId("track"),
+    ...payload
+  };
+
+  store.tracks.push(track);
+  venue.allowedTrackIds.push(track.id);
+  return { track };
+}
+
 export function updateDemoQueueItem(
   venueId: string,
   queueItemId: string,

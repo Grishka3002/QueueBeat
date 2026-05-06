@@ -83,6 +83,60 @@ export function parseTrackIdsInput(input: unknown) {
   return { trackIds };
 }
 
+function parseDurationToSeconds(value: string) {
+  const normalized = value.trim();
+  const colonMatch = normalized.match(/^(\d{1,2}):([0-5]\d)$/);
+  if (colonMatch) {
+    return Number(colonMatch[1]) * 60 + Number(colonMatch[2]);
+  }
+
+  const seconds = Number(normalized);
+  return Number.isFinite(seconds) ? Math.round(seconds) : NaN;
+}
+
+export function parseCustomTrackInput(input: unknown) {
+  if (!input || typeof input !== "object") {
+    throw new ValidationError("Некорректные данные трека.");
+  }
+
+  const data = input as Record<string, unknown>;
+  const title = ensureString(data.title, "title");
+  const artist = ensureString(data.artist, "artist");
+  const durationInput = ensureString(data.duration, "duration");
+  const durationSec = parseDurationToSeconds(durationInput);
+  const coverUrl = optionalString(data.coverUrl);
+
+  if (title.length < 1 || title.length > 120) {
+    throw new ValidationError("Название трека должно быть от 1 до 120 символов.");
+  }
+
+  if (artist.length < 1 || artist.length > 120) {
+    throw new ValidationError("Исполнитель должен быть от 1 до 120 символов.");
+  }
+
+  if (!Number.isFinite(durationSec) || durationSec < 30 || durationSec > 900) {
+    throw new ValidationError("Длительность трека должна быть от 0:30 до 15:00.");
+  }
+
+  if (coverUrl) {
+    try {
+      const parsedUrl = new URL(coverUrl);
+      if (parsedUrl.protocol !== "http:" && parsedUrl.protocol !== "https:") {
+        throw new Error("INVALID_PROTOCOL");
+      }
+    } catch {
+      throw new ValidationError("Ссылка на обложку должна быть корректным URL.");
+    }
+  }
+
+  return {
+    title,
+    artist,
+    durationSec,
+    coverUrl
+  };
+}
+
 export function parseLoginInput(input: unknown) {
   if (!input || typeof input !== "object") {
     throw new ValidationError("Некорректные данные входа.");
