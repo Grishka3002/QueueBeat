@@ -6,14 +6,14 @@ import { SectionCard } from "@/components/ui/section-card";
 export default function RegisterPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#080910] px-4 py-8 text-white">
-      <SectionCard className="w-full max-w-lg">
+      <SectionCard className="w-full max-w-3xl">
         <div className="space-y-6">
           <div className="space-y-3">
             <div className="text-xs uppercase tracking-[0.35em] text-white/35">Venue onboarding</div>
             <h1 className="text-3xl font-semibold">Register your venue</h1>
             <p className="text-sm leading-6 text-white/60">
-              After registration your account goes to platform verification. Once approved, you can publish your
-              playlist and QR code.
+              Fill in venue and business details like a payment service onboarding flow. Once approved, you can publish
+              your playlist and QR code.
             </p>
           </div>
           <VenueRegisterForm />

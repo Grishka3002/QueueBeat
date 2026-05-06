@@ -19,6 +19,11 @@ enum VenueVerificationStatus {
   REJECTED
 }
 
+enum BusinessType {
+  INDIVIDUAL_ENTREPRENEUR
+  LLC
+}
+
 enum OrderStatus {
   PENDING
   PAID
@@ -53,11 +58,35 @@ model Venue {
   createdAt           DateTime    @default(now())
   updatedAt           DateTime    @updatedAt
   owner               User?       @relation(fields: [ownerId], references: [id], onDelete: SetNull)
+  businessProfile     BusinessProfile?
   venueTracks         VenueTrack[]
   orders              Order[]
   queueItems          QueueItem[]
 
   @@index([ownerId])
+}
+
+model BusinessProfile {
+  id              String       @id @default(cuid())
+  venueId         String       @unique
+  businessType    BusinessType
+  legalName       String
+  inn             String
+  kpp             String?
+  ogrn            String?
+  ogrnip          String?
+  legalAddress    String
+  actualAddress   String?
+  contactName     String
+  contactPhone    String
+  contactEmail    String
+  bankName        String?
+  bankBik         String?
+  bankAccount     String?
+  corrAccount     String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  venue           Venue        @relation(fields: [venueId], references: [id], onDelete: Cascade)
 }
 
 model Track {

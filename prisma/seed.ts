@@ -45,19 +45,58 @@ const venues = [
     name: "Velvet Room",
     slug: "velvet-room",
     requestPriceCents: 90000,
-    isAcceptingRequests: true
+    isAcceptingRequests: true,
+    businessProfile: {
+      businessType: "LLC" as const,
+      legalName: "LLC Velvet Room",
+      inn: "7701234567",
+      kpp: "770101001",
+      ogrn: "1234567890123",
+      ogrnip: null,
+      legalAddress: "Moscow, Tverskaya street, 10",
+      actualAddress: "Moscow, Tverskaya street, 10",
+      contactName: "Alex Velvet",
+      contactPhone: "+7 900 111-22-33",
+      contactEmail: "velvet-room@queuebeat.local"
+    }
   },
   {
     name: "Luna Rooftop",
     slug: "luna-rooftop",
     requestPriceCents: 120000,
-    isAcceptingRequests: true
+    isAcceptingRequests: true,
+    businessProfile: {
+      businessType: "INDIVIDUAL_ENTREPRENEUR" as const,
+      legalName: "IP Luna Rooftop",
+      inn: "250100000001",
+      kpp: null,
+      ogrn: null,
+      ogrnip: "325250100000001",
+      legalAddress: "Vladivostok, Svetlanskaya street, 20",
+      actualAddress: "Vladivostok, Svetlanskaya street, 20",
+      contactName: "Luna Owner",
+      contactPhone: "+7 900 222-33-44",
+      contactEmail: "luna-rooftop@queuebeat.local"
+    }
   },
   {
     name: "Noir Bar",
     slug: "noir-bar",
     requestPriceCents: 70000,
-    isAcceptingRequests: false
+    isAcceptingRequests: false,
+    businessProfile: {
+      businessType: "LLC" as const,
+      legalName: "LLC Noir Bar",
+      inn: "7801234567",
+      kpp: "780101001",
+      ogrn: "1234567890124",
+      ogrnip: null,
+      legalAddress: "Saint Petersburg, Rubinstein street, 5",
+      actualAddress: "Saint Petersburg, Rubinstein street, 5",
+      contactName: "Noir Manager",
+      contactPhone: "+7 900 333-44-55",
+      contactEmail: "noir-bar@queuebeat.local"
+    }
   }
 ];
 
@@ -101,7 +140,10 @@ async function main() {
 
   await prisma.venue.createMany({
     data: venues.map((venue, index) => ({
-      ...venue,
+      name: venue.name,
+      slug: venue.slug,
+      requestPriceCents: venue.requestPriceCents,
+      isAcceptingRequests: venue.isAcceptingRequests,
       ownerId: venueOwners[index]?.id,
       verificationStatus: "VERIFIED"
     }))
@@ -109,6 +151,13 @@ async function main() {
 
   const createdVenues = await prisma.venue.findMany({
     orderBy: { createdAt: "asc" }
+  });
+
+  await prisma.businessProfile.createMany({
+    data: createdVenues.map((venue, index) => ({
+      venueId: venue.id,
+      ...venues[index].businessProfile
+    }))
   });
 
   await prisma.venueTrack.createMany({

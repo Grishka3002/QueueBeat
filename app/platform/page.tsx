@@ -16,6 +16,7 @@ export default async function PlatformPage() {
     prisma.venue.findMany({
       include: {
         owner: true,
+        businessProfile: true,
         _count: {
           select: {
             venueTracks: true,
@@ -74,6 +75,17 @@ export default async function PlatformPage() {
                   Owner: {venue.owner?.email ?? "Unassigned"} - /v/{venue.slug} -{" "}
                   {formatPrice(venue.requestPriceCents)}
                 </div>
+                {venue.businessProfile ? (
+                  <div className="text-sm leading-6 text-white/45">
+                    {venue.businessProfile.businessType === "LLC" ? "LLC" : "IP"} -{" "}
+                    {venue.businessProfile.legalName} - INN {venue.businessProfile.inn}
+                    {venue.businessProfile.kpp ? ` - KPP ${venue.businessProfile.kpp}` : ""}
+                    {venue.businessProfile.ogrn ? ` - OGRN ${venue.businessProfile.ogrn}` : ""}
+                    {venue.businessProfile.ogrnip ? ` - OGRNIP ${venue.businessProfile.ogrnip}` : ""}
+                    <br />
+                    {venue.businessProfile.legalAddress}
+                  </div>
+                ) : null}
                 <div className="flex flex-wrap gap-3 text-sm text-white/55">
                   <span>{venue._count.venueTracks} tracks</span>
                   <span>{venue._count.queueItems} queue items</span>

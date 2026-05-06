@@ -23,7 +23,10 @@ export async function POST(request: Request) {
             slug: data.slug,
             requestPriceCents: 50000,
             isAcceptingRequests: false,
-            verificationStatus: "PENDING"
+            verificationStatus: "PENDING",
+            businessProfile: {
+              create: data.businessProfile
+            }
           }
         }
       }
