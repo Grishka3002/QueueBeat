@@ -13,7 +13,7 @@ export async function GET(
 ) {
   const { venueId } = await params;
   if (!(await canManageVerifiedVenue(venueId))) {
-    return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    return NextResponse.json({ error: "Нет доступа." }, { status: 401 });
   }
 
   let venue = null;
@@ -38,11 +38,11 @@ export async function GET(
   }
 
   if (!venue) {
-    return NextResponse.json({ error: "Venue not found." }, { status: 404 });
+    return NextResponse.json({ error: "Заведение не найдено." }, { status: 404 });
   }
 
   if (!env.demoMode && !isSubscriptionUsable(venue)) {
-    return NextResponse.json({ error: "Venue subscription is not active." }, { status: 402 });
+    return NextResponse.json({ error: "Подписка заведения не активна." }, { status: 402 });
   }
 
   const url = `${env.appUrl}/v/${venue.slug}`;

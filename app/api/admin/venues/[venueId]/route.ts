@@ -14,7 +14,7 @@ export async function PATCH(
   try {
     const { venueId } = await params;
     if (!(await canManageVerifiedVenue(venueId))) {
-      return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+      return NextResponse.json({ error: "Нет доступа." }, { status: 401 });
     }
 
     const data = parseVenueSettingsInput(await request.json());
@@ -28,11 +28,11 @@ export async function PATCH(
       });
 
       if ("error" in result) {
-        const status = result.error === "Slug already exists." ? 409 : 404;
+        const status = result.error === "Этот slug уже занят." ? 409 : 404;
         return NextResponse.json({ error: result.error }, { status });
       }
 
-      return NextResponse.json({ message: "Venue settings updated." });
+      return NextResponse.json({ message: "Настройки заведения обновлены." });
     }
 
     await prisma.venue.update({
@@ -43,17 +43,17 @@ export async function PATCH(
       }
     });
 
-    return NextResponse.json({ message: "Venue settings updated." });
+    return NextResponse.json({ message: "Настройки заведения обновлены." });
   } catch (error) {
     if (error instanceof ValidationError) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
-      return NextResponse.json({ error: "Slug already exists." }, { status: 409 });
+      return NextResponse.json({ error: "Этот slug уже занят." }, { status: 409 });
     }
 
     console.error(error);
-    return NextResponse.json({ error: "Internal server error." }, { status: 500 });
+    return NextResponse.json({ error: "Внутренняя ошибка сервера." }, { status: 500 });
   }
 }

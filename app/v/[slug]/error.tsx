@@ -10,8 +10,8 @@ export default function VenueError({
 }) {
   return (
     <RuntimeError
-      title="Venue page could not load"
-      description="The guest page needs venue data from PostgreSQL. Check that Railway has DATABASE_URL configured and Prisma migrations plus seed data have been applied."
+      title="Не удалось загрузить страницу заведения"
+      description="Гостевой странице нужны данные заведения из PostgreSQL. Проверьте DATABASE_URL в Railway, а также применённые миграции Prisma и seed-данные."
       reset={reset}
     />
   );

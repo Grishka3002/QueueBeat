@@ -7,7 +7,7 @@ export class ValidationError extends Error {
 
 function ensureString(value: unknown, field: string) {
   if (typeof value !== "string") {
-    throw new ValidationError(`Field "${field}" is required.`);
+    throw new ValidationError(`Поле "${field}" обязательно.`);
   }
   return value.trim();
 }
@@ -18,7 +18,7 @@ function optionalString(value: unknown) {
 
 export function parseVenueSettingsInput(input: unknown) {
   if (!input || typeof input !== "object") {
-    throw new ValidationError("Invalid venue settings payload.");
+    throw new ValidationError("Некорректные данные настроек заведения.");
   }
 
   const data = input as Record<string, unknown>;
@@ -27,15 +27,15 @@ export function parseVenueSettingsInput(input: unknown) {
   const priceRub = Number(data.priceRub);
 
   if (name.length < 2 || name.length > 80) {
-    throw new ValidationError("Venue name must be between 2 and 80 characters.");
+    throw new ValidationError("Название заведения должно быть от 2 до 80 символов.");
   }
 
   if (!/^[a-z0-9-]{3,40}$/.test(slug)) {
-    throw new ValidationError("Slug must be 3-40 chars and use lowercase letters, numbers, or dashes.");
+    throw new ValidationError("Slug должен быть от 3 до 40 символов и содержать только латинские строчные буквы, цифры или дефисы.");
   }
 
   if (!Number.isFinite(priceRub) || priceRub < 1 || priceRub > 10000) {
-    throw new ValidationError("Price must be between 1 and 10000 RUB.");
+    throw new ValidationError("Цена должна быть от 1 до 10000 ₽.");
   }
 
   return {
@@ -48,7 +48,7 @@ export function parseVenueSettingsInput(input: unknown) {
 
 export function parseTrackSelectionInput(input: unknown) {
   if (!input || typeof input !== "object") {
-    throw new ValidationError("Invalid track selection payload.");
+    throw new ValidationError("Некорректные данные выбора трека.");
   }
 
   const data = input as Record<string, unknown>;
@@ -59,7 +59,7 @@ export function parseTrackSelectionInput(input: unknown) {
 
 export function parseMockPaymentInput(input: unknown) {
   if (!input || typeof input !== "object") {
-    throw new ValidationError("Invalid payment payload.");
+    throw new ValidationError("Некорректные данные оплаты.");
   }
 
   const data = input as Record<string, unknown>;
@@ -69,12 +69,12 @@ export function parseMockPaymentInput(input: unknown) {
 
 export function parseTrackIdsInput(input: unknown) {
   if (!input || typeof input !== "object") {
-    throw new ValidationError("Invalid track mapping payload.");
+    throw new ValidationError("Некорректные данные списка треков.");
   }
 
   const data = input as Record<string, unknown>;
   if (!Array.isArray(data.trackIds)) {
-    throw new ValidationError("trackIds must be an array.");
+    throw new ValidationError("trackIds должен быть массивом.");
   }
 
   const trackIds = Array.from(
@@ -85,7 +85,7 @@ export function parseTrackIdsInput(input: unknown) {
 
 export function parseLoginInput(input: unknown) {
   if (!input || typeof input !== "object") {
-    throw new ValidationError("Invalid login payload.");
+    throw new ValidationError("Некорректные данные входа.");
   }
 
   const data = input as Record<string, unknown>;
@@ -93,11 +93,11 @@ export function parseLoginInput(input: unknown) {
   const password = ensureString(data.password, "password");
 
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
-    throw new ValidationError("Enter a valid email.");
+    throw new ValidationError("Введите корректный email.");
   }
 
   if (password.length < 8 || password.length > 120) {
-    throw new ValidationError("Password must be at least 8 characters.");
+    throw new ValidationError("Пароль должен быть минимум 8 символов.");
   }
 
   return { email, password };
@@ -105,7 +105,7 @@ export function parseLoginInput(input: unknown) {
 
 export function parseVenueRegistrationInput(input: unknown) {
   if (!input || typeof input !== "object") {
-    throw new ValidationError("Invalid registration payload.");
+    throw new ValidationError("Некорректные данные регистрации.");
   }
 
   const data = input as Record<string, unknown>;
@@ -119,7 +119,7 @@ export function parseVenueRegistrationInput(input: unknown) {
   const kpp = optionalString(data.kpp)?.replace(/\D/g, "") ?? null;
   const ogrn = optionalString(data.ogrn)?.replace(/\D/g, "") ?? null;
   const ogrnip = optionalString(data.ogrnip)?.replace(/\D/g, "") ?? null;
-  const legalAddress = optionalString(data.legalAddress) ?? "Not provided during quick signup";
+  const legalAddress = optionalString(data.legalAddress) ?? "Не указан при быстрой регистрации";
   const actualAddress = optionalString(data.actualAddress);
   const contactName = optionalString(data.contactName) ?? ownerName;
   const contactPhone = ensureString(data.contactPhone, "contactPhone");
@@ -129,77 +129,77 @@ export function parseVenueRegistrationInput(input: unknown) {
   const corrAccount = optionalString(data.corrAccount)?.replace(/\D/g, "") ?? null;
 
   if (ownerName.length < 2 || ownerName.length > 80) {
-    throw new ValidationError("Owner name must be between 2 and 80 characters.");
+    throw new ValidationError("Имя владельца должно быть от 2 до 80 символов.");
   }
 
   if (venueName.length < 2 || venueName.length > 80) {
-    throw new ValidationError("Venue name must be between 2 and 80 characters.");
+    throw new ValidationError("Название заведения должно быть от 2 до 80 символов.");
   }
 
   if (!/^[a-z0-9-]{3,40}$/.test(slug)) {
-    throw new ValidationError("Slug must be 3-40 chars and use lowercase letters, numbers, or dashes.");
+    throw new ValidationError("Slug должен быть от 3 до 40 символов и содержать только латинские строчные буквы, цифры или дефисы.");
   }
 
   if (businessTypeInput !== "INDIVIDUAL_ENTREPRENEUR" && businessTypeInput !== "LLC") {
-    throw new ValidationError("Business type must be IP or LLC.");
+    throw new ValidationError("Тип бизнеса должен быть ИП или ООО.");
   }
 
   const businessType: "INDIVIDUAL_ENTREPRENEUR" | "LLC" = businessTypeInput;
 
   if (legalName.length < 2 || legalName.length > 180) {
-    throw new ValidationError("Legal business name must be between 2 and 180 characters.");
+    throw new ValidationError("Юридическое название должно быть от 2 до 180 символов.");
   }
 
   if (businessType === "INDIVIDUAL_ENTREPRENEUR") {
     if (!/^\d{12}$/.test(inn)) {
-      throw new ValidationError("IP INN must contain 12 digits.");
+      throw new ValidationError("ИНН ИП должен содержать 12 цифр.");
     }
   }
 
   if (businessType === "LLC") {
     if (!/^\d{10}$/.test(inn)) {
-      throw new ValidationError("LLC INN must contain 10 digits.");
+      throw new ValidationError("ИНН ООО должен содержать 10 цифр.");
     }
   }
 
   if (kpp && !/^\d{9}$/.test(kpp)) {
-    throw new ValidationError("KPP must contain 9 digits.");
+    throw new ValidationError("КПП должен содержать 9 цифр.");
   }
 
   if (ogrn && !/^\d{13}$/.test(ogrn)) {
-    throw new ValidationError("OGRN must contain 13 digits.");
+    throw new ValidationError("ОГРН должен содержать 13 цифр.");
   }
 
   if (ogrnip && !/^\d{15}$/.test(ogrnip)) {
-    throw new ValidationError("OGRNIP must contain 15 digits.");
+    throw new ValidationError("ОГРНИП должен содержать 15 цифр.");
   }
 
   if (legalAddress && (legalAddress.length < 10 || legalAddress.length > 240)) {
-    throw new ValidationError("Legal address must be between 10 and 240 characters.");
+    throw new ValidationError("Юридический адрес должен быть от 10 до 240 символов.");
   }
 
   if (actualAddress && actualAddress.length > 240) {
-    throw new ValidationError("Actual address must be under 240 characters.");
+    throw new ValidationError("Фактический адрес должен быть до 240 символов.");
   }
 
   if (contactName.length < 2 || contactName.length > 120) {
-    throw new ValidationError("Representative name must be between 2 and 120 characters.");
+    throw new ValidationError("Имя представителя должно быть от 2 до 120 символов.");
   }
 
   if (!/^\+?[0-9\s()-]{7,24}$/.test(contactPhone)) {
-    throw new ValidationError("Enter a valid representative phone.");
+    throw new ValidationError("Введите корректный телефон представителя.");
   }
 
   if (bankBik && !/^\d{9}$/.test(bankBik)) {
-    throw new ValidationError("Bank BIK must contain 9 digits.");
+    throw new ValidationError("БИК банка должен содержать 9 цифр.");
   }
 
   if (bankAccount && !/^\d{20}$/.test(bankAccount)) {
-    throw new ValidationError("Bank account must contain 20 digits.");
+    throw new ValidationError("Расчётный счёт должен содержать 20 цифр.");
   }
 
   if (corrAccount && !/^\d{20}$/.test(corrAccount)) {
-    throw new ValidationError("Correspondent account must contain 20 digits.");
+    throw new ValidationError("Корреспондентский счёт должен содержать 20 цифр.");
   }
 
   return {

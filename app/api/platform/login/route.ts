@@ -5,12 +5,12 @@ import { env } from "@/lib/env";
 
 export async function POST(request: Request) {
   if (!env.hasAdminPassword) {
-    return NextResponse.json({ error: "ADMIN_PASSWORD is not configured." }, { status: 500 });
+    return NextResponse.json({ error: "ADMIN_PASSWORD не настроен." }, { status: 500 });
   }
 
   const body = (await request.json()) as { password?: string };
   if (body.password !== env.adminPassword) {
-    return NextResponse.json({ error: "Invalid platform password." }, { status: 401 });
+    return NextResponse.json({ error: "Неверный пароль платформы." }, { status: 401 });
   }
 
   const response = NextResponse.json({ ok: true });

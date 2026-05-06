@@ -12,12 +12,12 @@ export async function PATCH(
 ) {
   const { venueId, queueItemId } = await params;
   if (!(await canManageVerifiedVenue(venueId))) {
-    return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    return NextResponse.json({ error: "Нет доступа." }, { status: 401 });
   }
 
   const body = (await request.json()) as { status?: QueueItemStatus };
   if (body.status !== "PLAYED" && body.status !== "REMOVED") {
-    return NextResponse.json({ error: "Invalid queue status." }, { status: 400 });
+    return NextResponse.json({ error: "Некорректный статус очереди." }, { status: 400 });
   }
 
   if (env.demoMode) {
@@ -27,7 +27,7 @@ export async function PATCH(
     }
 
     return NextResponse.json({
-      message: body.status === "PLAYED" ? "Track marked as played." : "Track removed from queue."
+      message: body.status === "PLAYED" ? "Трек отмечен как проигранный." : "Трек удалён из очереди."
     });
   }
 
@@ -45,14 +45,14 @@ export async function PATCH(
     });
 
     if (updateResult.count === 0) {
-      return NextResponse.json({ error: "Queue item not found." }, { status: 404 });
+      return NextResponse.json({ error: "Элемент очереди не найден." }, { status: 404 });
     }
 
     return NextResponse.json({
-      message: body.status === "PLAYED" ? "Track marked as played." : "Track removed from queue."
+      message: body.status === "PLAYED" ? "Трек отмечен как проигранный." : "Трек удалён из очереди."
     });
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: "Internal server error." }, { status: 500 });
+    return NextResponse.json({ error: "Внутренняя ошибка сервера." }, { status: 500 });
   }
 }

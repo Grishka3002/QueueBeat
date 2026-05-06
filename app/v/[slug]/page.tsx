@@ -16,11 +16,11 @@ export default async function VenuePage({
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#080910] px-5 py-10 text-white">
         <div className="w-full max-w-lg rounded-[2rem] border border-white/10 bg-white/[0.04] p-7 text-center shadow-glow backdrop-blur">
-          <Badge tone="warning">QR paused</Badge>
+          <Badge tone="warning">QR-код на паузе</Badge>
           <h1 className="mt-5 text-3xl font-semibold">{venue.name}</h1>
           <p className="mt-4 leading-7 text-white/60">
-            This venue is temporarily not accepting music requests. The QR link will work again when the venue
-            subscription is active.
+            Это заведение временно не принимает музыкальные заявки. QR-ссылка снова заработает,
+            когда подписка заведения станет активной.
           </p>
         </div>
       </main>

@@ -114,25 +114,27 @@ export function VenueClient({ venue, tracks, queue }: VenueClientProps) {
           <div className="space-y-5">
             <div className="flex items-start justify-between gap-4">
               <div className="space-y-2">
-                <p className="text-xs uppercase tracking-[0.35em] text-white/40">Venue Playlist</p>
+                <p className="text-xs uppercase tracking-[0.35em] text-white/40">Плейлист заведения</p>
                 <h1 className="font-sans text-3xl font-semibold tracking-tight text-white">
                   {venue.name}
                 </h1>
                 <p className="max-w-sm text-sm leading-6 text-white/65">
-                  Сканируйте, выбирайте одобренный трек и отправляйте его в очередь заведения после оплаты.
+                  Выберите разрешённый трек и отправьте его в очередь заведения после оплаты.
                 </p>
               </div>
               <Badge tone={venue.isAcceptingRequests ? "success" : "warning"}>
-                {venue.isAcceptingRequests ? "Прием открыт" : "Прием выключен"}
+                {venue.isAcceptingRequests ? "Приём открыт" : "Приём выключен"}
               </Badge>
             </div>
 
             <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-4">
-              <div className="text-xs uppercase tracking-[0.28em] text-white/40">Стоимость запроса</div>
+              <div className="text-xs uppercase tracking-[0.28em] text-white/40">Стоимость заявки</div>
               <div className="mt-2 text-4xl font-semibold text-gradient">
                 {formatPrice(venue.requestPriceCents)}
               </div>
-              <div className="mt-2 text-sm text-white/55">Цена всегда берется с сервера и не может быть изменена на клиенте.</div>
+              <div className="mt-2 text-sm text-white/55">
+                Цена всегда берётся с сервера из настроек заведения и не меняется на телефоне гостя.
+              </div>
             </div>
           </div>
         </SectionCard>
@@ -151,13 +153,14 @@ export function VenueClient({ venue, tracks, queue }: VenueClientProps) {
 
             {!venue.isAcceptingRequests ? (
               <div className="rounded-[1.4rem] border border-amber-500/20 bg-amber-500/10 p-4 text-sm leading-6 text-amber-200">
-                Заведение временно не принимает музыкальные заявки. Вы можете посмотреть доступные треки, но оплатить заказ сейчас нельзя.
+                Заведение временно не принимает музыкальные заявки. Вы можете посмотреть плейлист, но оплатить
+                заказ сейчас нельзя.
               </div>
             ) : null}
 
             {tracks.length === 0 ? (
               <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5 text-sm text-white/55">
-                Для этого заведения пока не настроена разрешенная библиотека.
+                Для этого заведения пока не настроен разрешённый плейлист.
               </div>
             ) : filteredTracks.length === 0 ? (
               <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5 text-sm text-white/55">
@@ -222,7 +225,7 @@ export function VenueClient({ venue, tracks, queue }: VenueClientProps) {
 
             <div className="rounded-[1.5rem] border border-white/10 bg-black/25 p-4">
               <div className="flex items-center justify-between text-sm text-white/55">
-                <span>Итог к оплате</span>
+                <span>Итого к оплате</span>
                 <span>{formatPrice(venue.requestPriceCents)}</span>
               </div>
               <button
@@ -252,8 +255,10 @@ export function VenueClient({ venue, tracks, queue }: VenueClientProps) {
         <SectionCard>
           <div className="space-y-4">
             <div>
-              <div className="text-xs uppercase tracking-[0.35em] text-white/35">Live queue</div>
-              <div className="mt-2 text-sm text-white/55">Гости видят только треки, уже попавшие в очередь.</div>
+              <div className="text-xs uppercase tracking-[0.35em] text-white/35">Живая очередь</div>
+              <div className="mt-2 text-sm text-white/55">
+                Здесь видны только треки, которые уже оплачены и попали в очередь.
+              </div>
             </div>
 
             {queue.length === 0 ? (

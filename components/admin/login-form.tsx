@@ -7,8 +7,8 @@ import { useRouter } from "next/navigation";
 export function LoginForm({
   endpoint = "/api/platform/login",
   redirectTo = "/platform" as Route,
-  placeholder = "Platform admin password",
-  buttonLabel = "Open platform console"
+  placeholder = "Пароль владельца платформы",
+  buttonLabel = "Открыть платформу"
 }: {
   endpoint?: string;
   redirectTo?: Route;
@@ -36,13 +36,13 @@ export function LoginForm({
 
       const payload = (await response.json()) as { error?: string };
       if (!response.ok) {
-        throw new Error(payload.error ?? "Login failed.");
+        throw new Error(payload.error ?? "Не удалось войти.");
       }
 
       router.push(redirectTo);
       router.refresh();
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : "Unknown error.");
+      setError(submitError instanceof Error ? submitError.message : "Неизвестная ошибка.");
     } finally {
       setIsSubmitting(false);
     }
@@ -63,7 +63,7 @@ export function LoginForm({
         disabled={isSubmitting}
         className="w-full rounded-full bg-gradient-to-r from-accent to-accentBlue px-5 py-3 text-sm font-semibold text-white shadow-glow disabled:opacity-60"
       >
-        {isSubmitting ? "Signing in..." : buttonLabel}
+        {isSubmitting ? "Входим..." : buttonLabel}
       </button>
     </form>
   );

@@ -9,6 +9,16 @@ import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { formatPrice } from "@/lib/utils";
 
+function formatVerificationStatus(status: "PENDING" | "VERIFIED" | "REJECTED") {
+  const labels = {
+    PENDING: "Ожидает проверки",
+    VERIFIED: "Проверено",
+    REJECTED: "Отклонено"
+  };
+
+  return labels[status];
+}
+
 export default async function PlatformPage() {
   await requireAdmin();
 
@@ -33,23 +43,23 @@ export default async function PlatformPage() {
 
   return (
     <AdminShell
-      badge="Platform"
-      title="QueueBeat platform console"
-      description="Approve venue accounts, monitor customer setup, and open any venue dashboard for support."
+      badge="Платформа"
+      title="Панель платформы QueueBeat"
+      description="Проверяйте заведения, контролируйте подключение клиентов и открывайте любые кабинеты для поддержки."
       homeHref="/platform"
-      homeLabel="Platform"
+      homeLabel="Платформа"
     >
       <div className="grid gap-5 sm:grid-cols-3">
         <SectionCard>
-          <div className="text-sm text-white/45">Venues</div>
+          <div className="text-sm text-white/45">Заведения</div>
           <div className="mt-2 text-3xl font-semibold">{venues.length}</div>
         </SectionCard>
         <SectionCard>
-          <div className="text-sm text-white/45">Users</div>
+          <div className="text-sm text-white/45">Пользователи</div>
           <div className="mt-2 text-3xl font-semibold">{usersCount}</div>
         </SectionCard>
         <SectionCard>
-          <div className="text-sm text-white/45">Orders</div>
+          <div className="text-sm text-white/45">Заказы</div>
           <div className="mt-2 text-3xl font-semibold">{ordersCount}</div>
         </SectionCard>
       </div>
@@ -65,31 +75,31 @@ export default async function PlatformPage() {
                 <div className="flex flex-wrap items-center gap-3">
                   <div className="text-xl font-semibold">{venue.name}</div>
                   <Badge tone={venue.verificationStatus === "VERIFIED" ? "success" : "warning"}>
-                    {venue.verificationStatus}
+                    {formatVerificationStatus(venue.verificationStatus)}
                   </Badge>
                   <Badge tone={venue.isAcceptingRequests ? "success" : "default"}>
-                    {venue.isAcceptingRequests ? "Open" : "Paused"}
+                    {venue.isAcceptingRequests ? "Приём открыт" : "На паузе"}
                   </Badge>
                 </div>
                 <div className="text-sm text-white/45">
-                  Owner: {venue.owner?.email ?? "Unassigned"} - /v/{venue.slug} -{" "}
+                  Владелец: {venue.owner?.email ?? "Не назначен"} - /v/{venue.slug} -{" "}
                   {formatPrice(venue.requestPriceCents)}
                 </div>
                 {venue.businessProfile ? (
                   <div className="text-sm leading-6 text-white/45">
-                    {venue.businessProfile.businessType === "LLC" ? "LLC" : "IP"} -{" "}
-                    {venue.businessProfile.legalName} - INN {venue.businessProfile.inn}
-                    {venue.businessProfile.kpp ? ` - KPP ${venue.businessProfile.kpp}` : ""}
-                    {venue.businessProfile.ogrn ? ` - OGRN ${venue.businessProfile.ogrn}` : ""}
-                    {venue.businessProfile.ogrnip ? ` - OGRNIP ${venue.businessProfile.ogrnip}` : ""}
+                    {venue.businessProfile.businessType === "LLC" ? "ООО" : "ИП"} -{" "}
+                    {venue.businessProfile.legalName} - ИНН {venue.businessProfile.inn}
+                    {venue.businessProfile.kpp ? ` - КПП ${venue.businessProfile.kpp}` : ""}
+                    {venue.businessProfile.ogrn ? ` - ОГРН ${venue.businessProfile.ogrn}` : ""}
+                    {venue.businessProfile.ogrnip ? ` - ОГРНИП ${venue.businessProfile.ogrnip}` : ""}
                     <br />
                     {venue.businessProfile.legalAddress}
                   </div>
                 ) : null}
                 <div className="flex flex-wrap gap-3 text-sm text-white/55">
-                  <span>{venue._count.venueTracks} tracks</span>
-                  <span>{venue._count.queueItems} queue items</span>
-                  <span>{venue._count.orders} orders</span>
+                  <span>{venue._count.venueTracks} треков</span>
+                  <span>{venue._count.queueItems} в очереди</span>
+                  <span>{venue._count.orders} заказов</span>
                 </div>
               </div>
               <div className="flex flex-wrap items-center gap-3">
@@ -97,7 +107,7 @@ export default async function PlatformPage() {
                   href={`/platform/venues/${venue.id}` as Route}
                   className="rounded-full border border-white/10 px-4 py-2 text-sm text-white/75 hover:bg-white/5"
                 >
-                  Open
+                  Открыть
                 </Link>
                 <VerifyVenueButton venueId={venue.id} status={venue.verificationStatus} />
               </div>

@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     if (env.demoMode) {
       const result = createDemoPendingOrder(body.venueId, body.trackId);
       if ("error" in result) {
-        return NextResponse.json({ error: result.error }, { status: result.error === "Venue not found." ? 404 : 400 });
+        return NextResponse.json({ error: result.error }, { status: result.error === "Заведение не найдено." ? 404 : 400 });
       }
 
       const payment = await paymentProvider.start(result.order.id);
@@ -43,19 +43,19 @@ export async function POST(request: Request) {
     });
 
     if (!venue) {
-      return NextResponse.json({ error: "Venue not found." }, { status: 404 });
+      return NextResponse.json({ error: "Заведение не найдено." }, { status: 404 });
     }
 
     if (!venue.isAcceptingRequests) {
-      return NextResponse.json({ error: "Venue is not accepting requests." }, { status: 400 });
+      return NextResponse.json({ error: "Заведение сейчас не принимает заявки." }, { status: 400 });
     }
 
     if (!isSubscriptionUsable(venue)) {
-      return NextResponse.json({ error: "Venue subscription is not active." }, { status: 402 });
+      return NextResponse.json({ error: "Подписка заведения не активна." }, { status: 402 });
     }
 
     if (venue.venueTracks.length === 0) {
-      return NextResponse.json({ error: "This track is not allowed for the selected venue." }, { status: 400 });
+      return NextResponse.json({ error: "Этот трек не разрешён для выбранного заведения." }, { status: 400 });
     }
 
     const order = await prisma.order.create({
@@ -100,6 +100,6 @@ export async function POST(request: Request) {
     }
 
     console.error(error);
-    return NextResponse.json({ error: "Internal server error." }, { status: 500 });
+    return NextResponse.json({ error: "Внутренняя ошибка сервера." }, { status: 500 });
   }
 }

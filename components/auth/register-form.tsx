@@ -45,13 +45,13 @@ export function VenueRegisterForm() {
 
       const payload = (await response.json()) as { error?: string };
       if (!response.ok) {
-        throw new Error(payload.error ?? "Registration failed.");
+        throw new Error(payload.error ?? "Не удалось зарегистрировать заведение.");
       }
 
       router.push("/dashboard" as Route);
       router.refresh();
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : "Unknown error.");
+      setError(submitError instanceof Error ? submitError.message : "Неизвестная ошибка.");
     } finally {
       setIsSubmitting(false);
     }
@@ -62,12 +62,12 @@ export function VenueRegisterForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="rounded-[1.4rem] border border-white/10 bg-white/[0.03] p-4">
-        <div className="mb-3 text-xs uppercase tracking-[0.28em] text-white/35">Account</div>
+        <div className="mb-3 text-xs uppercase tracking-[0.28em] text-white/35">Аккаунт</div>
         <div className="grid gap-3 sm:grid-cols-2">
           <input
             value={ownerName}
             onChange={(event) => setOwnerName(event.target.value)}
-            placeholder="Your name"
+            placeholder="Ваше имя"
             className="rounded-[1.2rem] border border-white/10 bg-white/5 px-4 py-3 outline-none placeholder:text-white/30 focus:border-white/25"
           />
           <input
@@ -81,38 +81,38 @@ export function VenueRegisterForm() {
             type="password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
-            placeholder="Password, 8+ characters"
+            placeholder="Пароль, минимум 8 символов"
             className="rounded-[1.2rem] border border-white/10 bg-white/5 px-4 py-3 outline-none placeholder:text-white/30 focus:border-white/25"
           />
           <input
             value={contactPhone}
             onChange={(event) => setContactPhone(event.target.value)}
-            placeholder="Phone for verification"
+            placeholder="Телефон для проверки"
             className="rounded-[1.2rem] border border-white/10 bg-white/5 px-4 py-3 outline-none placeholder:text-white/30 focus:border-white/25"
           />
         </div>
       </div>
 
       <div className="rounded-[1.4rem] border border-white/10 bg-white/[0.03] p-4">
-        <div className="mb-3 text-xs uppercase tracking-[0.28em] text-white/35">Venue</div>
+        <div className="mb-3 text-xs uppercase tracking-[0.28em] text-white/35">Заведение</div>
         <div className="grid gap-3 sm:grid-cols-2">
           <input
             value={venueName}
             onChange={(event) => setVenueName(event.target.value)}
-            placeholder="Venue name"
+            placeholder="Название заведения"
             className="rounded-[1.2rem] border border-white/10 bg-white/5 px-4 py-3 outline-none placeholder:text-white/30 focus:border-white/25"
           />
           <input
             value={slug}
             onChange={(event) => setSlug(event.target.value.toLowerCase())}
-            placeholder="public-link, e.g. velvet-room"
+            placeholder="Публичная ссылка, например velvet-room"
             className="rounded-[1.2rem] border border-white/10 bg-white/5 px-4 py-3 outline-none placeholder:text-white/30 focus:border-white/25"
           />
         </div>
       </div>
 
       <div className="rounded-[1.4rem] border border-white/10 bg-white/[0.03] p-4">
-        <div className="mb-3 text-xs uppercase tracking-[0.28em] text-white/35">Business basics</div>
+        <div className="mb-3 text-xs uppercase tracking-[0.28em] text-white/35">Данные бизнеса</div>
         <div className="mb-3 grid grid-cols-2 gap-2 rounded-[1.1rem] bg-black/20 p-1">
           <button
             type="button"
@@ -121,7 +121,7 @@ export function VenueRegisterForm() {
               !isLlc ? "bg-white text-black" : "text-white/60 hover:bg-white/5"
             }`}
           >
-            IP
+            ИП
           </button>
           <button
             type="button"
@@ -130,28 +130,28 @@ export function VenueRegisterForm() {
               isLlc ? "bg-white text-black" : "text-white/60 hover:bg-white/5"
             }`}
           >
-            LLC
+            ООО
           </button>
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
           <input
             value={legalName}
             onChange={(event) => setLegalName(event.target.value)}
-            placeholder={isLlc ? "Legal name, e.g. LLC Music Bar" : "IP full legal name"}
+            placeholder={isLlc ? "Юр. название, например ООО Музыка Бар" : "ФИО ИП полностью"}
             className="rounded-[1.2rem] border border-white/10 bg-white/5 px-4 py-3 outline-none placeholder:text-white/30 focus:border-white/25"
           />
           <input
             value={inn}
             onChange={(event) => setInn(event.target.value)}
-            placeholder={isLlc ? "INN, 10 digits" : "INN, 12 digits"}
+            placeholder={isLlc ? "ИНН, 10 цифр" : "ИНН, 12 цифр"}
             className="rounded-[1.2rem] border border-white/10 bg-white/5 px-4 py-3 outline-none placeholder:text-white/30 focus:border-white/25"
           />
         </div>
       </div>
 
       <div className="rounded-[1.2rem] border border-amber-300/15 bg-amber-300/10 p-4 text-sm leading-6 text-amber-100/80">
-        Payment details are intentionally collected later. After verification, we can add a separate payment onboarding
-        step for provider credentials, receipts, commissions, and payouts.
+        Платёжные данные мы намеренно собираем позже. После проверки добавим отдельный шаг для подключения
+        провайдера оплаты, чеков, комиссии и выплат.
       </div>
 
       {error ? <div className="text-sm text-rose-300">{error}</div> : null}
@@ -160,10 +160,10 @@ export function VenueRegisterForm() {
         disabled={isSubmitting}
         className="w-full rounded-full bg-gradient-to-r from-accent to-accentBlue px-5 py-3 text-sm font-semibold text-white shadow-glow disabled:opacity-60"
       >
-        {isSubmitting ? "Creating account..." : "Register venue"}
+        {isSubmitting ? "Создаём аккаунт..." : "Зарегистрировать заведение"}
       </button>
       <Link href="/login" className="inline-flex text-sm text-white/45 hover:text-white/70">
-        Already have an account?
+        Уже есть аккаунт?
       </Link>
     </form>
   );

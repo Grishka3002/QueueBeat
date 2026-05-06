@@ -10,8 +10,8 @@ export default function AdminError({
 }) {
   return (
     <RuntimeError
-      title="Admin dashboard could not load"
-      description="The dashboard needs a working production database and admin configuration. Check DATABASE_URL, ADMIN_PASSWORD, migrations, and seed data in Railway."
+      title="Не удалось загрузить админ-панель"
+      description="Кабинету нужна рабочая production-база и корректная админская конфигурация. Проверьте DATABASE_URL, ADMIN_PASSWORD, миграции и seed-данные в Railway."
       reset={reset}
     />
   );

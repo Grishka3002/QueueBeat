@@ -286,13 +286,13 @@ export function createDemoPendingOrder(venueId: string, trackId: string) {
   const store = getStore();
   const venue = store.venues.find((item) => item.id === venueId);
   if (!venue) {
-    return { error: "Venue not found." as const };
+    return { error: "Заведение не найдено." as const };
   }
   if (!venue.isAcceptingRequests) {
-    return { error: "Venue is not accepting requests." as const };
+    return { error: "Заведение сейчас не принимает заявки." as const };
   }
   if (!venue.allowedTrackIds.includes(trackId)) {
-    return { error: "This track is not allowed for the selected venue." as const };
+    return { error: "Этот трек не разрешён для выбранного заведения." as const };
   }
 
   const order: DemoOrder = {
@@ -327,15 +327,15 @@ export function confirmDemoOrder(orderId: string) {
   const store = getStore();
   const order = store.orders.find((item) => item.id === orderId);
   if (!order) {
-    return { error: "Order not found." as const };
+    return { error: "Заказ не найден." as const };
   }
   if (order.status !== "PENDING") {
-    return { error: "Order is not pending." as const };
+    return { error: "Заказ уже не ожидает оплату." as const };
   }
 
   const venue = store.venues.find((item) => item.id === order.venueId);
   if (!venue || !venue.allowedTrackIds.includes(order.trackId)) {
-    return { error: "Track is no longer available for this venue." as const };
+    return { error: "Трек больше недоступен для этого заведения." as const };
   }
 
   order.status = "PAID";
@@ -372,12 +372,12 @@ export function updateDemoVenueSettings(
   const store = getStore();
   const venue = store.venues.find((item) => item.id === venueId);
   if (!venue) {
-    return { error: "Venue not found." as const };
+    return { error: "Заведение не найдено." as const };
   }
 
   const slugTaken = store.venues.some((item) => item.id !== venueId && item.slug === payload.slug);
   if (slugTaken) {
-    return { error: "Slug already exists." as const };
+    return { error: "Этот slug уже занят." as const };
   }
 
   venue.name = payload.name;
@@ -392,12 +392,12 @@ export function replaceDemoVenueTracks(venueId: string, trackIds: string[]) {
   const store = getStore();
   const venue = store.venues.find((item) => item.id === venueId);
   if (!venue) {
-    return { error: "Venue not found." as const };
+    return { error: "Заведение не найдено." as const };
   }
 
   const allExist = trackIds.every((trackId) => store.tracks.some((track) => track.id === trackId));
   if (!allExist) {
-    return { error: "Some tracks do not exist." as const };
+    return { error: "Некоторые треки не существуют." as const };
   }
 
   venue.allowedTrackIds = [...trackIds];
@@ -412,7 +412,7 @@ export function updateDemoQueueItem(
   const store = getStore();
   const queueItem = store.queueItems.find((item) => item.id === queueItemId && item.venueId === venueId);
   if (!queueItem) {
-    return { error: "Queue item not found." as const };
+    return { error: "Элемент очереди не найден." as const };
   }
 
   queueItem.status = status;

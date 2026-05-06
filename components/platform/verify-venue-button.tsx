@@ -35,7 +35,7 @@ export function VerifyVenueButton({
         onClick={() => updateStatus("VERIFIED")}
         className="rounded-full bg-emerald-400/15 px-3 py-2 text-xs font-semibold text-emerald-200 disabled:opacity-40"
       >
-        Verify
+        Проверить
       </button>
       <button
         type="button"
@@ -43,7 +43,7 @@ export function VerifyVenueButton({
         onClick={() => updateStatus("REJECTED")}
         className="rounded-full bg-rose-400/15 px-3 py-2 text-xs font-semibold text-rose-200 disabled:opacity-40"
       >
-        Reject
+        Отклонить
       </button>
     </div>
   );

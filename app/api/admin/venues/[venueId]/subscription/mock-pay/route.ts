@@ -10,7 +10,7 @@ export async function POST(
 ) {
   const { venueId } = await params;
   if (!(await canManageVerifiedVenue(venueId))) {
-    return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    return NextResponse.json({ error: "Нет доступа." }, { status: 401 });
   }
 
   const plan = await prisma.subscriptionPlan.findFirst({
@@ -18,7 +18,7 @@ export async function POST(
   });
 
   if (!plan) {
-    return NextResponse.json({ error: "Subscription plan is not configured." }, { status: 500 });
+    return NextResponse.json({ error: "Тариф подписки не настроен." }, { status: 500 });
   }
 
   const now = new Date();
@@ -46,7 +46,7 @@ export async function POST(
   });
 
   return NextResponse.json({
-    message: "Subscription activated for one month.",
+    message: "Подписка активирована на один месяц.",
     subscriptionId: subscription.id,
     currentPeriodEnd
   });

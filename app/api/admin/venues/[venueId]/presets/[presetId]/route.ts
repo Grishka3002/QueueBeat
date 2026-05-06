@@ -9,7 +9,7 @@ export async function POST(
 ) {
   const { venueId, presetId } = await params;
   if (!(await canManageVerifiedVenue(venueId))) {
-    return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    return NextResponse.json({ error: "Нет доступа." }, { status: 401 });
   }
 
   const preset = await prisma.playlistPreset.findUnique({
@@ -22,7 +22,7 @@ export async function POST(
   });
 
   if (!preset) {
-    return NextResponse.json({ error: "Preset not found." }, { status: 404 });
+    return NextResponse.json({ error: "Пресет не найден." }, { status: 404 });
   }
 
   await prisma.$transaction(async (transaction) => {
@@ -39,5 +39,5 @@ export async function POST(
     });
   });
 
-  return NextResponse.json({ message: `${preset.name} preset applied.` });
+  return NextResponse.json({ message: `Пресет «${preset.name}» применён.` });
 }

@@ -18,12 +18,12 @@ export function SubscriptionActions({ venueId }: { venueId: string }) {
       });
       const payload = (await response.json()) as { error?: string };
       if (!response.ok) {
-        throw new Error(payload.error ?? "Could not activate subscription.");
+        throw new Error(payload.error ?? "Не удалось активировать подписку.");
       }
 
       router.refresh();
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : "Unknown error.");
+      setError(submitError instanceof Error ? submitError.message : "Неизвестная ошибка.");
     } finally {
       setIsSubmitting(false);
     }
@@ -38,7 +38,7 @@ export function SubscriptionActions({ venueId }: { venueId: string }) {
         disabled={isSubmitting}
         className="w-full rounded-full bg-gradient-to-r from-accent to-accentBlue px-5 py-3 text-sm font-semibold text-white shadow-glow disabled:opacity-60"
       >
-        {isSubmitting ? "Processing..." : "Mock pay monthly subscription"}
+        {isSubmitting ? "Обрабатываем..." : "Mock-оплата месячной подписки"}
       </button>
     </div>
   );

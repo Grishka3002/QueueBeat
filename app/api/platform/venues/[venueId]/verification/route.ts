@@ -8,12 +8,12 @@ export async function PATCH(
   { params }: { params: Promise<{ venueId: string }> }
 ) {
   if (!(await isAdminAuthenticated())) {
-    return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    return NextResponse.json({ error: "Нет доступа." }, { status: 401 });
   }
 
   const body = (await request.json()) as { status?: string };
   if (body.status !== "VERIFIED" && body.status !== "REJECTED") {
-    return NextResponse.json({ error: "Invalid verification status." }, { status: 400 });
+    return NextResponse.json({ error: "Некорректный статус проверки." }, { status: 400 });
   }
 
   const { venueId } = await params;
@@ -29,5 +29,5 @@ export async function PATCH(
     }
   });
 
-  return NextResponse.json({ message: "Venue verification updated." });
+  return NextResponse.json({ message: "Статус проверки заведения обновлён." });
 }

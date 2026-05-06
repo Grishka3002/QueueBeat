@@ -16,12 +16,12 @@ export async function POST(request: Request) {
       const result = confirmDemoOrder(body.orderId);
 
       if ("error" in result) {
-        return NextResponse.json({ error: result.error }, { status: result.error === "Order not found." ? 404 : 400 });
+        return NextResponse.json({ error: result.error }, { status: result.error === "Заказ не найден." ? 404 : 400 });
       }
 
       return NextResponse.json({
         status: confirmation.status,
-        message: "Payment successful. Track added to the venue queue."
+        message: "Оплата прошла успешно. Трек добавлен в очередь заведения."
       });
     }
 
@@ -33,11 +33,11 @@ export async function POST(request: Request) {
     });
 
     if (!order) {
-      return NextResponse.json({ error: "Order not found." }, { status: 404 });
+      return NextResponse.json({ error: "Заказ не найден." }, { status: 404 });
     }
 
     if (order.status !== "PENDING") {
-      return NextResponse.json({ error: "Order is not pending." }, { status: 400 });
+      return NextResponse.json({ error: "Заказ уже не ожидает оплату." }, { status: 400 });
     }
 
     const venueTrack = await prisma.venueTrack.findUnique({
@@ -50,7 +50,7 @@ export async function POST(request: Request) {
     });
 
     if (!venueTrack) {
-      return NextResponse.json({ error: "Track is no longer available for this venue." }, { status: 400 });
+      return NextResponse.json({ error: "Трек больше недоступен для этого заведения." }, { status: 400 });
     }
 
     await paymentProvider.confirm(order.id);
@@ -116,14 +116,14 @@ export async function POST(request: Request) {
                   orderId: order.id,
                   type: "VENUE_SHARE",
                   amountCents: venueShareCents,
-                  description: "Venue share for paid track request"
+                  description: "Доля заведения за оплаченную заявку трека"
                 },
                 {
                   venueId: order.venueId,
                   orderId: order.id,
                   type: "PLATFORM_FEE",
                   amountCents: -platformFeeCents,
-                  description: "QueueBeat platform fee"
+                  description: "Комиссия платформы QueueBeat"
                 }
               ]
             });
@@ -134,11 +134,11 @@ export async function POST(request: Request) {
         );
 
         return NextResponse.json({
-          message: "Payment successful. Track added to the venue queue."
+          message: "Оплата прошла успешно. Трек добавлен в очередь заведения."
         });
       } catch (error) {
         if (error instanceof Error && error.message === "ORDER_NOT_PENDING") {
-          return NextResponse.json({ error: "Order is not pending." }, { status: 400 });
+          return NextResponse.json({ error: "Заказ уже не ожидает оплату." }, { status: 400 });
         }
 
         const shouldRetry =
@@ -151,13 +151,13 @@ export async function POST(request: Request) {
       }
     }
 
-    return NextResponse.json({ error: "Could not confirm payment." }, { status: 500 });
+    return NextResponse.json({ error: "Не удалось подтвердить оплату." }, { status: 500 });
   } catch (error) {
     if (error instanceof ValidationError) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
     console.error(error);
-    return NextResponse.json({ error: "Internal server error." }, { status: 500 });
+    return NextResponse.json({ error: "Внутренняя ошибка сервера." }, { status: 500 });
   }
 }

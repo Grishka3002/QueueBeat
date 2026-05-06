@@ -48,14 +48,14 @@ const venues = [
     isAcceptingRequests: true,
     businessProfile: {
       businessType: "LLC" as const,
-      legalName: "LLC Velvet Room",
+      legalName: "ООО «Вельвет Рум»",
       inn: "7701234567",
       kpp: "770101001",
       ogrn: "1234567890123",
       ogrnip: null,
-      legalAddress: "Moscow, Tverskaya street, 10",
-      actualAddress: "Moscow, Tverskaya street, 10",
-      contactName: "Alex Velvet",
+      legalAddress: "Москва, Тверская улица, 10",
+      actualAddress: "Москва, Тверская улица, 10",
+      contactName: "Алексей Вельвет",
       contactPhone: "+7 900 111-22-33",
       contactEmail: "velvet-room@queuebeat.local"
     }
@@ -67,14 +67,14 @@ const venues = [
     isAcceptingRequests: true,
     businessProfile: {
       businessType: "INDIVIDUAL_ENTREPRENEUR" as const,
-      legalName: "IP Luna Rooftop",
+      legalName: "ИП Иванова Луна Сергеевна",
       inn: "250100000001",
       kpp: null,
       ogrn: null,
       ogrnip: "325250100000001",
-      legalAddress: "Vladivostok, Svetlanskaya street, 20",
-      actualAddress: "Vladivostok, Svetlanskaya street, 20",
-      contactName: "Luna Owner",
+      legalAddress: "Владивосток, Светланская улица, 20",
+      actualAddress: "Владивосток, Светланская улица, 20",
+      contactName: "Луна Иванова",
       contactPhone: "+7 900 222-33-44",
       contactEmail: "luna-rooftop@queuebeat.local"
     }
@@ -86,14 +86,14 @@ const venues = [
     isAcceptingRequests: false,
     businessProfile: {
       businessType: "LLC" as const,
-      legalName: "LLC Noir Bar",
+      legalName: "ООО «Нуар Бар»",
       inn: "7801234567",
       kpp: "780101001",
       ogrn: "1234567890124",
       ogrnip: null,
-      legalAddress: "Saint Petersburg, Rubinstein street, 5",
-      actualAddress: "Saint Petersburg, Rubinstein street, 5",
-      contactName: "Noir Manager",
+      legalAddress: "Санкт-Петербург, улица Рубинштейна, 5",
+      actualAddress: "Санкт-Петербург, улица Рубинштейна, 5",
+      contactName: "Мария Нуар",
       contactPhone: "+7 900 333-44-55",
       contactEmail: "noir-bar@queuebeat.local"
     }
@@ -128,7 +128,7 @@ async function main() {
   await prisma.user.create({
     data: {
       email: "platform@queuebeat.local",
-      name: "QueueBeat Platform",
+      name: "Платформа QueueBeat",
       passwordHash: hashPassword("queuebeat-admin"),
       role: "PLATFORM_ADMIN"
     }
@@ -137,7 +137,7 @@ async function main() {
   const venueOwners = await prisma.user.createManyAndReturn({
     data: venues.map((venue) => ({
       email: `${venue.slug}@queuebeat.local`,
-      name: `${venue.name} Owner`,
+      name: `Владелец ${venue.name}`,
       passwordHash: hashPassword("queuebeat-admin"),
       role: "VENUE_OWNER" as const
     }))
@@ -198,21 +198,21 @@ async function main() {
 
   const presetDefinitions = [
     {
-      name: "Lounge Warmup",
+      name: "Lounge-разогрев",
       slug: "lounge-warmup",
-      description: "Soft pop, nu-disco and cocktail bar tracks for early evening.",
+      description: "Мягкий поп, ню-диско и коктейльные треки для начала вечера.",
       trackTitles: ["Midnight City", "Feel It Still", "Rather Be", "Latch", "Firestone", "Calm Down"]
     },
     {
-      name: "Night Club Hits",
+      name: "Ночные клубные хиты",
       slug: "night-club-hits",
-      description: "Danceable crowd-pleasers for peak hours.",
+      description: "Танцевальные треки для пиковых часов и полной посадки.",
       trackTitles: ["One More Time", "Titanium", "Levels", "Freed From Desire", "Summer", "Dance The Night"]
     },
     {
-      name: "Pop Requests",
+      name: "Поп-заявки",
       slug: "pop-requests",
-      description: "Recognizable pop tracks guests are likely to request first.",
+      description: "Узнаваемые поп-треки, которые гости чаще всего просят первыми.",
       trackTitles: ["Blinding Lights", "Levitating", "Flowers", "As It Was", "Starboy", "Houdini"]
     }
   ];
@@ -238,7 +238,7 @@ async function main() {
 
   const firstVenue = createdVenues[0];
   if (!firstVenue) {
-    throw new Error("Seed failed: no venues were created.");
+    throw new Error("Seed не создал ни одного заведения.");
   }
 
   const seededTracks = createdTracks.slice(0, 3);
@@ -276,14 +276,14 @@ async function main() {
           orderId: order.id,
           type: "VENUE_SHARE",
           amountCents: firstVenue.requestPriceCents - platformFeeCents,
-          description: "Seed venue share for paid track request"
+          description: "Seed: доля заведения за оплаченную заявку трека"
         },
         {
           venueId: firstVenue.id,
           orderId: order.id,
           type: "PLATFORM_FEE",
           amountCents: -platformFeeCents,
-          description: "Seed QueueBeat platform fee"
+          description: "Seed: комиссия платформы QueueBeat"
         }
       ]
     });

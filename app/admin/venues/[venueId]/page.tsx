@@ -16,6 +16,27 @@ import { isSubscriptionUsable } from "@/lib/commercial";
 import { getAdminVenueById } from "@/lib/data";
 import { formatDateTime, formatPrice } from "@/lib/utils";
 
+function formatQueueStatus(status: "QUEUED" | "PLAYED" | "REMOVED") {
+  const labels = {
+    QUEUED: "В очереди",
+    PLAYED: "Проигран",
+    REMOVED: "Удалён"
+  };
+
+  return labels[status];
+}
+
+function formatSubscriptionStatus(status: string) {
+  const labels: Record<string, string> = {
+    TRIAL: "Пробный период",
+    ACTIVE: "Активна",
+    PAST_DUE: "Есть задолженность",
+    CANCELED: "Отменена"
+  };
+
+  return labels[status] ?? status;
+}
+
 export default async function AdminVenuePage({
   params
 }: {
@@ -46,43 +67,43 @@ export default async function AdminVenuePage({
 
   return (
     <AdminShell
-      badge="Venue"
+      badge="Заведение"
       title={venue.name}
-      description="Edit venue settings, manage approved tracks, and keep the live request queue tidy."
+      description="Настройки заведения, разрешённый плейлист, QR-код, подписка и живая очередь заявок."
       homeHref={isPlatform ? "/platform" : "/dashboard"}
-      homeLabel={isPlatform ? "Platform" : "Dashboard"}
+      homeLabel={isPlatform ? "Платформа" : "Кабинет"}
       previewHref={`/v/${venue.slug}` as Route}
     >
       <div className="grid gap-5 md:grid-cols-4">
         <SectionCard>
-          <div className="text-sm text-white/45">QR status</div>
+          <div className="text-sm text-white/45">Статус QR-кода</div>
           <div className="mt-2 flex items-center gap-2">
             <Badge tone={subscriptionActive ? "success" : "danger"}>
-              {subscriptionActive ? "Active" : "Blocked"}
+              {subscriptionActive ? "Активен" : "Заблокирован"}
             </Badge>
           </div>
           <div className="mt-3 text-xs leading-5 text-white/45">
             {subscriptionActive
-              ? "Guests can open the QR page and order tracks."
-              : "Guests see a paused QR page until subscription is active."}
+              ? "Гости могут открыть QR-страницу и заказать трек."
+              : "Гости увидят страницу-паузу, пока подписка не активна."}
           </div>
         </SectionCard>
         <SectionCard>
-          <div className="text-sm text-white/45">Available balance</div>
+          <div className="text-sm text-white/45">Баланс к выплате</div>
           <div className="mt-2 text-3xl font-semibold">{formatPrice(analytics.balanceCents)}</div>
-          <div className="mt-2 text-xs text-white/40">Venue share after platform fee.</div>
+          <div className="mt-2 text-xs text-white/40">Доля заведения после комиссии платформы.</div>
         </SectionCard>
         <SectionCard>
-          <div className="text-sm text-white/45">Paid orders, 14 days</div>
+          <div className="text-sm text-white/45">Оплаченные заявки за 14 дней</div>
           <div className="mt-2 text-3xl font-semibold">{analytics.paidOrdersCount}</div>
           <div className="mt-2 text-xs text-white/40">
-            Gross revenue: {formatPrice(analytics.venueRevenueCents + analytics.platformFeesCents)}
+            Оборот: {formatPrice(analytics.venueRevenueCents + analytics.platformFeesCents)}
           </div>
         </SectionCard>
         <SectionCard>
-          <div className="text-sm text-white/45">Platform fee</div>
+          <div className="text-sm text-white/45">Комиссия платформы</div>
           <div className="mt-2 text-3xl font-semibold">{platformFeeBps / 100}%</div>
-          <div className="mt-2 text-xs text-white/40">Current split: venue {100 - platformFeeBps / 100}%.</div>
+          <div className="mt-2 text-xs text-white/40">Текущий сплит: заведению {100 - platformFeeBps / 100}%.</div>
         </SectionCard>
       </div>
 
@@ -90,9 +111,9 @@ export default async function AdminVenuePage({
         <SectionCard>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold">Settings</h2>
+              <h2 className="text-xl font-semibold">Настройки</h2>
               <Badge tone={venue.isAcceptingRequests ? "success" : "warning"}>
-                {venue.isAcceptingRequests ? "Accepting requests" : "Requests paused"}
+                {venue.isAcceptingRequests ? "Приём включён" : "Приём на паузе"}
               </Badge>
             </div>
             <VenueSettingsForm
@@ -105,11 +126,11 @@ export default async function AdminVenuePage({
               }}
             />
             <div className="rounded-[1.2rem] border border-white/10 bg-black/25 p-4 text-sm text-white/55">
-              Guest link:{" "}
+              Ссылка для гостей:{" "}
               <Link href={`/v/${venue.slug}`} className="text-white underline underline-offset-4">
                 /v/{venue.slug}
               </Link>
-              <div className="mt-2">Request price: {formatPrice(venue.requestPriceCents)}</div>
+              <div className="mt-2">Цена заявки: {formatPrice(venue.requestPriceCents)}</div>
             </div>
           </div>
         </SectionCard>
@@ -117,13 +138,13 @@ export default async function AdminVenuePage({
         <SectionCard>
           <div className="space-y-4">
             <div className="flex items-center justify-between gap-3">
-              <h2 className="text-xl font-semibold">QR code</h2>
+              <h2 className="text-xl font-semibold">QR-код</h2>
               {subscriptionActive ? (
                 <a
                   href={`/api/admin/venues/${venue.id}/qr?download=1`}
                   className="rounded-full border border-white/10 px-4 py-2 text-sm text-white/75 hover:bg-white/5"
                 >
-                  Download PNG
+                  Скачать PNG
                 </a>
               ) : null}
             </div>
@@ -131,7 +152,7 @@ export default async function AdminVenuePage({
               <div className="rounded-[1.6rem] border border-white/10 bg-white p-5">
                 <Image
                   src={`/api/admin/venues/${venue.id}/qr`}
-                  alt={`QR for ${venue.name}`}
+                  alt={`QR-код для ${venue.name}`}
                   width={320}
                   height={320}
                   unoptimized
@@ -140,18 +161,18 @@ export default async function AdminVenuePage({
               </div>
             ) : (
               <div className="rounded-[1.6rem] border border-dashed border-amber-300/25 bg-amber-300/10 p-5 text-sm leading-6 text-amber-100/80">
-                QR generation is locked until the venue has an active subscription or trial.
+                Генерация QR-кода закрыта, пока у заведения нет активной подписки или пробного периода.
               </div>
             )}
             <div className="text-sm leading-6 text-white/55">
-              This QR code opens the public guest page. Print it or place it on tables.
+              Этот QR-код открывает публичную страницу для гостей. Его можно распечатать и разместить на столах.
             </div>
             <div className="rounded-[1.2rem] border border-white/10 bg-black/25 p-4 text-sm leading-6 text-white/55">
-              <div className="font-semibold text-white">Subscription</div>
+              <div className="font-semibold text-white">Подписка</div>
               <div className="mt-1">
                 {latestSubscription
-                  ? `${latestSubscription.status} until ${formatDateTime(latestSubscription.currentPeriodEnd)}`
-                  : "No active subscription yet."}
+                  ? `${formatSubscriptionStatus(latestSubscription.status)} до ${formatDateTime(latestSubscription.currentPeriodEnd)}`
+                  : "Активной подписки пока нет."}
               </div>
               <div className="mt-4">
                 <SubscriptionActions venueId={venue.id} />
@@ -162,7 +183,7 @@ export default async function AdminVenuePage({
 
         <SectionCard>
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold">Approved tracks</h2>
+            <h2 className="text-xl font-semibold">Разрешённые треки</h2>
             <TrackPickerForm
               venueId={venue.id}
               selectedTrackIds={venue.venueTracks.map((item) => item.trackId)}
@@ -175,10 +196,10 @@ export default async function AdminVenuePage({
       <div className="grid gap-5 xl:grid-cols-[0.9fr_1.1fr]">
         <SectionCard>
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold">Playlist presets</h2>
+            <h2 className="text-xl font-semibold">Пресеты плейлистов</h2>
             {presets.length === 0 ? (
               <div className="rounded-[1.4rem] border border-dashed border-white/10 p-5 text-sm text-white/45">
-                No presets configured yet.
+                Пресеты пока не настроены.
               </div>
             ) : (
               <div className="space-y-3">
@@ -188,7 +209,7 @@ export default async function AdminVenuePage({
                       <div>
                         <div className="font-semibold">{preset.name}</div>
                         <div className="mt-1 text-sm leading-6 text-white/50">{preset.description}</div>
-                        <div className="mt-1 text-xs text-white/35">{preset.presetTracks.length} tracks</div>
+                        <div className="mt-1 text-xs text-white/35">{preset.presetTracks.length} треков</div>
                       </div>
                       <PresetApplyButton venueId={venue.id} presetId={preset.id} />
                     </div>
@@ -201,10 +222,10 @@ export default async function AdminVenuePage({
 
         <SectionCard>
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold">Daily orders</h2>
+            <h2 className="text-xl font-semibold">Заявки по дням</h2>
             {Object.keys(analytics.dailyOrders).length === 0 ? (
               <div className="rounded-[1.4rem] border border-dashed border-white/10 p-5 text-sm text-white/45">
-                No paid song requests in the last 14 days.
+                За последние 14 дней ещё не было оплаченных заявок.
               </div>
             ) : (
               <div className="space-y-2">
@@ -214,7 +235,7 @@ export default async function AdminVenuePage({
                     className="grid grid-cols-[1fr_auto_auto] gap-3 rounded-[1.1rem] border border-white/10 bg-white/[0.03] px-4 py-3 text-sm"
                   >
                     <span className="text-white/70">{day}</span>
-                    <span className="text-white/45">{item.orders} orders</span>
+                    <span className="text-white/45">{item.orders} заявок</span>
                     <span className="font-semibold">{formatPrice(item.grossCents)}</span>
                   </div>
                 ))}
@@ -226,19 +247,19 @@ export default async function AdminVenuePage({
 
       <SectionCard>
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Venue queue</h2>
+          <h2 className="text-xl font-semibold">Очередь заведения</h2>
           {venue.queueItems.length === 0 ? (
             <div className="rounded-[1.4rem] border border-dashed border-white/10 p-5 text-sm text-white/45">
-              The queue is empty for now.
+              Очередь пока пустая.
             </div>
           ) : (
             <div className="overflow-hidden rounded-[1.5rem] border border-white/10">
               <div className="grid grid-cols-[1.4fr_1fr_0.8fr_0.8fr_1fr] gap-3 bg-white/5 px-4 py-3 text-xs uppercase tracking-[0.2em] text-white/35">
-                <span>Track</span>
-                <span>Status</span>
-                <span>Position</span>
-                <span>Added</span>
-                <span>Action</span>
+                <span>Трек</span>
+                <span>Статус</span>
+                <span>Позиция</span>
+                <span>Добавлен</span>
+                <span>Действие</span>
               </div>
               <div className="divide-y divide-white/10">
                 {venue.queueItems.map((item) => (
@@ -260,7 +281,7 @@ export default async function AdminVenuePage({
                               : "default"
                         }
                       >
-                        {item.status}
+                        {formatQueueStatus(item.status)}
                       </Badge>
                     </div>
                     <div>{item.position}</div>

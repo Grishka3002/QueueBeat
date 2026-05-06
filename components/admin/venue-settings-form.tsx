@@ -47,13 +47,13 @@ export function VenueSettingsForm({ venue }: VenueSettingsFormProps) {
 
       const payload = (await response.json()) as { message?: string; error?: string };
       if (!response.ok) {
-        throw new Error(payload.error ?? "Could not update venue.");
+        throw new Error(payload.error ?? "Не удалось обновить заведение.");
       }
 
-      setStatus(payload.message ?? "Settings saved.");
+      setStatus(payload.message ?? "Настройки сохранены.");
       router.refresh();
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : "Unknown error.");
+      setError(submitError instanceof Error ? submitError.message : "Неизвестная ошибка.");
     } finally {
       setIsSubmitting(false);
     }
@@ -62,7 +62,7 @@ export function VenueSettingsForm({ venue }: VenueSettingsFormProps) {
   return (
     <form onSubmit={handleSubmit} className="grid gap-4">
       <label className="grid gap-2 text-sm text-white/70">
-        Venue name
+        Название заведения
         <input
           value={name}
           onChange={(event) => setName(event.target.value)}
@@ -70,7 +70,7 @@ export function VenueSettingsForm({ venue }: VenueSettingsFormProps) {
         />
       </label>
       <label className="grid gap-2 text-sm text-white/70">
-        Slug
+        Slug для публичной ссылки
         <input
           value={slug}
           onChange={(event) => setSlug(event.target.value.toLowerCase())}
@@ -78,7 +78,7 @@ export function VenueSettingsForm({ venue }: VenueSettingsFormProps) {
         />
       </label>
       <label className="grid gap-2 text-sm text-white/70">
-        Price, RUB
+        Цена заявки, ₽
         <input
           type="number"
           min={1}
@@ -94,10 +94,10 @@ export function VenueSettingsForm({ venue }: VenueSettingsFormProps) {
           type="checkbox"
           className="h-4 w-4"
         />
-        Accept paid requests
+        Принимать оплаченные заявки
       </label>
       <div className="rounded-[1.2rem] border border-white/10 bg-black/25 px-4 py-3 text-sm text-white/55">
-        Current server price: {formatPrice(venue.requestPriceCents)}
+        Текущая цена на сервере: {formatPrice(venue.requestPriceCents)}
       </div>
       {error ? <div className="text-sm text-rose-300">{error}</div> : null}
       {status ? <div className="text-sm text-emerald-300">{status}</div> : null}
@@ -106,7 +106,7 @@ export function VenueSettingsForm({ venue }: VenueSettingsFormProps) {
         disabled={isSubmitting}
         className="rounded-full bg-gradient-to-r from-accent to-accentBlue px-5 py-3 text-sm font-semibold text-white disabled:opacity-60"
       >
-        {isSubmitting ? "Saving..." : "Save settings"}
+        {isSubmitting ? "Сохраняем..." : "Сохранить настройки"}
       </button>
     </form>
   );

@@ -4,7 +4,7 @@ import "@/app/globals.css";
 
 export const metadata: Metadata = {
   title: "QueueBeat",
-  description: "QR-powered music requests for bars, lounges and nightlife venues."
+  description: "Музыкальные заявки по QR-коду для баров, лаунжей и ночных заведений."
 };
 
 export default function RootLayout({

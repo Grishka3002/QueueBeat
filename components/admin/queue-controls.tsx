@@ -31,13 +31,13 @@ export function QueueControls({ venueId, itemId, status }: QueueControlsProps) {
 
       const payload = (await response.json()) as { message?: string; error?: string };
       if (!response.ok) {
-        throw new Error(payload.error ?? "Could not update queue item.");
+        throw new Error(payload.error ?? "Не удалось обновить трек в очереди.");
       }
 
-      setMessage(payload.message ?? "Queue updated.");
+      setMessage(payload.message ?? "Очередь обновлена.");
       router.refresh();
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : "Unknown error.");
+      setError(submitError instanceof Error ? submitError.message : "Неизвестная ошибка.");
     } finally {
       setIsBusy(false);
     }

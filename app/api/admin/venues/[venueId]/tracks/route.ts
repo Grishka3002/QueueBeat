@@ -13,7 +13,7 @@ export async function PUT(
   try {
     const { venueId } = await params;
     if (!(await canManageVerifiedVenue(venueId))) {
-      return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+      return NextResponse.json({ error: "Нет доступа." }, { status: 401 });
     }
 
     const { trackIds } = parseTrackIdsInput(await request.json());
@@ -21,10 +21,10 @@ export async function PUT(
     if (env.demoMode) {
       const result = replaceDemoVenueTracks(venueId, trackIds);
       if ("error" in result) {
-        return NextResponse.json({ error: result.error }, { status: result.error === "Venue not found." ? 404 : 400 });
+        return NextResponse.json({ error: result.error }, { status: result.error === "Заведение не найдено." ? 404 : 400 });
       }
 
-      return NextResponse.json({ message: "Allowed track library updated." });
+      return NextResponse.json({ message: "Разрешённая библиотека треков обновлена." });
     }
 
     const existingTracks = await prisma.track.findMany({
@@ -39,7 +39,7 @@ export async function PUT(
     });
 
     if (existingTracks.length !== trackIds.length) {
-      return NextResponse.json({ error: "Some tracks do not exist." }, { status: 400 });
+      return NextResponse.json({ error: "Некоторые треки не существуют." }, { status: 400 });
     }
 
     await prisma.$transaction(async (transaction) => {
@@ -57,13 +57,13 @@ export async function PUT(
       }
     });
 
-    return NextResponse.json({ message: "Allowed track library updated." });
+    return NextResponse.json({ message: "Разрешённая библиотека треков обновлена." });
   } catch (error) {
     if (error instanceof ValidationError) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
     console.error(error);
-    return NextResponse.json({ error: "Internal server error." }, { status: 500 });
+    return NextResponse.json({ error: "Внутренняя ошибка сервера." }, { status: 500 });
   }
 }

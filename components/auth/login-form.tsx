@@ -26,13 +26,13 @@ export function VenueLoginForm() {
 
       const payload = (await response.json()) as { error?: string };
       if (!response.ok) {
-        throw new Error(payload.error ?? "Login failed.");
+        throw new Error(payload.error ?? "Не удалось войти.");
       }
 
       router.push("/dashboard" as Route);
       router.refresh();
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : "Unknown error.");
+      setError(submitError instanceof Error ? submitError.message : "Неизвестная ошибка.");
     } finally {
       setIsSubmitting(false);
     }
@@ -44,14 +44,14 @@ export function VenueLoginForm() {
         type="email"
         value={email}
         onChange={(event) => setEmail(event.target.value)}
-        placeholder="Venue owner email"
+        placeholder="Email владельца заведения"
         className="w-full rounded-[1.2rem] border border-white/10 bg-white/5 px-4 py-3 outline-none transition placeholder:text-white/30 focus:border-white/25"
       />
       <input
         type="password"
         value={password}
         onChange={(event) => setPassword(event.target.value)}
-        placeholder="Password"
+        placeholder="Пароль"
         className="w-full rounded-[1.2rem] border border-white/10 bg-white/5 px-4 py-3 outline-none transition placeholder:text-white/30 focus:border-white/25"
       />
       {error ? <div className="text-sm text-rose-300">{error}</div> : null}
@@ -60,10 +60,10 @@ export function VenueLoginForm() {
         disabled={isSubmitting}
         className="w-full rounded-full bg-gradient-to-r from-accent to-accentBlue px-5 py-3 text-sm font-semibold text-white shadow-glow disabled:opacity-60"
       >
-        {isSubmitting ? "Signing in..." : "Open venue dashboard"}
+        {isSubmitting ? "Входим..." : "Открыть кабинет заведения"}
       </button>
       <Link href="/register" className="inline-flex text-sm text-white/45 hover:text-white/70">
-        Register a new venue
+        Зарегистрировать новое заведение
       </Link>
     </form>
   );

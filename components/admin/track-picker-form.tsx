@@ -45,13 +45,13 @@ export function TrackPickerForm({ venueId, selectedTrackIds, allTracks }: TrackP
 
       const payload = (await response.json()) as { message?: string; error?: string };
       if (!response.ok) {
-        throw new Error(payload.error ?? "Could not save track selection.");
+        throw new Error(payload.error ?? "Не удалось сохранить выбранные треки.");
       }
 
-      setState(payload.message ?? "Approved tracks updated.");
+      setState(payload.message ?? "Разрешённые треки обновлены.");
       router.refresh();
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : "Unknown error.");
+      setError(submitError instanceof Error ? submitError.message : "Неизвестная ошибка.");
     } finally {
       setIsSubmitting(false);
     }
@@ -68,7 +68,7 @@ export function TrackPickerForm({ venueId, selectedTrackIds, allTracks }: TrackP
       <input
         value={query}
         onChange={(event) => setQuery(event.target.value)}
-        placeholder="Search the music library"
+        placeholder="Поиск по музыкальной библиотеке"
         className="w-full rounded-[1.2rem] border border-white/10 bg-white/5 px-4 py-3 text-white outline-none placeholder:text-white/30"
       />
       <div className="max-h-[28rem] space-y-2 overflow-auto pr-1 scrollbar-thin">
@@ -105,7 +105,7 @@ export function TrackPickerForm({ venueId, selectedTrackIds, allTracks }: TrackP
         disabled={isSubmitting}
         className="rounded-full bg-white/10 px-5 py-3 text-sm font-semibold text-white hover:bg-white/15 disabled:opacity-60"
       >
-        {isSubmitting ? "Saving..." : "Save approved tracks"}
+        {isSubmitting ? "Сохраняем..." : "Сохранить разрешённые треки"}
       </button>
     </div>
   );

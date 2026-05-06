@@ -8,9 +8,9 @@ export function AdminShell({
   title,
   description,
   children,
-  badge = "Dashboard",
+  badge = "Кабинет",
   homeHref = "/dashboard" as Route,
-  homeLabel = "Dashboard",
+  homeLabel = "Кабинет",
   previewHref = "/v/velvet-room" as Route
 }: {
   title: string;
@@ -41,7 +41,7 @@ export function AdminShell({
                 className="rounded-full border border-white/10 px-4 py-2 hover:bg-white/5"
                 href={previewHref}
               >
-                Guest preview
+                Страница гостя
               </Link>
             </nav>
           </div>

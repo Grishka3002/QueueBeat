@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     });
 
     if (!user?.passwordHash || user.role !== "VENUE_OWNER" || !verifyPassword(data.password, user.passwordHash)) {
-      return NextResponse.json({ error: "Invalid email or password." }, { status: 401 });
+      return NextResponse.json({ error: "Неверный email или пароль." }, { status: 401 });
     }
 
     const response = NextResponse.json({ ok: true });
@@ -34,6 +34,6 @@ export async function POST(request: Request) {
     }
 
     console.error(error);
-    return NextResponse.json({ error: "Internal server error." }, { status: 500 });
+    return NextResponse.json({ error: "Внутренняя ошибка сервера." }, { status: 500 });
   }
 }
