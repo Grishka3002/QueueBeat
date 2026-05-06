@@ -2,6 +2,7 @@ import QRCode from "qrcode";
 import { NextResponse } from "next/server";
 
 import { canManageVerifiedVenue } from "@/lib/auth";
+import { isSubscriptionUsable } from "@/lib/commercial";
 import { getDemoDashboard } from "@/lib/demo-store";
 import { env } from "@/lib/env";
 import { prisma } from "@/lib/prisma";
@@ -23,14 +24,25 @@ export async function GET(
     venue = await prisma.venue.findUnique({
       where: { id: venueId },
       select: {
+        id: true,
         name: true,
-        slug: true
+        slug: true,
+        verificationStatus: true,
+        trialEndsAt: true,
+        subscriptions: {
+          orderBy: { currentPeriodEnd: "desc" },
+          take: 3
+        }
       }
     });
   }
 
   if (!venue) {
     return NextResponse.json({ error: "Venue not found." }, { status: 404 });
+  }
+
+  if (!env.demoMode && !isSubscriptionUsable(venue)) {
+    return NextResponse.json({ error: "Venue subscription is not active." }, { status: 402 });
   }
 
   const url = `${env.appUrl}/v/${venue.slug}`;

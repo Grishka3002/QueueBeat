@@ -17,11 +17,15 @@ export async function PATCH(
   }
 
   const { venueId } = await params;
+  const trialEndsAt = new Date();
+  trialEndsAt.setDate(trialEndsAt.getDate() + 14);
+
   await prisma.venue.update({
     where: { id: venueId },
     data: {
       verificationStatus: body.status,
-      isAcceptingRequests: body.status === "VERIFIED"
+      isAcceptingRequests: body.status === "VERIFIED",
+      trialEndsAt: body.status === "VERIFIED" ? trialEndsAt : null
     }
   });
 

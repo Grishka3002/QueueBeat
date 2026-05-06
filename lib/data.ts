@@ -43,6 +43,10 @@ export async function getVenueBySlug(slug: string) {
           },
           orderBy: [{ position: "asc" }, { createdAt: "asc" }],
           take: 8
+        },
+        subscriptions: {
+          orderBy: { currentPeriodEnd: "desc" },
+          take: 3
         }
       }
     });
@@ -129,6 +133,21 @@ export async function getAdminVenueById(venueId: string) {
             order: true
           },
           orderBy: [{ status: "asc" }, { position: "asc" }, { createdAt: "desc" }]
+        },
+        subscriptions: {
+          include: {
+            plan: true
+          },
+          orderBy: { currentPeriodEnd: "desc" },
+          take: 3
+        },
+        ledgerEntries: {
+          orderBy: { createdAt: "desc" },
+          take: 20
+        },
+        payments: {
+          orderBy: { createdAt: "desc" },
+          take: 10
         }
       }
     });
@@ -137,13 +156,72 @@ export async function getAdminVenueById(venueId: string) {
       notFound();
     }
 
-    const allTracks = await prisma.track.findMany({
-      orderBy: [{ artist: "asc" }, { title: "asc" }]
-    });
+    const since = new Date();
+    since.setDate(since.getDate() - 13);
+    since.setHours(0, 0, 0, 0);
+
+    const [allTracks, presets, ledgerEntries, paidOrders] = await Promise.all([
+      prisma.track.findMany({
+        orderBy: [{ artist: "asc" }, { title: "asc" }]
+      }),
+      prisma.playlistPreset.findMany({
+        include: {
+          presetTracks: {
+            include: { track: true },
+            orderBy: { position: "asc" }
+          }
+        },
+        orderBy: { name: "asc" }
+      }),
+      prisma.ledgerEntry.findMany({
+        where: { venueId },
+        orderBy: { createdAt: "desc" }
+      }),
+      prisma.order.findMany({
+        where: {
+          venueId,
+          status: "PAID",
+          paidAt: {
+            gte: since
+          }
+        },
+        select: {
+          amountCents: true,
+          paidAt: true
+        },
+        orderBy: { paidAt: "asc" }
+      })
+    ]);
+
+    const balanceCents = ledgerEntries.reduce((sum, entry) => sum + entry.amountCents, 0);
+    const venueRevenueCents = ledgerEntries
+      .filter((entry) => entry.type === "VENUE_SHARE")
+      .reduce((sum, entry) => sum + entry.amountCents, 0);
+    const platformFeesCents = ledgerEntries
+      .filter((entry) => entry.type === "PLATFORM_FEE")
+      .reduce((sum, entry) => sum + Math.abs(entry.amountCents), 0);
+    const dailyOrders = paidOrders.reduce<Record<string, { orders: number; grossCents: number }>>(
+      (result, order) => {
+        const key = (order.paidAt ?? new Date()).toISOString().slice(0, 10);
+        result[key] = result[key] ?? { orders: 0, grossCents: 0 };
+        result[key].orders += 1;
+        result[key].grossCents += order.amountCents;
+        return result;
+      },
+      {}
+    );
 
     return {
       venue,
-      allTracks
+      allTracks,
+      presets,
+      analytics: {
+        balanceCents,
+        venueRevenueCents,
+        platformFeesCents,
+        paidOrdersCount: paidOrders.length,
+        dailyOrders
+      }
     };
   } catch (error) {
     console.error(error);

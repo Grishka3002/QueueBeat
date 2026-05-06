@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 
+import { splitTrackPayment } from "@/lib/commercial";
 import { confirmDemoOrder } from "@/lib/demo-store";
 import { env } from "@/lib/env";
 import { paymentProvider } from "@/lib/payments";
@@ -90,6 +91,41 @@ export async function POST(request: Request) {
                 position: (maxPosition._max.position ?? 0) + 1,
                 status: "QUEUED"
               }
+            });
+
+            await transaction.payment.updateMany({
+              where: {
+                orderId: order.id,
+                kind: "TRACK_REQUEST"
+              },
+              data: {
+                status: "SUCCEEDED",
+                paidAt: new Date()
+              }
+            });
+
+            const { platformFeeCents, venueShareCents } = splitTrackPayment(
+              order.amountCents,
+              order.venue.platformFeeBps
+            );
+
+            await transaction.ledgerEntry.createMany({
+              data: [
+                {
+                  venueId: order.venueId,
+                  orderId: order.id,
+                  type: "VENUE_SHARE",
+                  amountCents: venueShareCents,
+                  description: "Venue share for paid track request"
+                },
+                {
+                  venueId: order.venueId,
+                  orderId: order.id,
+                  type: "PLATFORM_FEE",
+                  amountCents: -platformFeeCents,
+                  description: "QueueBeat platform fee"
+                }
+              ]
             });
           },
           {

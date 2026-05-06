@@ -1,5 +1,7 @@
 import { VenueClient } from "@/components/public/venue-client";
+import { Badge } from "@/components/ui/badge";
 import { getVenueOr404 } from "@/lib/data";
+import { isSubscriptionUsable } from "@/lib/commercial";
 
 export default async function VenuePage({
   params
@@ -8,6 +10,22 @@ export default async function VenuePage({
 }) {
   const { slug } = await params;
   const venue = await getVenueOr404(slug);
+  const qrIsActive = isSubscriptionUsable(venue);
+
+  if (!qrIsActive) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#080910] px-5 py-10 text-white">
+        <div className="w-full max-w-lg rounded-[2rem] border border-white/10 bg-white/[0.04] p-7 text-center shadow-glow backdrop-blur">
+          <Badge tone="warning">QR paused</Badge>
+          <h1 className="mt-5 text-3xl font-semibold">{venue.name}</h1>
+          <p className="mt-4 leading-7 text-white/60">
+            This venue is temporarily not accepting music requests. The QR link will work again when the venue
+            subscription is active.
+          </p>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="bg-[#080910]">

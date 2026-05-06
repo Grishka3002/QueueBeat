@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { isSubscriptionUsable } from "@/lib/commercial";
 import { createDemoPendingOrder, setDemoOrderPaymentReference } from "@/lib/demo-store";
 import { env } from "@/lib/env";
 import { paymentProvider } from "@/lib/payments";
@@ -33,6 +34,10 @@ export async function POST(request: Request) {
           where: {
             trackId: body.trackId
           }
+        },
+        subscriptions: {
+          orderBy: { currentPeriodEnd: "desc" },
+          take: 3
         }
       }
     });
@@ -43,6 +48,10 @@ export async function POST(request: Request) {
 
     if (!venue.isAcceptingRequests) {
       return NextResponse.json({ error: "Venue is not accepting requests." }, { status: 400 });
+    }
+
+    if (!isSubscriptionUsable(venue)) {
+      return NextResponse.json({ error: "Venue subscription is not active." }, { status: 402 });
     }
 
     if (venue.venueTracks.length === 0) {
@@ -64,6 +73,18 @@ export async function POST(request: Request) {
       where: { id: order.id },
       data: {
         paymentReference: payment.checkoutId
+      }
+    });
+
+    await prisma.payment.create({
+      data: {
+        venueId: venue.id,
+        orderId: order.id,
+        kind: "TRACK_REQUEST",
+        status: "PENDING",
+        amountCents: venue.requestPriceCents,
+        provider: "mock",
+        providerRef: payment.checkoutId
       }
     });
 

@@ -101,12 +101,29 @@ const venues = [
 ];
 
 async function main() {
+  await prisma.payout.deleteMany();
+  await prisma.ledgerEntry.deleteMany();
+  await prisma.payment.deleteMany();
   await prisma.queueItem.deleteMany();
   await prisma.order.deleteMany();
   await prisma.venueTrack.deleteMany();
+  await prisma.playlistPresetTrack.deleteMany();
+  await prisma.playlistPreset.deleteMany();
+  await prisma.venueSubscription.deleteMany();
+  await prisma.subscriptionPlan.deleteMany();
+  await prisma.businessProfile.deleteMany();
   await prisma.track.deleteMany();
   await prisma.venue.deleteMany();
   await prisma.user.deleteMany();
+
+  const plan = await prisma.subscriptionPlan.create({
+    data: {
+      name: "QueueBeat Pro",
+      slug: "pro-monthly",
+      priceCents: 299000,
+      intervalMonths: 1
+    }
+  });
 
   await prisma.user.create({
     data: {
@@ -153,6 +170,16 @@ async function main() {
     orderBy: { createdAt: "asc" }
   });
 
+  await prisma.venueSubscription.createMany({
+    data: createdVenues.map((venue) => ({
+      venueId: venue.id,
+      planId: plan.id,
+      status: "ACTIVE",
+      startsAt: new Date(),
+      currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+    }))
+  });
+
   await prisma.businessProfile.createMany({
     data: createdVenues.map((venue, index) => ({
       venueId: venue.id,
@@ -168,6 +195,46 @@ async function main() {
       }))
     )
   });
+
+  const presetDefinitions = [
+    {
+      name: "Lounge Warmup",
+      slug: "lounge-warmup",
+      description: "Soft pop, nu-disco and cocktail bar tracks for early evening.",
+      trackTitles: ["Midnight City", "Feel It Still", "Rather Be", "Latch", "Firestone", "Calm Down"]
+    },
+    {
+      name: "Night Club Hits",
+      slug: "night-club-hits",
+      description: "Danceable crowd-pleasers for peak hours.",
+      trackTitles: ["One More Time", "Titanium", "Levels", "Freed From Desire", "Summer", "Dance The Night"]
+    },
+    {
+      name: "Pop Requests",
+      slug: "pop-requests",
+      description: "Recognizable pop tracks guests are likely to request first.",
+      trackTitles: ["Blinding Lights", "Levitating", "Flowers", "As It Was", "Starboy", "Houdini"]
+    }
+  ];
+
+  for (const presetDefinition of presetDefinitions) {
+    const preset = await prisma.playlistPreset.create({
+      data: {
+        name: presetDefinition.name,
+        slug: presetDefinition.slug,
+        description: presetDefinition.description
+      }
+    });
+
+    const presetTracks = createdTracks.filter((track) => presetDefinition.trackTitles.includes(track.title));
+    await prisma.playlistPresetTrack.createMany({
+      data: presetTracks.map((track, index) => ({
+        presetId: preset.id,
+        trackId: track.id,
+        position: index + 1
+      }))
+    });
+  }
 
   const firstVenue = createdVenues[0];
   if (!firstVenue) {
@@ -186,6 +253,39 @@ async function main() {
         paymentReference: `seed-${index + 1}`,
         paidAt: new Date(Date.now() - index * 60 * 60 * 1000)
       }
+    });
+
+    await prisma.payment.create({
+      data: {
+        venueId: firstVenue.id,
+        orderId: order.id,
+        kind: "TRACK_REQUEST",
+        status: "SUCCEEDED",
+        amountCents: firstVenue.requestPriceCents,
+        provider: "mock",
+        providerRef: `seed-payment-${index + 1}`,
+        paidAt: order.paidAt
+      }
+    });
+
+    const platformFeeCents = Math.round((firstVenue.requestPriceCents * firstVenue.platformFeeBps) / 10000);
+    await prisma.ledgerEntry.createMany({
+      data: [
+        {
+          venueId: firstVenue.id,
+          orderId: order.id,
+          type: "VENUE_SHARE",
+          amountCents: firstVenue.requestPriceCents - platformFeeCents,
+          description: "Seed venue share for paid track request"
+        },
+        {
+          venueId: firstVenue.id,
+          orderId: order.id,
+          type: "PLATFORM_FEE",
+          amountCents: -platformFeeCents,
+          description: "Seed QueueBeat platform fee"
+        }
+      ]
     });
 
     await prisma.queueItem.create({

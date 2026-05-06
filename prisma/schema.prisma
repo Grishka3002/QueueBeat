@@ -24,6 +24,37 @@ enum BusinessType {
   LLC
 }
 
+enum SubscriptionStatus {
+  TRIAL
+  ACTIVE
+  PAST_DUE
+  CANCELED
+}
+
+enum PaymentKind {
+  TRACK_REQUEST
+  SUBSCRIPTION
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+}
+
+enum LedgerEntryType {
+  VENUE_SHARE
+  PLATFORM_FEE
+  PAYOUT
+  ADJUSTMENT
+}
+
+enum PayoutStatus {
+  PENDING
+  PAID
+  CANCELED
+}
+
 enum OrderStatus {
   PENDING
   PAID
@@ -55,10 +86,16 @@ model Venue {
   requestPriceCents   Int
   isAcceptingRequests Boolean     @default(true)
   verificationStatus  VenueVerificationStatus @default(PENDING)
+  platformFeeBps      Int         @default(2000)
+  trialEndsAt          DateTime?
   createdAt           DateTime    @default(now())
   updatedAt           DateTime    @updatedAt
   owner               User?       @relation(fields: [ownerId], references: [id], onDelete: SetNull)
   businessProfile     BusinessProfile?
+  subscriptions        VenueSubscription[]
+  payments             Payment[]
+  ledgerEntries        LedgerEntry[]
+  payouts              Payout[]
   venueTracks         VenueTrack[]
   orders              Order[]
   queueItems          QueueItem[]
@@ -100,6 +137,36 @@ model Track {
   venueTracks VenueTrack[]
   orders      Order[]
   queueItems  QueueItem[]
+  presetTracks PlaylistPresetTrack[]
+}
+
+model SubscriptionPlan {
+  id              String              @id @default(cuid())
+  name            String
+  slug            String              @unique
+  priceCents      Int
+  intervalMonths  Int                 @default(1)
+  isActive        Boolean             @default(true)
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  subscriptions   VenueSubscription[]
+}
+
+model VenueSubscription {
+  id        String             @id @default(cuid())
+  venueId   String
+  planId    String
+  status    SubscriptionStatus @default(TRIAL)
+  startsAt  DateTime           @default(now())
+  currentPeriodEnd DateTime
+  canceledAt DateTime?
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  venue     Venue              @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  plan      SubscriptionPlan   @relation(fields: [planId], references: [id], onDelete: Restrict)
+  payments  Payment[]
+
+  @@index([venueId, status, currentPeriodEnd])
 }
 
 model VenueTrack {
@@ -126,6 +193,76 @@ model Order {
   venue            Venue       @relation(fields: [venueId], references: [id], onDelete: Cascade)
   track            Track       @relation(fields: [trackId], references: [id], onDelete: Restrict)
   queueItem        QueueItem?
+  payments         Payment[]
+  ledgerEntries    LedgerEntry[]
+}
+
+model Payment {
+  id             String        @id @default(cuid())
+  venueId        String
+  orderId        String?
+  subscriptionId String?
+  kind           PaymentKind
+  status         PaymentStatus @default(PENDING)
+  amountCents    Int
+  provider       String        @default("mock")
+  providerRef    String?
+  createdAt      DateTime      @default(now())
+  paidAt         DateTime?
+  venue          Venue         @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  order          Order?        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  subscription   VenueSubscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+
+  @@index([venueId, status, createdAt])
+  @@index([orderId])
+}
+
+model LedgerEntry {
+  id          String          @id @default(cuid())
+  venueId     String
+  orderId     String?
+  type        LedgerEntryType
+  amountCents Int
+  description String
+  createdAt   DateTime        @default(now())
+  venue       Venue           @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  order       Order?          @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  @@index([venueId, type, createdAt])
+}
+
+model Payout {
+  id          String       @id @default(cuid())
+  venueId     String
+  amountCents Int
+  status      PayoutStatus @default(PENDING)
+  note        String?
+  createdAt   DateTime     @default(now())
+  paidAt      DateTime?
+  venue       Venue        @relation(fields: [venueId], references: [id], onDelete: Cascade)
+
+  @@index([venueId, status, createdAt])
+}
+
+model PlaylistPreset {
+  id          String                @id @default(cuid())
+  name        String
+  slug        String                @unique
+  description String
+  createdAt   DateTime              @default(now())
+  presetTracks PlaylistPresetTrack[]
+}
+
+model PlaylistPresetTrack {
+  id        String         @id @default(cuid())
+  presetId  String
+  trackId   String
+  position  Int
+  preset    PlaylistPreset @relation(fields: [presetId], references: [id], onDelete: Cascade)
+  track     Track          @relation(fields: [trackId], references: [id], onDelete: Cascade)
+
+  @@unique([presetId, trackId])
+  @@index([presetId, position])
 }
 
 model QueueItem {
