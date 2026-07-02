@@ -137,6 +137,35 @@ export function parseCustomTrackInput(input: unknown) {
   };
 }
 
+export function parseVibePlaylistInput(input: unknown) {
+  if (!input || typeof input !== "object") {
+    throw new ValidationError("Некорректные данные вайб-плейлиста.");
+  }
+
+  const data = input as Record<string, unknown>;
+  const prompt = ensureString(data.prompt, "prompt");
+  const count = Number(data.count ?? 16);
+  const mode = typeof data.mode === "string" ? data.mode : "append";
+
+  if (prompt.length < 3 || prompt.length > 280) {
+    throw new ValidationError("Описание вайба должно быть от 3 до 280 символов.");
+  }
+
+  if (!Number.isFinite(count) || count < 5 || count > 40) {
+    throw new ValidationError("Количество треков должно быть от 5 до 40.");
+  }
+
+  if (mode !== "append" && mode !== "replace") {
+    throw new ValidationError("Режим должен быть append или replace.");
+  }
+
+  return {
+    prompt,
+    count: Math.round(count),
+    mode
+  };
+}
+
 export function parseLoginInput(input: unknown) {
   if (!input || typeof input !== "object") {
     throw new ValidationError("Некорректные данные входа.");

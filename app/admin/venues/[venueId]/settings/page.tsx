@@ -8,6 +8,7 @@ import { AdminShell } from "@/components/admin/admin-shell";
 import { PresetApplyButton } from "@/components/admin/preset-apply-button";
 import { SubscriptionActions } from "@/components/admin/subscription-actions";
 import { TrackPickerForm } from "@/components/admin/track-picker-form";
+import { VibePlaylistForm } from "@/components/admin/vibe-playlist-form";
 import { VenueNav } from "@/components/admin/venue-nav";
 import { VenueSettingsForm } from "@/components/admin/venue-settings-form";
 import { Badge } from "@/components/ui/badge";
@@ -169,6 +170,10 @@ export default async function AdminVenueSettingsPage({
           <AddTrackForm venueId={venue.id} />
         </SectionCard>
       </div>
+
+      <SectionCard>
+        <VibePlaylistForm venueId={venue.id} />
+      </SectionCard>
 
       <SectionCard>
         <div className="space-y-4">
