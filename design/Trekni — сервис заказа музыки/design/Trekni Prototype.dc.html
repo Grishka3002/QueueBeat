@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&amp;family=Onest:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0B0B12;font-family:Onest,sans-serif}
+a{color:#5BD7E8;text-decoration:none}a:hover{color:#A5EFF8}
+@keyframes eqh{from{transform:scaleY(0.3)}to{transform:scaleY(1)}}
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:radial-gradient(120% 40% at 50% -6%, rgba(248,73,166,0.13), transparent 55%), #0B0B12;color:#F2F1F7;overflow-x:clip">
+  <div style="max-width:1120px;margin:0 auto;padding:48px 32px 72px">
+
+    <!-- HEADER -->
+    <div style="display:flex;align-items:center;gap:14px">
+      <div style="display:flex;align-items:flex-end;gap:3px;height:22px">
+        <span style="width:4px;height:22px;border-radius:2px;background:#F849A6;transform-origin:bottom;animation:eqh 0.9s ease-in-out -0.2s infinite alternate"></span>
+        <span style="width:4px;height:22px;border-radius:2px;background:#F849A6;transform-origin:bottom;animation:eqh 1.1s ease-in-out -0.6s infinite alternate"></span>
+        <span style="width:4px;height:22px;border-radius:2px;background:#5BD7E8;opacity:0.85;transform-origin:bottom;animation:eqh 0.8s ease-in-out -0.4s infinite alternate"></span>
+      </div>
+      <div style="font-family:Unbounded,sans-serif;font-weight:800;font-size:17px;letter-spacing:4px">ТРЕКНИ</div>
+      <div style="margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(242,241,247,0.45);border:1px solid rgba(255,255,255,0.12);border-radius:999px;padding:6px 12px">интерактивный прототип · v1</div>
+    </div>
+
+    <div style="margin-top:36px;max-width:760px">
+      <div style="font-family:Unbounded,sans-serif;font-weight:700;font-size:38px;line-height:1.14;letter-spacing:-0.01em">Заказ музыки в заведении по QR — <span style="color:#F849A6">целиком, одним потоком</span></div>
+      <div style="margin-top:18px;font-size:16px;line-height:1.6;color:rgba(242,241,247,0.62)">Гость сканирует QR, выбирает трек из плейлиста заведения и платит через СБП. Трек встаёт в очередь и автоматически играет на плеере у колонок — без диджея. Заведение управляет плейлистом, ценой и приёмом; платформа берёт комиссию и ведёт выплаты. Ниже — путь ценности и все экраны прототипа.</div>
+    </div>
+
+    <!-- VALUE FLOW -->
+    <div style="margin-top:40px;background:#101019;border:1px solid rgba(255,255,255,0.07);border-radius:22px;padding:26px 24px">
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+        <div style="font-size:12px;font-weight:700;letter-spacing:2px;color:rgba(242,241,247,0.5)">КАК ДВИЖЕТСЯ ЦЕННОСТЬ</div>
+        <div style="display:flex;gap:16px;font-family:'IBM Plex Mono',monospace;font-size:11px">
+          <span style="display:inline-flex;align-items:center;gap:6px;color:rgba(242,241,247,0.6)"><span style="width:8px;height:8px;border-radius:99px;background:#5BD7E8"></span>гость</span>
+          <span style="display:inline-flex;align-items:center;gap:6px;color:rgba(242,241,247,0.6)"><span style="width:8px;height:8px;border-radius:99px;background:#F849A6"></span>заведение</span>
+          <span style="display:inline-flex;align-items:center;gap:6px;color:rgba(242,241,247,0.6)"><span style="width:8px;height:8px;border-radius:99px;background:#B8F23C"></span>платформа</span>
+        </div>
+      </div>
+      <div style="margin-top:22px;display:grid;grid-template-columns:repeat(6, 1fr);gap:8px">
+        <sc-for list="{{ steps }}" as="st" hint-placeholder-count="6">
+          <div style="position:relative;display:flex;flex-direction:column;gap:9px;padding-right:8px">
+            <div style="{{ st.numStyle }}">{{ st.n }}</div>
+            <div style="font-size:13px;font-weight:600;line-height:1.25">{{ st.title }}</div>
+            <div style="font-size:11.5px;line-height:1.4;color:rgba(242,241,247,0.5)">{{ st.note }}</div>
+            <div style="{{ st.arrowStyle }}">→</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <!-- SCREENS -->
+    <div style="margin-top:44px;display:flex;align-items:baseline;justify-content:space-between">
+      <div style="font-family:Unbounded,sans-serif;font-weight:700;font-size:22px">Экраны прототипа</div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:rgba(242,241,247,0.45)">7 экранов · 4 роли</div>
+    </div>
+
+    <div style="margin-top:20px;display:grid;grid-template-columns:repeat(3, 1fr);gap:16px">
+      <sc-for list="{{ cards }}" as="c" hint-placeholder-count="6">
+        <a href="{{ c.href }}" style="display:block;background:#12121B;border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:22px;color:#F2F1F7" style-hover="border-color:{{ c.hover }};transform:translateY(-3px)">
+          <div style="display:flex;align-items:center;gap:9px">
+            <span style="{{ c.roleStyle }}">{{ c.role }}</span>
+            <span style="margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:10px;color:rgba(242,241,247,0.4);border:1px solid rgba(255,255,255,0.12);border-radius:999px;padding:3px 8px;white-space:nowrap">{{ c.device }}</span>
+          </div>
+          <div style="margin-top:16px;font-family:Unbounded,sans-serif;font-weight:700;font-size:18px;line-height:1.2">{{ c.title }}</div>
+          <div style="margin-top:9px;font-size:13px;line-height:1.55;color:rgba(242,241,247,0.55);min-height:58px">{{ c.desc }}</div>
+          <div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:6px">
+            <sc-for list="{{ c.tags }}" as="tg" hint-placeholder-count="3">
+              <span style="font-size:11px;color:rgba(242,241,247,0.55);background:rgba(255,255,255,0.05);border-radius:999px;padding:4px 9px">{{ tg }}</span>
+            </sc-for>
+          </div>
+          <div style="margin-top:16px;font-size:13px;font-weight:600;color:{{ c.hover }}">Открыть экран →</div>
+        </a>
+      </sc-for>
+    </div>
+
+    <!-- FOOTER NOTE -->
+    <div style="margin-top:40px;padding:20px 22px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:16px;font-size:12.5px;line-height:1.6;color:rgba(242,241,247,0.5)">
+      <span style="color:rgba(242,241,247,0.75);font-weight:600">Прототип, а не продакшн.</span> Экраны сделаны в HTML как эталон внешнего вида и поведения. Данные — демонстрационные, оплата и отправка форм не выполняются по-настоящему. Кастомизация заведений (цвет-акцент, название, логотип) заложена как платная опция и включается на тарифе «Всё включено».
+    </div>
+
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 1200, &quot;height&quot;: 1180 }
+}">
+class Component extends DCLogic {
+  STEPS = [
+    { n: '1', role: 'guest', title: 'Скан QR', note: 'на столе, без приложения' },
+    { n: '2', role: 'guest', title: 'Выбор трека', note: 'из плейлиста заведения' },
+    { n: '3', role: 'guest', title: 'Оплата СБП', note: 'без регистрации' },
+    { n: '4', role: 'venue', title: 'Очередь', note: 'заявка встаёт в очередь' },
+    { n: '5', role: 'venue', title: 'Плеер играет', note: 'авто, без диджея' },
+    { n: '6', role: 'platform', title: 'Выплата', note: 'доля минус комиссия' },
+  ];
+
+  ROLE = {
+    guest: '#5BD7E8', venue: '#F849A6', platform: '#B8F23C',
+  };
+
+  CARDS = [
+    { href: 'Trekni Landing.dc.html', role: 'платформа', roleColor: '#B8F23C', device: 'desktop', title: 'Лендинг для заведений', desc: 'Продающая страница: как работает, контроль, доход, легальность РАО/ВОИС, тарифы и саморегистрация.', tags: ['тарифы', 'калькулятор', 'FAQ'] },
+    { href: 'Trekni Guest Flow.dc.html', role: 'посетитель', roleColor: '#5BD7E8', device: 'mobile', title: 'Гостевой флоу', desc: 'Поиск и выбор трека, оплата через СБП, статус заявки и позиция в очереди. Плюс ошибка оплаты и «приём закрыт».', tags: ['поиск', 'оплата', 'очередь', 'RU/EN'] },
+    { href: 'Trekni Owner Cabinet.dc.html', role: 'владелец', roleColor: '#F849A6', device: 'desktop', title: 'Кабинет владельца', desc: 'Обзор, полная статистика с графиками, плейлист, QR-точки, выплаты, юр. чистота, расписание и брендинг.', tags: ['статистика', 'плейлист', 'выплаты'] },
+    { href: 'Trekni Player.dc.html', role: 'у колонок', roleColor: '#F849A6', device: '16:9', title: 'Плеер заведения', desc: 'Экран у колонок: «сейчас играет», очередь заявок, бесконечный фон и заставка-переход между треками.', tags: ['now playing', 'очередь', 'фон ∞'] },
+    { href: 'Trekni Remote.dc.html', role: 'смена · из кабинета', roleColor: '#F849A6', device: 'mobile', title: 'Пульт смены', desc: 'Мобильный пульт быстрого управления: громкость, пауза/скип, «играть сейчас», удаление заявки с возвратом. Вход — из кабинета.', tags: ['громкость', 'пауза/скип', 'очередь'] },
+    { href: 'Trekni Admin.dc.html', role: 'платформа', roleColor: '#B8F23C', device: 'desktop', title: 'Админка платформы', desc: 'Обзор, заведения с карточкой, модерация подключений и контента, финансы и выплаты, споры с возвратом.', tags: ['модерация', 'финансы', 'споры'] },
+    { href: 'Trekni Directions.dc.html', role: 'исследование', roleColor: 'rgba(242,241,247,0.6)', device: 'canvas', title: 'Направления стиля', desc: 'Четыре визуальных направления гостевого экрана. Выбрано 1a «Пульс» — ночной неон, оно и развито во флоу.', tags: ['4 варианта', 'выбрано 1a'] },
+  ];
+
+  renderVals() {
+    const steps = this.STEPS.map((s, i) => {
+      const c = this.ROLE[s.role];
+      return {
+        n: s.n, title: s.title, note: s.note,
+        numStyle: { width: 30, height: 30, borderRadius: 99, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Unbounded, sans-serif', fontWeight: 700, fontSize: 13, color: '#0B0B12', background: c },
+        arrowStyle: { display: i === this.STEPS.length - 1 ? 'none' : 'block', position: 'absolute', top: 4, right: -6, color: 'rgba(242,241,247,0.25)', fontSize: 14 },
+      };
+    });
+
+    const cards = this.CARDS.map(c => ({
+      href: c.href, role: c.role, device: c.device, title: c.title, desc: c.desc, tags: c.tags, hover: c.roleColor,
+      roleStyle: { fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, letterSpacing: '1px', textTransform: 'uppercase', color: c.roleColor, border: '1px solid ' + c.roleColor + '66', borderRadius: 999, padding: '4px 10px', whiteSpace: 'nowrap' },
+    }));
+
+    return { steps, cards };
+  }
+}
+
+</script>
+</body>
+</html>

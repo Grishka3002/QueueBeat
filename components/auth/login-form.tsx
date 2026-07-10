@@ -45,24 +45,24 @@ export function VenueLoginForm() {
         value={email}
         onChange={(event) => setEmail(event.target.value)}
         placeholder="Email владельца заведения"
-        className="w-full rounded-[1.2rem] border border-white/10 bg-white/5 px-4 py-3 outline-none transition placeholder:text-white/30 focus:border-white/25"
+        className="soft-input w-full rounded-[1.2rem] px-4 py-3"
       />
       <input
         type="password"
         value={password}
         onChange={(event) => setPassword(event.target.value)}
         placeholder="Пароль"
-        className="w-full rounded-[1.2rem] border border-white/10 bg-white/5 px-4 py-3 outline-none transition placeholder:text-white/30 focus:border-white/25"
+        className="soft-input w-full rounded-[1.2rem] px-4 py-3"
       />
-      {error ? <div className="text-sm text-rose-300">{error}</div> : null}
+      {error ? <div className="status-message border border-rose-500/20 bg-rose-500/10 text-sm text-rose-200">{error}</div> : null}
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full rounded-full bg-gradient-to-r from-accent to-accentBlue px-5 py-3 text-sm font-semibold text-white shadow-glow disabled:opacity-60"
+        className="primary-action w-full px-5 py-3 text-sm"
       >
         {isSubmitting ? "Входим..." : "Открыть кабинет заведения"}
       </button>
-      <Link href="/register" className="inline-flex text-sm text-white/45 hover:text-white/70">
+      <Link href="/register" className="inline-flex min-h-10 items-center text-sm text-white/45 transition-[color] duration-150 hover:text-white/75">
         Зарегистрировать новое заведение
       </Link>
     </form>

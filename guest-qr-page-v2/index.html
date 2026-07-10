@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gusli | Заказать трек</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app" aria-label="Заказать трек">
+      <header class="topbar">
+        <div>
+          <span class="kicker">Gusli</span>
+          <h1>Velvet Room</h1>
+        </div>
+        <div class="price">
+          <span>заявка</span>
+          <strong>900 ₽</strong>
+        </div>
+      </header>
+
+      <section class="intro" aria-label="Описание">
+        <p>Выберите песню из плейлиста. После оплаты она появится в очереди Velvet Room.</p>
+      </section>
+
+      <label class="search">
+        <span aria-hidden="true">⌕</span>
+        <input id="search" type="search" placeholder="Поиск по трекам" autocomplete="off" />
+      </label>
+
+      <section class="tracks" aria-labelledby="tracks-title">
+        <div class="section-title">
+          <h2 id="tracks-title">Плейлист</h2>
+          <span id="track-count">8</span>
+        </div>
+        <div id="track-list" class="track-list"></div>
+      </section>
+
+      <section class="queue" aria-live="polite">
+        <button class="queue-toggle" id="queue-toggle" type="button" aria-expanded="false" aria-controls="queue-list">
+          <span>Очередь</span>
+          <strong id="queue-count">2</strong>
+        </button>
+        <div id="queue-list" class="queue-list" hidden></div>
+      </section>
+    </main>
+
+    <aside class="checkout" aria-live="polite">
+      <div>
+        <span>Выбрано</span>
+        <strong id="selected-title">Песня не выбрана</strong>
+      </div>
+      <button id="pay-button" type="button" disabled>Оплатить</button>
+    </aside>
+
+    <div class="toast" id="toast" role="status">Готово: трек в очереди</div>
+
+    <script src="./script.js"></script>
+  </body>
+</html>

@@ -68,7 +68,7 @@ export function TrackPickerForm({ venueId, selectedTrackIds, allTracks }: TrackP
 
   return (
     <div className="space-y-4">
-      <div className="rounded-[1.3rem] border border-white/10 bg-white/[0.03] p-4">
+      <div className="surface-tile rounded-[1.4rem] p-4">
         <div className="text-sm font-semibold text-white">Глобальная библиотека платформы</div>
         <p className="mt-1 text-sm leading-6 text-white/45">
           Владелец заведения выбирает только те треки, которые будут доступны гостям. Гостю не нужно видеть весь каталог.
@@ -82,7 +82,7 @@ export function TrackPickerForm({ venueId, selectedTrackIds, allTracks }: TrackP
         value={query}
         onChange={(event) => setQuery(event.target.value)}
         placeholder="Поиск по музыкальной библиотеке"
-        className="w-full rounded-[1.2rem] border border-white/10 bg-white/5 px-4 py-3 text-white outline-none placeholder:text-white/30"
+        className="soft-input w-full rounded-[1.2rem] px-4 py-3"
       />
 
       <div className="max-h-[28rem] space-y-2 overflow-auto pr-1 scrollbar-thin">
@@ -91,19 +91,19 @@ export function TrackPickerForm({ venueId, selectedTrackIds, allTracks }: TrackP
           return (
             <label
               key={track.id}
-              className="flex items-center gap-3 rounded-[1.2rem] border border-white/10 bg-white/[0.03] px-4 py-3 text-sm"
+              className="surface-tile flex min-h-16 cursor-pointer items-center gap-3 rounded-[1.2rem] px-4 py-3 text-sm"
             >
               <input
                 type="checkbox"
                 checked={checked}
                 onChange={() => toggleTrack(track.id)}
-                className="h-4 w-4"
+                className="h-4 w-4 accent-fuchsia-400"
               />
               <div className="min-w-0 flex-1">
                 <div className="truncate font-medium text-white">{track.title}</div>
                 <div className="truncate text-white/45">{track.artist}</div>
               </div>
-              <div className="text-white/35">
+              <div className="text-white/35 tabular-nums">
                 {Math.floor(track.durationSec / 60)}:
                 {String(track.durationSec % 60).padStart(2, "0")}
               </div>
@@ -117,13 +117,13 @@ export function TrackPickerForm({ venueId, selectedTrackIds, allTracks }: TrackP
           Показаны первые 80 совпадений. Уточните поиск, если не видите нужный трек.
         </div>
       ) : null}
-      {error ? <div className="text-sm text-rose-300">{error}</div> : null}
-      {state ? <div className="text-sm text-emerald-300">{state}</div> : null}
+      {error ? <div className="status-message border border-rose-500/20 bg-rose-500/10 text-sm text-rose-200">{error}</div> : null}
+      {state ? <div className="status-message border border-emerald-500/20 bg-emerald-500/10 text-sm text-emerald-200">{state}</div> : null}
       <button
         type="button"
         onClick={handleSave}
         disabled={isSubmitting}
-        className="rounded-full bg-white/10 px-5 py-3 text-sm font-semibold text-white hover:bg-white/15 disabled:opacity-60"
+        className="secondary-action px-5 py-3 text-sm"
       >
         {isSubmitting ? "Сохраняем..." : "Сохранить разрешённые треки"}
       </button>

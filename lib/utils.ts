@@ -26,6 +26,16 @@ export function formatDateTime(date: Date | string) {
   }).format(new Date(date));
 }
 
+export function trackTag(artist: string, title: string) {
+  const source = (artist || title || "··").trim();
+  const words = source.split(/\s+/).filter(Boolean);
+  const tag =
+    words.length >= 2
+      ? `${words[0][0] ?? ""}${words[1][0] ?? ""}`
+      : source.slice(0, 2);
+  return tag.toUpperCase();
+}
+
 export function trackGradient(seed: string) {
   const gradients = [
     "from-fuchsia-500 via-pink-500 to-amber-400",

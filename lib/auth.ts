@@ -123,6 +123,10 @@ export async function requireVenueOwner() {
 }
 
 export async function canManageVenue(venueId: string) {
+  if (env.demoMode) {
+    return true;
+  }
+
   if (await isAdminAuthenticated()) {
     return true;
   }
@@ -132,6 +136,10 @@ export async function canManageVenue(venueId: string) {
 }
 
 export async function canManageVerifiedVenue(venueId: string) {
+  if (env.demoMode) {
+    return true;
+  }
+
   if (await isAdminAuthenticated()) {
     return true;
   }

@@ -1,0 +1,187 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TrackStatus {
+  ACTIVE
+  BLOCKED
+  PROCESSING
+  FAILED
+}
+
+enum ImportStatus {
+  RUNNING
+  COMPLETED
+  FAILED
+  REJECTED
+}
+
+enum LicenseType {
+  PUBLIC_DOMAIN
+  CC0
+  CC_BY
+  CC_BY_SA
+  ROYALTY_FREE
+  DIRECT_CONTRACT
+  OWNED
+}
+
+enum StorageProvider {
+  POSTGRES
+  S3
+}
+
+enum CatalogProvider {
+  HITMOS
+}
+
+enum ProviderRunStatus {
+  READY
+  RUNNING
+  PAUSED
+  COMPLETED
+  FAILED
+}
+
+enum ProviderItemStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  BLOCKED
+}
+
+model Track {
+  id               String         @id @default(uuid())
+  title            String
+  artist           String
+  normalizedTitle  String
+  normalizedArtist String
+  durationSec      Int?
+  isrc             String?        @unique
+  explicit         Boolean        @default(false)
+  status           TrackStatus    @default(ACTIVE)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  assets           AudioAsset[]
+  licenses         TrackLicense[]
+  imports          ImportJob[]
+  providerItems    ProviderCatalogItem[]
+
+  @@index([normalizedArtist, normalizedTitle])
+  @@index([status, createdAt])
+}
+
+model AudioAsset {
+  id              String          @id @default(uuid())
+  trackId         String
+  storageProvider StorageProvider @default(POSTGRES)
+  bucket          String?
+  storageKey      String?         @unique
+  audioData       Bytes?
+  mimeType        String
+  byteSize        BigInt
+  sha256          String          @unique
+  durationSec     Int?
+  bitrateKbps     Int?
+  sampleRateHz    Int?
+  createdAt       DateTime        @default(now())
+  track           Track           @relation(fields: [trackId], references: [id], onDelete: Cascade)
+
+  @@index([trackId])
+  @@index([storageProvider])
+}
+
+model TrackLicense {
+  id           String      @id @default(uuid())
+  trackId      String?
+  sourceUrl    String
+  type         LicenseType
+  rightsHolder String?
+  proofUrl     String
+  startsAt     DateTime    @default(now())
+  expiresAt    DateTime?
+  territory    String      @default("worldwide")
+  notes        String?
+  createdAt    DateTime    @default(now())
+  track        Track?      @relation(fields: [trackId], references: [id], onDelete: SetNull)
+
+  @@index([trackId])
+  @@index([type, expiresAt])
+}
+
+model ImportJob {
+  id           String       @id @default(uuid())
+  sourceUrl    String
+  status       ImportStatus @default(RUNNING)
+  reason       String?
+  trackId      String?
+  sourceSha256 String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  track        Track?       @relation(fields: [trackId], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
+  @@index([sourceSha256])
+}
+
+model ProviderImportRun {
+  id                 String            @id @default(uuid())
+  provider           CatalogProvider
+  catalogRootUrl     String
+  agreementReference String
+  licenseType        LicenseType       @default(DIRECT_CONTRACT)
+  rightsHolder       String?
+  expiresAt          DateTime?
+  territory          String            @default("worldwide")
+  notes              String?
+  maxTracks          Int               @default(1000000)
+  status             ProviderRunStatus @default(READY)
+  cursor             String?
+  catalogSealed      Boolean           @default(false)
+  discoveredCount    Int               @default(0)
+  importedCount      Int               @default(0)
+  failedCount        Int               @default(0)
+  lastError          String?
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  startedAt          DateTime?
+  finishedAt         DateTime?
+  items              ProviderCatalogItem[]
+
+  @@index([provider, status, createdAt])
+}
+
+model ProviderCatalogItem {
+  id              String             @id @default(uuid())
+  runId           String
+  providerItemId  String
+  sourcePageUrl   String
+  audioSourceUrl  String?
+  title           String?
+  artist          String?
+  durationSec     Int?
+  isrc            String?
+  sourceMetadata  Json?
+  status          ProviderItemStatus @default(PENDING)
+  attempts        Int                @default(0)
+  nextAttemptAt   DateTime?
+  lockedAt        DateTime?
+  completedAt     DateTime?
+  lastError       String?
+  trackId         String?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  run             ProviderImportRun  @relation(fields: [runId], references: [id], onDelete: Cascade)
+  track           Track?             @relation(fields: [trackId], references: [id], onDelete: SetNull)
+
+  @@unique([runId, providerItemId])
+  @@index([runId, status, nextAttemptAt])
+  @@index([trackId])
+}

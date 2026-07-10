@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&amp;family=Onest:wght@400;500;600;700&amp;family=Cormorant:ital,wght@0,500;0,600;1,500;1,600&amp;family=Golos+Text:wght@400;500;600;700;800&amp;family=Sofia+Sans+Extra+Condensed:wght@700;800&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#f0eee9;font-family:system-ui,sans-serif}
+a{color:#2a78d6}a:hover{color:#1b5eb0}
+.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);scroll-margin-top:16px}
+.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 8px}
+.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}
+.dv-tname{font:600 13px/1.2 system-ui,sans-serif;color:#1a1a1a}
+.dv-opts{display:flex;flex-wrap:wrap;gap:36px;align-items:flex-start}
+.dv-opt{flex:none;display:flex;flex-direction:column;gap:10px;scroll-margin-top:16px}
+.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none}
+.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 system-ui,sans-serif;color:rgba(0,0,0,.55)}
+.dv-card{max-width:100%;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden}
+.dv-opt:target .dv-oid{background:#2a78d6;color:#fff}
+.dv-next{margin:26px 0 0;font:12px/1.5 system-ui,sans-serif;color:rgba(0,0,0,.5)}
+</style>
+</helmet>
+
+<section class="dv-turn" id="t1">
+  <div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">Трекни — направления визуального стиля, экран гостя</span></div>
+  <div style="max-width:820px;font:12px/1.55 system-ui,sans-serif;color:rgba(0,0,0,.55);margin:0 0 24px">
+    Допущения: заведение «Бар „Соловей“» (Москва), цена заявки 199 ₽, оплата СБП, RU/EN-переключатель, без регистрации.
+    Контент во всех четырёх вариантах одинаковый — сравниваем только стиль. Выбранное направление разовьём в полный кликабельный флоу: скан QR → выбор трека → оплата → очередь.
+  </div>
+  <div class="dv-opts">
+
+    <!-- ═══════════ 1a ПУЛЬС — ночной неон ═══════════ -->
+    <div class="dv-opt" id="1a">
+      <div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a><b style="color:#1a1a1a">«Пульс»</b> — ночной клуб, неон</div>
+      <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+        <div style="min-height:100%;box-sizing:border-box;display:flex;flex-direction:column;padding:70px 0 0;background:radial-gradient(120% 50% at 50% -8%, oklch(0.72 0.2 345 / 0.14), transparent 60%), #0B0B12;font-family:Onest,sans-serif">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 20px 0">
+            <div style="font-family:Unbounded,sans-serif;font-weight:700;font-size:12px;letter-spacing:4px;color:oklch(0.78 0.14 195)">ТРЕКНИ</div>
+            <div style="display:flex;border:1px solid rgba(255,255,255,0.14);border-radius:999px;padding:2px;font-size:11px;font-weight:600">
+              <span style="padding:4px 10px;border-radius:999px;background:rgba(255,255,255,0.14);color:#F2F1F7">RU</span>
+              <span style="padding:4px 10px;color:rgba(242,241,247,0.45)">EN</span>
+            </div>
+          </div>
+          <div style="padding:16px 20px 0">
+            <div style="font-family:Unbounded,sans-serif;font-weight:700;font-size:23px;color:#F2F1F7">Бар «Соловей»</div>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12.5px;color:rgba(242,241,247,0.55)">
+              <span>Никольская, 12</span>
+              <span style="width:3px;height:3px;border-radius:99px;background:rgba(242,241,247,0.35)"></span>
+              <span style="display:inline-flex;align-items:center;gap:5px;color:oklch(0.78 0.14 195)"><span style="width:6px;height:6px;border-radius:99px;background:oklch(0.78 0.14 195)"></span>приём открыт</span>
+              <span style="margin-left:auto;border:1px solid oklch(0.72 0.2 345 / 0.6);color:oklch(0.78 0.17 345);border-radius:999px;padding:4px 10px;font-size:11.5px;font-weight:600">трек — 199 ₽</span>
+            </div>
+          </div>
+          <div style="margin:16px 20px 0;display:flex;align-items:center;gap:12px;background:#15151F;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:12px 14px">
+            <div style="display:flex;align-items:flex-end;gap:3px;height:18px">
+              <span style="width:3px;height:9px;border-radius:2px;background:oklch(0.72 0.2 345)"></span>
+              <span style="width:3px;height:16px;border-radius:2px;background:oklch(0.72 0.2 345)"></span>
+              <span style="width:3px;height:7px;border-radius:2px;background:oklch(0.72 0.2 345 / 0.7)"></span>
+              <span style="width:3px;height:12px;border-radius:2px;background:oklch(0.72 0.2 345)"></span>
+            </div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:9.5px;font-weight:700;letter-spacing:2px;color:rgba(242,241,247,0.45)">СЕЙЧАС ИГРАЕТ</div>
+              <div style="font-size:13px;font-weight:600;color:#F2F1F7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Би-2 — Полковнику никто не пишет</div>
+            </div>
+            <div style="font-size:11.5px;color:rgba(242,241,247,0.5);text-align:right;line-height:1.4">в очереди 3<br>~12 мин</div>
+          </div>
+          <div style="margin:12px 20px 0;display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.06);border-radius:999px;padding:12px 16px">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="rgba(242,241,247,0.45)" stroke-width="1.5"></circle><path d="M9.5 9.5L13 13" stroke="rgba(242,241,247,0.45)" stroke-width="1.5" stroke-linecap="round"></path></svg>
+            <span style="font-size:14px;color:rgba(242,241,247,0.45)">Найти трек или исполнителя</span>
+          </div>
+          <div style="margin:12px 20px 0;display:flex;gap:7px;font-size:12.5px;font-weight:600">
+            <span style="padding:7px 13px;border-radius:999px;background:oklch(0.72 0.2 345);color:#17020D">Все</span>
+            <span style="padding:7px 13px;border-radius:999px;border:1px solid rgba(255,255,255,0.13);color:rgba(242,241,247,0.6)">Поп</span>
+            <span style="padding:7px 13px;border-radius:999px;border:1px solid rgba(255,255,255,0.13);color:rgba(242,241,247,0.6)">Рок</span>
+            <span style="padding:7px 13px;border-radius:999px;border:1px solid rgba(255,255,255,0.13);color:rgba(242,241,247,0.6)">Хип-хоп</span>
+            <span style="padding:7px 13px;border-radius:999px;border:1px solid rgba(255,255,255,0.13);color:rgba(242,241,247,0.6)">2000-е</span>
+          </div>
+          <div style="margin:12px 20px 0;display:flex;flex-direction:column;gap:4px">
+            <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid oklch(0.72 0.2 345 / 0.7);background:oklch(0.72 0.2 345 / 0.09);border-radius:14px">
+              <div style="width:44px;height:44px;border-radius:10px;background:repeating-linear-gradient(135deg, rgba(255,255,255,0.07) 0 3px, transparent 3px 7px), #1D1D2B;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:rgba(242,241,247,0.5)">ZV</div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:15px;font-weight:600;color:#F2F1F7">Life</div>
+                <div style="font-size:12.5px;color:rgba(242,241,247,0.5)">Zivert · 3:07</div>
+              </div>
+              <div style="width:34px;height:34px;border-radius:99px;background:oklch(0.72 0.2 345);color:#17020D;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800">✓</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.06)">
+              <div style="width:44px;height:44px;border-radius:10px;background:repeating-linear-gradient(135deg, rgba(255,255,255,0.07) 0 3px, transparent 3px 7px), #1D1D2B;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:rgba(242,241,247,0.5)">СК</div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:15px;font-weight:600;color:#F2F1F7">Положение</div>
+                <div style="font-size:12.5px;color:rgba(242,241,247,0.5)">Скриптонит · 3:44</div>
+              </div>
+              <div style="width:34px;height:34px;border-radius:99px;border:1px solid rgba(255,255,255,0.2);color:#F2F1F7;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:500">+</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.06)">
+              <div style="width:44px;height:44px;border-radius:10px;background:repeating-linear-gradient(135deg, rgba(255,255,255,0.07) 0 3px, transparent 3px 7px), #1D1D2B;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:rgba(242,241,247,0.5)">TW</div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:15px;font-weight:600;color:#F2F1F7">Blinding Lights</div>
+                <div style="font-size:12.5px;color:rgba(242,241,247,0.5)">The Weeknd · 3:20</div>
+              </div>
+              <div style="width:34px;height:34px;border-radius:99px;border:1px solid rgba(255,255,255,0.2);color:#F2F1F7;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:500">+</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.06)">
+              <div style="width:44px;height:44px;border-radius:10px;background:repeating-linear-gradient(135deg, rgba(255,255,255,0.07) 0 3px, transparent 3px 7px), #1D1D2B;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:rgba(242,241,247,0.5)">РВ</div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:15px;font-weight:600;color:#F2F1F7">Крошка моя</div>
+                <div style="font-size:12.5px;color:rgba(242,241,247,0.5)">Руки Вверх · 3:41</div>
+              </div>
+              <div style="width:34px;height:34px;border-radius:99px;border:1px solid rgba(255,255,255,0.2);color:#F2F1F7;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:500">+</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:10px 12px">
+              <div style="width:44px;height:44px;border-radius:10px;background:repeating-linear-gradient(135deg, rgba(255,255,255,0.07) 0 3px, transparent 3px 7px), #1D1D2B;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:rgba(242,241,247,0.5)">QN</div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:15px;font-weight:600;color:#F2F1F7">Don't Stop Me Now</div>
+                <div style="font-size:12.5px;color:rgba(242,241,247,0.5)">Queen · 3:29</div>
+              </div>
+              <div style="width:34px;height:34px;border-radius:99px;border:1px solid rgba(255,255,255,0.2);color:#F2F1F7;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:500">+</div>
+            </div>
+          </div>
+          <div style="margin-top:auto;padding:14px 20px 46px">
+            <div style="background:oklch(0.72 0.2 345);color:#17020D;border-radius:999px;padding:16px;text-align:center;font-family:Unbounded,sans-serif;font-weight:700;font-size:14px;box-shadow:0 10px 34px oklch(0.72 0.2 345 / 0.35)" style-hover="filter:brightness(1.08)">Заказать за 199 ₽</div>
+            <div style="text-align:center;margin-top:9px;font-size:11px;color:rgba(242,241,247,0.4)">Оплата через СБП · без регистрации</div>
+          </div>
+        </div>
+      </x-import>
+      <div style="width:402px;display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="width:14px;height:14px;border-radius:99px;background:#0B0B12;border:1px solid rgba(0,0,0,.15)"></span>
+          <span style="width:14px;height:14px;border-radius:99px;background:oklch(0.72 0.2 345);border:1px solid rgba(0,0,0,.1)"></span>
+          <span style="width:14px;height:14px;border-radius:99px;background:oklch(0.78 0.14 195);border:1px solid rgba(0,0,0,.1)"></span>
+          <span style="font:500 10.5px 'IBM Plex Mono',monospace;color:rgba(0,0,0,.5);margin-left:6px">Unbounded + Onest</span>
+        </div>
+        <div style="font:400 11.5px/1.45 system-ui,sans-serif;color:rgba(0,0,0,.6)">Клубная энергия: глубокий тёмный фон, неон, эквалайзер. Для площадок с танцполом и вечерней публикой.</div>
+      </div>
+    </div>
+
+    <!-- ═══════════ 1b САЛОН — тёплый премиум ═══════════ -->
+    <div class="dv-opt" id="1b">
+      <div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a><b style="color:#1a1a1a">«Салон»</b> — тёплый премиальный бар</div>
+      <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+        <div style="min-height:100%;box-sizing:border-box;display:flex;flex-direction:column;padding:70px 0 0;background:#1B130E;font-family:'Golos Text',sans-serif">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 22px 0">
+            <div style="font-family:Cormorant,serif;font-style:italic;font-weight:600;font-size:18px;color:oklch(0.78 0.11 80)">Трекни</div>
+            <div style="display:flex;border:1px solid oklch(0.78 0.11 80 / 0.35);border-radius:999px;padding:2px;font-size:11px;font-weight:500">
+              <span style="padding:4px 10px;border-radius:999px;background:oklch(0.78 0.11 80 / 0.18);color:#F1E7D8">RU</span>
+              <span style="padding:4px 10px;color:rgba(241,231,216,0.45)">EN</span>
+            </div>
+          </div>
+          <div style="padding:18px 22px 0">
+            <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:14px">
+              <span style="height:1px;background:oklch(0.78 0.11 80 / 0.5)"></span>
+              <span style="height:1px;background:oklch(0.78 0.11 80 / 0.34)"></span>
+              <span style="height:1px;background:oklch(0.78 0.11 80 / 0.2)"></span>
+              <span style="height:1px;background:oklch(0.78 0.11 80 / 0.1)"></span>
+            </div>
+            <div style="font-family:Cormorant,serif;font-weight:600;font-size:31px;line-height:1.05;color:#F1E7D8">Бар «Соловей»</div>
+            <div style="margin-top:7px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(241,231,216,0.5)">Никольская, 12 · Москва · приём открыт</div>
+            <div style="margin-top:12px;display:inline-flex;align-items:baseline;gap:8px;border:1px solid oklch(0.78 0.11 80 / 0.4);border-radius:3px;padding:7px 12px">
+              <span style="font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:rgba(241,231,216,0.55)">Заказ трека</span>
+              <span style="font-family:Cormorant,serif;font-weight:600;font-size:19px;color:oklch(0.78 0.11 80)">199 ₽</span>
+            </div>
+          </div>
+          <div style="margin:16px 0 0;padding:11px 22px;border-top:1px solid oklch(0.78 0.11 80 / 0.18);border-bottom:1px solid oklch(0.78 0.11 80 / 0.18);display:flex;align-items:center;gap:10px">
+            <span style="font-family:Cormorant,serif;font-style:italic;font-size:15px;color:oklch(0.78 0.11 80)">Сейчас звучит</span>
+            <span style="flex:1;min-width:0;font-size:13px;color:#F1E7D8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Би-2 — Полковнику никто не пишет</span>
+            <span style="font-size:11px;color:rgba(241,231,216,0.5)">3 · ~12 мин</span>
+          </div>
+          <div style="margin:14px 22px 0;display:flex;align-items:center;gap:10px;border-bottom:1px solid oklch(0.78 0.11 80 / 0.3);padding:9px 2px">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="rgba(241,231,216,0.45)" stroke-width="1.2"></circle><path d="M9.5 9.5L13 13" stroke="rgba(241,231,216,0.45)" stroke-width="1.2" stroke-linecap="round"></path></svg>
+            <span style="font-family:Cormorant,serif;font-style:italic;font-size:16px;color:rgba(241,231,216,0.45)">Найти трек или исполнителя…</span>
+          </div>
+          <div style="margin:13px 22px 0;font-size:11px;letter-spacing:0.09em;color:rgba(241,231,216,0.45);display:flex;gap:10px;flex-wrap:wrap">
+            <span style="color:oklch(0.78 0.11 80);border-bottom:1px solid oklch(0.78 0.11 80)">ВСЕ</span><span>·</span><span>ПОП</span><span>·</span><span>РОК</span><span>·</span><span>ХИП-ХОП</span><span>·</span><span>2000-Е</span>
+          </div>
+          <div style="margin:8px 22px 0;display:flex;flex-direction:column">
+            <div style="display:flex;align-items:center;gap:12px;padding:10px 10px;background:oklch(0.78 0.11 80 / 0.08);border-radius:8px;margin:2px -10px">
+              <span style="font-family:Cormorant,serif;font-weight:500;font-size:14px;color:oklch(0.78 0.11 80);width:20px">01</span>
+              <div style="flex:1;min-width:0">
+                <div style="font-family:Cormorant,serif;font-weight:600;font-size:19px;color:#F1E7D8;line-height:1.1">Life</div>
+                <div style="font-size:11px;letter-spacing:0.05em;text-transform:uppercase;color:rgba(241,231,216,0.5);margin-top:2px">Zivert · 3:07</div>
+              </div>
+              <div style="width:32px;height:32px;border-radius:99px;background:oklch(0.78 0.11 80);color:#241304;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700">✓</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(241,231,216,0.08)">
+              <span style="font-family:Cormorant,serif;font-weight:500;font-size:14px;color:rgba(241,231,216,0.4);width:20px">02</span>
+              <div style="flex:1;min-width:0">
+                <div style="font-family:Cormorant,serif;font-weight:600;font-size:19px;color:#F1E7D8;line-height:1.1">Положение</div>
+                <div style="font-size:11px;letter-spacing:0.05em;text-transform:uppercase;color:rgba(241,231,216,0.5);margin-top:2px">Скриптонит · 3:44</div>
+              </div>
+              <div style="width:32px;height:32px;border-radius:99px;border:1px solid oklch(0.78 0.11 80 / 0.5);color:oklch(0.78 0.11 80);display:flex;align-items:center;justify-content:center;font-size:16px">+</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(241,231,216,0.08)">
+              <span style="font-family:Cormorant,serif;font-weight:500;font-size:14px;color:rgba(241,231,216,0.4);width:20px">03</span>
+              <div style="flex:1;min-width:0">
+                <div style="font-family:Cormorant,serif;font-weight:600;font-size:19px;color:#F1E7D8;line-height:1.1">Blinding Lights</div>
+                <div style="font-size:11px;letter-spacing:0.05em;text-transform:uppercase;color:rgba(241,231,216,0.5);margin-top:2px">The Weeknd · 3:20</div>
+              </div>
+              <div style="width:32px;height:32px;border-radius:99px;border:1px solid oklch(0.78 0.11 80 / 0.5);color:oklch(0.78 0.11 80);display:flex;align-items:center;justify-content:center;font-size:16px">+</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(241,231,216,0.08)">
+              <span style="font-family:Cormorant,serif;font-weight:500;font-size:14px;color:rgba(241,231,216,0.4);width:20px">04</span>
+              <div style="flex:1;min-width:0">
+                <div style="font-family:Cormorant,serif;font-weight:600;font-size:19px;color:#F1E7D8;line-height:1.1">Крошка моя</div>
+                <div style="font-size:11px;letter-spacing:0.05em;text-transform:uppercase;color:rgba(241,231,216,0.5);margin-top:2px">Руки Вверх · 3:41</div>
+              </div>
+              <div style="width:32px;height:32px;border-radius:99px;border:1px solid oklch(0.78 0.11 80 / 0.5);color:oklch(0.78 0.11 80);display:flex;align-items:center;justify-content:center;font-size:16px">+</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:10px 0">
+              <span style="font-family:Cormorant,serif;font-weight:500;font-size:14px;color:rgba(241,231,216,0.4);width:20px">05</span>
+              <div style="flex:1;min-width:0">
+                <div style="font-family:Cormorant,serif;font-weight:600;font-size:19px;color:#F1E7D8;line-height:1.1">Don't Stop Me Now</div>
+                <div style="font-size:11px;letter-spacing:0.05em;text-transform:uppercase;color:rgba(241,231,216,0.5);margin-top:2px">Queen · 3:29</div>
+              </div>
+              <div style="width:32px;height:32px;border-radius:99px;border:1px solid oklch(0.78 0.11 80 / 0.5);color:oklch(0.78 0.11 80);display:flex;align-items:center;justify-content:center;font-size:16px">+</div>
+            </div>
+          </div>
+          <div style="margin-top:auto;padding:14px 22px 46px">
+            <div style="background:oklch(0.78 0.11 80);color:#241304;border-radius:4px;padding:16px;text-align:center;font-weight:600;font-size:15px;letter-spacing:0.02em" style-hover="filter:brightness(1.06)">Заказать за 199 ₽</div>
+            <div style="text-align:center;margin-top:9px;font-size:11px;color:rgba(241,231,216,0.4)">Оплата через СБП · без регистрации</div>
+          </div>
+        </div>
+      </x-import>
+      <div style="width:402px;display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="width:14px;height:14px;border-radius:99px;background:#1B130E;border:1px solid rgba(0,0,0,.15)"></span>
+          <span style="width:14px;height:14px;border-radius:99px;background:oklch(0.78 0.11 80);border:1px solid rgba(0,0,0,.1)"></span>
+          <span style="width:14px;height:14px;border-radius:99px;background:#F1E7D8;border:1px solid rgba(0,0,0,.12)"></span>
+          <span style="font:500 10.5px 'IBM Plex Mono',monospace;color:rgba(0,0,0,.5);margin-left:6px">Cormorant + Golos Text</span>
+        </div>
+        <div style="font:400 11.5px/1.45 system-ui,sans-serif;color:rgba(0,0,0,.6)">Премиальный бар: серифы, кремовый на эспрессо, плейлист как винная карта. Струны-хэйрлайны — тихая отсылка к гуслям.</div>
+      </div>
+    </div>
+
+    <!-- ═══════════ 1c АФИША — дерзкий плакат ═══════════ -->
+    <div class="dv-opt" id="1c">
+      <div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a><b style="color:#1a1a1a">«Афиша»</b> — дерзкий плакат</div>
+      <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+        <div style="min-height:100%;box-sizing:border-box;display:flex;flex-direction:column;padding:70px 0 0;background:#DFF24B;font-family:'Golos Text',sans-serif;color:#141414">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 18px 0">
+            <div style="font-family:'Sofia Sans Extra Condensed',sans-serif;font-weight:800;font-size:17px;letter-spacing:0.04em;border:2px solid #141414;padding:2px 9px">ТРЕКНИ</div>
+            <div style="display:flex;border:2px solid #141414;font-size:11.5px;font-weight:700">
+              <span style="padding:4px 10px;background:#141414;color:#DFF24B">RU</span>
+              <span style="padding:4px 10px;color:#141414">EN</span>
+            </div>
+          </div>
+          <div style="padding:14px 18px 0">
+            <div style="font-family:'Sofia Sans Extra Condensed',sans-serif;font-weight:800;font-size:46px;line-height:0.9;text-transform:uppercase">Бар «Соловей»</div>
+            <div style="margin-top:6px;font-size:12px;font-weight:500">Никольская, 12 · Москва · приём заявок открыт</div>
+          </div>
+          <div style="margin-top:12px;background:#141414;color:#DFF24B;padding:7px 0;white-space:nowrap;overflow:hidden;font-family:'Sofia Sans Extra Condensed',sans-serif;font-weight:700;font-size:14px;letter-spacing:0.12em">
+            <span style="padding-left:18px">ТРЕК — 199 ₽ ★ ОЧЕРЕДЬ — 3 ★ СЕЙЧАС: БИ-2 — ПОЛКОВНИКУ НИКТО НЕ ПИШЕТ ★ ТРЕК — 199 ₽ ★</span>
+          </div>
+          <div style="margin:14px 18px 0;display:flex;align-items:center;gap:10px;background:#F7F5EA;border:2px solid #141414;padding:11px 13px;box-shadow:3px 3px 0 #141414">
+            <svg width="15" height="15" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="#141414" stroke-width="1.8"></circle><path d="M9.5 9.5L13 13" stroke="#141414" stroke-width="1.8" stroke-linecap="round"></path></svg>
+            <span style="font-size:14px;color:#6b6b60;font-weight:500">Найти трек или исполнителя</span>
+          </div>
+          <div style="margin:12px 18px 0;display:flex;gap:7px;font-family:'Sofia Sans Extra Condensed',sans-serif;font-weight:700;font-size:14.5px;letter-spacing:0.04em">
+            <span style="padding:4px 11px;border:2px solid #141414;background:#141414;color:#DFF24B">ВСЕ</span>
+            <span style="padding:4px 11px;border:2px solid #141414">ПОП</span>
+            <span style="padding:4px 11px;border:2px solid #141414">РОК</span>
+            <span style="padding:4px 11px;border:2px solid #141414">ХИП-ХОП</span>
+            <span style="padding:4px 11px;border:2px solid #141414">2000-Е</span>
+          </div>
+          <div style="margin:12px 18px 0;background:#F7F5EA;border:2px solid #141414;box-shadow:4px 4px 0 #141414">
+            <div style="display:flex;align-items:center;gap:11px;padding:9px 12px;background:#141414;color:#DFF24B">
+              <span style="font-family:'Sofia Sans Extra Condensed',sans-serif;font-weight:800;font-size:19px;width:22px">01</span>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:14.5px;font-weight:700">Life</div>
+                <div style="font-size:12px;opacity:0.75">Zivert · 3:07</div>
+              </div>
+              <span style="font-family:'Sofia Sans Extra Condensed',sans-serif;font-weight:800;font-size:17px">✓ ВЫБРАН</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-top:2px solid #141414">
+              <span style="font-family:'Sofia Sans Extra Condensed',sans-serif;font-weight:800;font-size:19px;width:22px;color:#141414">02</span>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:14.5px;font-weight:700">Положение</div>
+                <div style="font-size:12px;color:#6b6b60">Скриптонит · 3:44</div>
+              </div>
+              <div style="width:32px;height:32px;border:2px solid #141414;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700">+</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-top:2px solid #141414">
+              <span style="font-family:'Sofia Sans Extra Condensed',sans-serif;font-weight:800;font-size:19px;width:22px">03</span>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:14.5px;font-weight:700">Blinding Lights</div>
+                <div style="font-size:12px;color:#6b6b60">The Weeknd · 3:20</div>
+              </div>
+              <div style="width:32px;height:32px;border:2px solid #141414;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700">+</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-top:2px solid #141414">
+              <span style="font-family:'Sofia Sans Extra Condensed',sans-serif;font-weight:800;font-size:19px;width:22px">04</span>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:14.5px;font-weight:700">Крошка моя</div>
+                <div style="font-size:12px;color:#6b6b60">Руки Вверх · 3:41</div>
+              </div>
+              <div style="width:32px;height:32px;border:2px solid #141414;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700">+</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:11px;padding:9px 12px;border-top:2px solid #141414">
+              <span style="font-family:'Sofia Sans Extra Condensed',sans-serif;font-weight:800;font-size:19px;width:22px">05</span>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:14.5px;font-weight:700">Don't Stop Me Now</div>
+                <div style="font-size:12px;color:#6b6b60">Queen · 3:29</div>
+              </div>
+              <div style="width:32px;height:32px;border:2px solid #141414;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700">+</div>
+            </div>
+          </div>
+          <div style="margin-top:auto;padding:14px 18px 46px">
+            <div style="background:#141414;color:#DFF24B;padding:15px;text-align:center;font-family:'Sofia Sans Extra Condensed',sans-serif;font-weight:800;font-size:21px;letter-spacing:0.08em;text-transform:uppercase" style-hover="filter:brightness(1.15)">Заказать за <span style="color:#FF6A48">199 ₽</span></div>
+            <div style="text-align:center;margin-top:8px;font-size:11px;font-weight:700;letter-spacing:0.06em">ОПЛАТА — СБП · БЕЗ РЕГИСТРАЦИИ</div>
+          </div>
+        </div>
+      </x-import>
+      <div style="width:402px;display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="width:14px;height:14px;border-radius:99px;background:#DFF24B;border:1px solid rgba(0,0,0,.15)"></span>
+          <span style="width:14px;height:14px;border-radius:99px;background:#141414;border:1px solid rgba(0,0,0,.1)"></span>
+          <span style="width:14px;height:14px;border-radius:99px;background:#FF6A48;border:1px solid rgba(0,0,0,.1)"></span>
+          <span style="font:500 10.5px 'IBM Plex Mono',monospace;color:rgba(0,0,0,.5);margin-left:6px">Sofia Sans Cond + Golos Text</span>
+        </div>
+        <div style="font:400 11.5px/1.45 system-ui,sans-serif;color:rgba(0,0,0,.6)">Плакат/афиша: кислотный фон, жирный кондесед, жёсткие рамки и тени. Дерзко — для молодёжных площадок и крафтовых баров.</div>
+      </div>
+    </div>
+
+    <!-- ═══════════ 1d СЕРВИС — светлый, спокойный ═══════════ -->
+    <div class="dv-opt" id="1d">
+      <div class="dv-olabel"><a class="dv-oid" href="#1d">1d</a><b style="color:#1a1a1a">«Сервис»</b> — светлый, доверие</div>
+      <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+        <div style="min-height:100%;box-sizing:border-box;display:flex;flex-direction:column;padding:70px 0 0;background:#F7F5F1;font-family:'Golos Text',sans-serif;color:#201E1B">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 20px 0">
+            <div style="font-weight:800;font-size:15.5px;letter-spacing:-0.01em">Трекни<span style="color:oklch(0.52 0.16 268)">.</span></div>
+            <div style="display:flex;background:#fff;border:1px solid #E7E2DA;border-radius:999px;padding:2px;font-size:11px;font-weight:600">
+              <span style="padding:4px 10px;border-radius:999px;background:#201E1B;color:#fff">RU</span>
+              <span style="padding:4px 10px;color:#8B857B">EN</span>
+            </div>
+          </div>
+          <div style="margin:14px 20px 0;background:#fff;border:1px solid #E7E2DA;border-radius:18px;padding:16px">
+            <div style="font-weight:700;font-size:21px">Бар «Соловей»</div>
+            <div style="margin-top:3px;font-size:13px;color:#8B857B">Никольская, 12 · Москва</div>
+            <div style="margin-top:12px;display:flex;align-items:center;gap:8px">
+              <span style="font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:18px;color:oklch(0.52 0.16 268)">199 ₽</span>
+              <span style="font-size:12.5px;color:#8B857B">за заявку</span>
+              <span style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#3E8155;background:oklch(0.55 0.12 155 / 0.1);border-radius:999px;padding:5px 10px"><span style="width:6px;height:6px;border-radius:99px;background:#3E8155"></span>приём открыт</span>
+            </div>
+          </div>
+          <div style="margin:10px 20px 0;background:#fff;border:1px solid #E7E2DA;border-radius:18px;padding:12px 16px;display:flex;align-items:center;gap:12px">
+            <div style="flex:1;min-width:0">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.1em;color:#8B857B">СЕЙЧАС ИГРАЕТ</div>
+              <div style="margin-top:2px;font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Би-2 — Полковнику никто не пишет</div>
+            </div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#8B857B;text-align:right;line-height:1.5">3 в очереди<br>~12 мин</div>
+          </div>
+          <div style="margin:10px 20px 0;display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #E7E2DA;border-radius:13px;padding:12px 14px">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="#8B857B" stroke-width="1.5"></circle><path d="M9.5 9.5L13 13" stroke="#8B857B" stroke-width="1.5" stroke-linecap="round"></path></svg>
+            <span style="font-size:14px;color:#8B857B">Найти трек или исполнителя</span>
+          </div>
+          <div style="margin:10px 20px 0;display:flex;gap:7px;font-size:12.5px;font-weight:600">
+            <span style="padding:7px 13px;border-radius:999px;background:oklch(0.52 0.16 268);color:#fff">Все</span>
+            <span style="padding:7px 13px;border-radius:999px;background:#fff;border:1px solid #E7E2DA;color:#5E5950">Поп</span>
+            <span style="padding:7px 13px;border-radius:999px;background:#fff;border:1px solid #E7E2DA;color:#5E5950">Рок</span>
+            <span style="padding:7px 13px;border-radius:999px;background:#fff;border:1px solid #E7E2DA;color:#5E5950">Хип-хоп</span>
+            <span style="padding:7px 13px;border-radius:999px;background:#fff;border:1px solid #E7E2DA;color:#5E5950">2000-е</span>
+          </div>
+          <div style="margin:10px 20px 0;background:#fff;border:1px solid #E7E2DA;border-radius:18px;overflow:hidden">
+            <div style="display:flex;align-items:center;gap:12px;padding:11px 14px;background:oklch(0.52 0.16 268 / 0.07)">
+              <div style="width:42px;height:42px;border-radius:10px;background:repeating-linear-gradient(135deg, rgba(0,0,0,0.045) 0 3px, transparent 3px 7px), #EFEBE3;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#8B857B">ZV</div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:14.5px;font-weight:600">Life</div>
+                <div style="font-size:12.5px;color:#8B857B">Zivert · 3:07</div>
+              </div>
+              <div style="width:32px;height:32px;border-radius:99px;background:oklch(0.52 0.16 268);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700">✓</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:11px 14px;border-top:1px solid #F0ECE5">
+              <div style="width:42px;height:42px;border-radius:10px;background:repeating-linear-gradient(135deg, rgba(0,0,0,0.045) 0 3px, transparent 3px 7px), #EFEBE3;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#8B857B">СК</div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:14.5px;font-weight:600">Положение</div>
+                <div style="font-size:12.5px;color:#8B857B">Скриптонит · 3:44</div>
+              </div>
+              <div style="width:32px;height:32px;border-radius:99px;border:1.5px solid oklch(0.52 0.16 268 / 0.4);color:oklch(0.52 0.16 268);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:500">+</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:11px 14px;border-top:1px solid #F0ECE5">
+              <div style="width:42px;height:42px;border-radius:10px;background:repeating-linear-gradient(135deg, rgba(0,0,0,0.045) 0 3px, transparent 3px 7px), #EFEBE3;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#8B857B">TW</div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:14.5px;font-weight:600">Blinding Lights</div>
+                <div style="font-size:12.5px;color:#8B857B">The Weeknd · 3:20</div>
+              </div>
+              <div style="width:32px;height:32px;border-radius:99px;border:1.5px solid oklch(0.52 0.16 268 / 0.4);color:oklch(0.52 0.16 268);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:500">+</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:11px 14px;border-top:1px solid #F0ECE5">
+              <div style="width:42px;height:42px;border-radius:10px;background:repeating-linear-gradient(135deg, rgba(0,0,0,0.045) 0 3px, transparent 3px 7px), #EFEBE3;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#8B857B">РВ</div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:14.5px;font-weight:600">Крошка моя</div>
+                <div style="font-size:12.5px;color:#8B857B">Руки Вверх · 3:41</div>
+              </div>
+              <div style="width:32px;height:32px;border-radius:99px;border:1.5px solid oklch(0.52 0.16 268 / 0.4);color:oklch(0.52 0.16 268);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:500">+</div>
+            </div>
+          </div>
+          <div style="margin-top:auto;padding:14px 20px 46px">
+            <div style="background:oklch(0.52 0.16 268);color:#fff;border-radius:14px;padding:16px;text-align:center;font-weight:600;font-size:15.5px" style-hover="filter:brightness(1.08)">Заказать за 199 ₽</div>
+            <div style="text-align:center;margin-top:9px;font-size:11.5px;color:#8B857B">Оплата через СБП — без регистрации</div>
+          </div>
+        </div>
+      </x-import>
+      <div style="width:402px;display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="width:14px;height:14px;border-radius:99px;background:#F7F5F1;border:1px solid rgba(0,0,0,.15)"></span>
+          <span style="width:14px;height:14px;border-radius:99px;background:oklch(0.52 0.16 268);border:1px solid rgba(0,0,0,.1)"></span>
+          <span style="width:14px;height:14px;border-radius:99px;background:#201E1B;border:1px solid rgba(0,0,0,.1)"></span>
+          <span style="font:500 10.5px 'IBM Plex Mono',monospace;color:rgba(0,0,0,.5);margin-left:6px">Golos Text + IBM Plex Mono</span>
+        </div>
+        <div style="font:400 11.5px/1.45 system-ui,sans-serif;color:rgba(0,0,0,.6)">Спокойный сервис: светлый фон, ясная цена, один акцент. Доверие к оплате; универсален для любых заведений — от кофейни до караоке.</div>
+      </div>
+    </div>
+
+  </div>
+  <p class="dv-next">Дальше: «развить <a class="dv-oid" href="#1a">1a</a> в полный кликабельный флоу» · «смешать: цвета из <a class="dv-oid" href="#1a">1a</a> + типографика из <a class="dv-oid" href="#1b">1b</a>» · «покажи ещё направления»</p>
+</section>
+
+</x-dc>
+</body>
+</html>

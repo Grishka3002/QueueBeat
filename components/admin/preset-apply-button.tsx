@@ -24,7 +24,7 @@ export function PresetApplyButton({ venueId, presetId }: { venueId: string; pres
       type="button"
       onClick={applyPreset}
       disabled={isSubmitting}
-      className="rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-white/75 hover:bg-white/5 disabled:opacity-50"
+      className="secondary-action px-4 py-2 text-sm"
     >
       {isSubmitting ? "Применяем..." : "Применить пресет"}
     </button>

@@ -75,12 +75,12 @@ export function VibePlaylistForm({ venueId }: { venueId: string }) {
   }
 
   return (
-    <div className="space-y-4 rounded-[1.6rem] border border-fuchsia-300/15 bg-gradient-to-br from-fuchsia-500/10 via-white/[0.03] to-cyan-400/10 p-5">
+    <div className="interactive-surface space-y-4 rounded-[1.8rem] border border-fuchsia-300/15 bg-gradient-to-br from-fuchsia-500/10 via-white/[0.03] to-cyan-400/10 p-5 shadow-soft">
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div>
           <h3 className="text-xl font-semibold text-white">Собрать плейлист по вайбу</h3>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-white/55">
-            Опишите атмосферу словами. QueueBeat подберёт треки из глобальной библиотеки и обновит витрину заведения.
+            Опишите атмосферу словами. Трекни подберёт треки из глобальной библиотеки и обновит витрину заведения.
           </p>
         </div>
         <Badge>Vibe Builder</Badge>
@@ -91,7 +91,7 @@ export function VibePlaylistForm({ venueId }: { venueId: string }) {
         onChange={(event) => setPrompt(event.target.value)}
         rows={3}
         placeholder="Например: лаунж, пятница вечер, 25-35 лет, без тяжёлого рока, можно поп и deep house"
-        className="w-full resize-none rounded-[1.25rem] border border-white/10 bg-black/25 px-4 py-3 text-sm leading-6 text-white outline-none placeholder:text-white/30 focus:border-fuchsia-300/40"
+        className="soft-input w-full resize-none rounded-[1.25rem] px-4 py-3 text-sm leading-6"
       />
 
       <div className="flex flex-wrap gap-2">
@@ -100,7 +100,7 @@ export function VibePlaylistForm({ venueId }: { venueId: string }) {
             key={example}
             type="button"
             onClick={() => setPrompt(example)}
-            className="rounded-full border border-white/10 px-3 py-2 text-xs text-white/55 hover:bg-white/5 hover:text-white"
+            className="mini-action"
           >
             {example}
           </button>
@@ -116,18 +116,18 @@ export function VibePlaylistForm({ venueId }: { venueId: string }) {
             max={40}
             value={count}
             onChange={(event) => setCount(Number(event.target.value))}
-            className="rounded-[1.1rem] border border-white/10 bg-white/5 px-4 py-3 text-white outline-none focus:border-white/25"
+            className="soft-input rounded-[1.1rem] px-4 py-3 tabular-nums"
           />
         </label>
 
         <div className="grid gap-2 text-sm text-white/65">
           Режим
-          <div className="grid grid-cols-2 gap-2 rounded-[1.1rem] bg-black/20 p-1">
+          <div className="grid grid-cols-2 gap-2 rounded-[1.25rem] bg-black/20 p-1 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)]">
             <button
               type="button"
               onClick={() => setMode("append")}
-              className={`rounded-[0.9rem] px-4 py-2 text-sm font-semibold transition ${
-                mode === "append" ? "bg-white text-black" : "text-white/60 hover:bg-white/5"
+              className={`min-h-10 rounded-[1rem] px-4 py-2 text-sm font-semibold transition-[transform,background-color,color,box-shadow] duration-150 ease-silk active:scale-[0.96] ${
+                mode === "append" ? "bg-white text-black shadow-[0_10px_26px_rgba(255,255,255,0.1)]" : "text-white/60 hover:bg-white/5 hover:text-white"
               }`}
             >
               Добавить
@@ -135,8 +135,8 @@ export function VibePlaylistForm({ venueId }: { venueId: string }) {
             <button
               type="button"
               onClick={() => setMode("replace")}
-              className={`rounded-[0.9rem] px-4 py-2 text-sm font-semibold transition ${
-                mode === "replace" ? "bg-white text-black" : "text-white/60 hover:bg-white/5"
+              className={`min-h-10 rounded-[1rem] px-4 py-2 text-sm font-semibold transition-[transform,background-color,color,box-shadow] duration-150 ease-silk active:scale-[0.96] ${
+                mode === "replace" ? "bg-white text-black shadow-[0_10px_26px_rgba(255,255,255,0.1)]" : "text-white/60 hover:bg-white/5 hover:text-white"
               }`}
             >
               Заменить витрину
@@ -148,14 +148,14 @@ export function VibePlaylistForm({ venueId }: { venueId: string }) {
           type="button"
           onClick={generatePlaylist}
           disabled={isPending}
-          className="rounded-full bg-gradient-to-r from-accent to-accentBlue px-5 py-3 text-sm font-semibold text-white shadow-glow disabled:opacity-60"
+          className="primary-action px-5 py-3 text-sm"
         >
           {isPending ? "Подбираем..." : "Собрать"}
         </button>
       </div>
 
-      {error ? <div className="text-sm text-rose-300">{error}</div> : null}
-      {message ? <div className="text-sm text-emerald-300">{message}</div> : null}
+      {error ? <div className="status-message border border-rose-500/20 bg-rose-500/10 text-sm text-rose-200">{error}</div> : null}
+      {message ? <div className="status-message border border-emerald-500/20 bg-emerald-500/10 text-sm text-emerald-200">{message}</div> : null}
       {reason ? <div className="text-sm leading-6 text-white/55">{reason}</div> : null}
 
       {profileLabels.length > 0 ? (
@@ -169,11 +169,11 @@ export function VibePlaylistForm({ venueId }: { venueId: string }) {
       {tracks.length > 0 ? (
         <div className="grid gap-2 md:grid-cols-2">
           {tracks.slice(0, 8).map((track) => (
-            <div key={track.id} className="rounded-[1.1rem] border border-white/10 bg-black/20 px-4 py-3 text-sm">
+            <div key={track.id} className="surface-tile rounded-[1.1rem] px-4 py-3 text-sm">
               <div className="truncate font-semibold text-white">{track.title}</div>
               <div className="mt-1 flex items-center justify-between gap-3 text-white/45">
                 <span className="truncate">{track.artist}</span>
-                <span>{formatDuration(track.durationSec)}</span>
+                <span className="tabular-nums">{formatDuration(track.durationSec)}</span>
               </div>
             </div>
           ))}
