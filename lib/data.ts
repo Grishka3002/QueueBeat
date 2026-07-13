@@ -10,7 +10,8 @@ const publicTrackSelect = {
   title: true,
   artist: true,
   durationSec: true,
-  coverUrl: true
+  coverUrl: true,
+  genre: true
 } satisfies Prisma.TrackSelect;
 
 export async function getVenueBySlug(slug: string) {

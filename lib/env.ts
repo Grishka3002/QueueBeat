@@ -12,5 +12,12 @@ export const env = {
     process.env.AUTH_SECRET ??
     process.env.ADMIN_PASSWORD ??
     (process.env.NODE_ENV === "production" ? "" : "queuebeat-local-secret"),
-  demoMode: process.env.DEMO_MODE === "true"
+  demoMode: process.env.DEMO_MODE === "true",
+  personalMode: process.env.PERSONAL_MODE === "true",
+  musicLibraryUrl: (process.env.MUSIC_LIBRARY_URL ?? "").replace(/\/+$/, ""),
+  musicLibraryApiKey: process.env.MUSIC_LIBRARY_API_KEY ?? ""
 };
+
+export const isMusicLibraryConfigured = Boolean(
+  env.musicLibraryUrl && env.musicLibraryApiKey
+);

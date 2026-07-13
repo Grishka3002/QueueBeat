@@ -31,12 +31,12 @@ export function SubscriptionActions({ venueId }: { venueId: string }) {
 
   return (
     <div className="space-y-3">
-      {error ? <div className="text-sm text-rose-300">{error}</div> : null}
+      {error ? <div className="status-message border border-rose-500/20 bg-rose-500/10 text-sm text-rose-200">{error}</div> : null}
       <button
         type="button"
         onClick={activateSubscription}
         disabled={isSubmitting}
-        className="w-full rounded-full bg-gradient-to-r from-accent to-accentBlue px-5 py-3 text-sm font-semibold text-white shadow-glow disabled:opacity-60"
+        className="primary-action w-full px-5 py-3 text-sm"
       >
         {isSubmitting ? "Обрабатываем..." : "Mock-оплата месячной подписки"}
       </button>

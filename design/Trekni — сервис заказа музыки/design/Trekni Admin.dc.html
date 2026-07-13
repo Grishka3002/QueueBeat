@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&amp;family=Onest:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0B0B12;font-family:Onest,sans-serif}
+a{color:#5BD7E8}a:hover{color:#A5EFF8}
+input::placeholder{color:rgba(242,241,247,0.38)}
+@keyframes toastIn{from{transform:translateY(14px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes rowOut{to{opacity:0;transform:translateX(18px)}}
+@keyframes drawerIn{from{transform:translateX(30px);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+</style>
+</helmet>
+
+<div style="min-height:100vh;display:flex;background:#0B0B12;color:#F2F1F7;overflow-x:clip">
+
+  <!-- SIDEBAR -->
+  <div style="width:236px;flex:none;box-sizing:border-box;border-right:1px solid rgba(255,255,255,0.07);padding:22px 14px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh">
+    <div style="display:flex;align-items:baseline;gap:8px;padding:0 10px 6px">
+      <span style="font-family:Unbounded,sans-serif;font-weight:700;font-size:13px;letter-spacing:3px;color:#5BD7E8">ТРЕКНИ</span>
+    </div>
+    <div style="margin:0 10px 14px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1px;color:rgba(242,241,247,0.4);border:1px solid rgba(255,255,255,0.1);border-radius:6px;padding:4px 8px;width:fit-content">ПАНЕЛЬ ПЛАТФОРМЫ</div>
+    <sc-for list="{{ nav }}" as="n" hint-placeholder-count="5">
+      <div onClick="{{ n.go }}" style="{{ n.style }}">
+        <span style="width:18px;text-align:center;font-size:14px">{{ n.icon }}</span>
+        <span style="flex:1">{{ n.label }}</span>
+        <span style="{{ n.badgeStyle }}">{{ n.badge }}</span>
+      </div>
+    </sc-for>
+    <div style="margin-top:auto;display:flex;align-items:center;gap:10px;padding:10px 10px;border-top:1px solid rgba(255,255,255,0.07)">
+      <div style="width:32px;height:32px;border-radius:99px;flex:none;background:rgba(91,215,232,0.14);border:1px solid rgba(91,215,232,0.45);display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#5BD7E8">ОП</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Олег Петров</div>
+        <div style="font-size:10.5px;color:rgba(242,241,247,0.45)">админ платформы</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div style="flex:1;min-width:0;display:flex;flex-direction:column">
+    <div style="display:flex;align-items:center;gap:14px;padding:16px 28px;border-bottom:1px solid rgba(255,255,255,0.07);position:sticky;top:0;background:rgba(11,11,18,0.85);backdrop-filter:blur(10px);z-index:20">
+      <div style="font-family:Unbounded,sans-serif;font-weight:700;font-size:16px">{{ sectionTitle }}</div>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:12px">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(242,241,247,0.5);border:1px solid rgba(255,255,255,0.12);border-radius:999px;padding:6px 12px">июль 2026</span>
+        <a href="Trekni Owner Cabinet.dc.html" style="text-decoration:none;font-size:12.5px;color:rgba(242,241,247,0.6);border:1px solid rgba(255,255,255,0.14);border-radius:999px;padding:7px 13px">кабинет заведения ↗</a>
+      </div>
+    </div>
+
+    <div style="padding:26px 28px 44px;display:flex;flex-direction:column;gap:16px;max-width:1120px;box-sizing:border-box">
+
+      <!-- ═══ ОБЗОР ═══ -->
+      <sc-if value="{{ isOverview }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:14px">
+          <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:18px">
+            <div style="font-size:12px;color:rgba(242,241,247,0.5)">Заведений всего</div>
+            <div style="margin-top:8px;font-family:Unbounded,sans-serif;font-weight:700;font-size:26px">148</div>
+            <div style="margin-top:5px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#5BD7E8">132 активны · +6 за месяц</div>
+          </div>
+          <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:18px">
+            <div style="font-size:12px;color:rgba(242,241,247,0.5)">Оборот за месяц</div>
+            <div style="margin-top:8px;font-family:Unbounded,sans-serif;font-weight:700;font-size:26px;white-space:nowrap">1,28 млн ₽</div>
+            <div style="margin-top:5px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#5BD7E8">+18 % к июню</div>
+          </div>
+          <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:18px">
+            <div style="font-size:12px;color:rgba(242,241,247,0.5)">Комиссия платформы</div>
+            <div style="margin-top:8px;font-family:Unbounded,sans-serif;font-weight:700;font-size:26px;color:#F849A6;white-space:nowrap">134 200 ₽</div>
+            <div style="margin-top:5px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(242,241,247,0.45)">средняя ставка 10,5 %</div>
+          </div>
+          <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:18px">
+            <div style="font-size:12px;color:rgba(242,241,247,0.5)">Требует внимания</div>
+            <div style="margin-top:8px;display:flex;align-items:baseline;gap:12px">
+              <span onClick="{{ goMod }}" style="font-family:Unbounded,sans-serif;font-weight:700;font-size:26px;cursor:pointer">{{ modCount }}</span>
+              <span style="font-size:11px;color:rgba(242,241,247,0.45)">модерация</span>
+            </div>
+            <div onClick="{{ goDisputes }}" style="margin-top:5px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#FF8A7A;cursor:pointer">{{ dispCount }} открытых спора →</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:14px">
+          <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:20px">
+            <div style="display:flex;align-items:baseline;justify-content:space-between">
+              <div style="font-weight:700;font-size:15px">Оборот платформы по месяцам</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:rgba(242,241,247,0.45)">GMV, млн ₽</div>
+            </div>
+            <div style="margin-top:18px;display:flex;align-items:flex-end;gap:14px;height:150px">
+              <sc-for list="{{ months }}" as="m" hint-placeholder-count="6">
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;height:100%;justify-content:flex-end">
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:rgba(242,241,247,0.55)">{{ m.v }}</div>
+                  <div style="{{ m.barStyle }}"></div>
+                  <div style="{{ m.labStyle }}">{{ m.m }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:20px">
+            <div style="font-weight:700;font-size:15px">Заведения по тарифам</div>
+            <div style="margin-top:16px;display:flex;height:12px;border-radius:99px;overflow:hidden;gap:2px">
+              <span style="width:41%;background:rgba(255,255,255,0.16)"></span>
+              <span style="width:38%;background:#5BD7E8"></span>
+              <span style="width:21%;background:#F849A6"></span>
+            </div>
+            <div style="margin-top:14px;display:flex;flex-direction:column;gap:10px;font-size:13px">
+              <div style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:99px;background:rgba(255,255,255,0.3)"></span><span style="flex:1;color:rgba(242,241,247,0.75)">Старт · 20 %</span><span style="font-family:'IBM Plex Mono',monospace;color:rgba(242,241,247,0.55)">61</span></div>
+              <div style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:99px;background:#5BD7E8"></span><span style="flex:1;color:rgba(242,241,247,0.75)">Легал · 10 %</span><span style="font-family:'IBM Plex Mono',monospace;color:rgba(242,241,247,0.55)">56</span></div>
+              <div style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:99px;background:#F849A6"></span><span style="flex:1;color:rgba(242,241,247,0.75)">Всё включено · 7 %</span><span style="font-family:'IBM Plex Mono',monospace;color:rgba(242,241,247,0.55)">31</span></div>
+            </div>
+            <div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.07);font-size:12px;line-height:1.55;color:rgba(242,241,247,0.5)">Апселл на «Легал» и выше растёт — юр. сопровождение работает как драйвер выручки.</div>
+          </div>
+        </div>
+
+        <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:20px">
+          <div style="font-weight:700;font-size:15px">Лента событий</div>
+          <div style="margin-top:8px;display:flex;flex-direction:column">
+            <sc-for list="{{ feed }}" as="f" hint-placeholder-count="5">
+              <div style="display:flex;align-items:center;gap:14px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,0.06)">
+                <span style="{{ f.dotStyle }}"></span>
+                <span style="flex:1;min-width:0;font-size:13.5px;color:rgba(242,241,247,0.8)">{{ f.text }}</span>
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:rgba(242,241,247,0.4);white-space:nowrap">{{ f.time }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ═══ ЗАВЕДЕНИЯ ═══ -->
+      <sc-if value="{{ isVenues }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <div style="flex:1;min-width:220px;display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.06);border-radius:999px;padding:11px 16px">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="rgba(242,241,247,0.45)" stroke-width="1.5"></circle><path d="M9.5 9.5L13 13" stroke="rgba(242,241,247,0.45)" stroke-width="1.5" stroke-linecap="round"></path></svg>
+            <input value="{{ vq }}" onChange="{{ onVq }}" placeholder="Поиск по названию или городу" style="flex:1;min-width:0;background:transparent;border:none;outline:none;font-family:Onest,sans-serif;font-size:14px;color:#F2F1F7;padding:0">
+          </div>
+          <div style="display:flex;gap:7px;font-size:12.5px;font-weight:600">
+            <sc-for list="{{ vfilters }}" as="vf" hint-placeholder-count="4">
+              <span onClick="{{ vf.pick }}" style="{{ vf.style }}">{{ vf.label }}</span>
+            </sc-for>
+          </div>
+        </div>
+        <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;overflow:hidden">
+          <div style="display:flex;align-items:center;gap:14px;padding:12px 18px;border-bottom:1px solid rgba(255,255,255,0.08);font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:1px;color:rgba(242,241,247,0.4)">
+            <span style="flex:1">ЗАВЕДЕНИЕ</span>
+            <span style="width:120px">ТАРИФ</span>
+            <span style="width:110px;text-align:right">ОБОРОТ / МЕС</span>
+            <span style="width:140px;text-align:right">СТАТУС</span>
+          </div>
+          <sc-for list="{{ venuesView }}" as="v" hint-placeholder-count="8">
+            <div onClick="{{ v.open }}" style="display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid rgba(255,255,255,0.05);cursor:pointer" style-hover="background:rgba(255,255,255,0.03)">
+              <div style="width:34px;height:34px;border-radius:9px;flex:none;background:rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(242,241,247,0.6)">{{ v.mono }}</div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ v.name }}</div>
+                <div style="font-size:12px;color:rgba(242,241,247,0.5)">{{ v.city }} · с {{ v.since }}</div>
+              </div>
+              <span style="width:120px;font-size:12.5px;color:rgba(242,241,247,0.7)">{{ v.tariff }}</span>
+              <span style="width:110px;text-align:right;font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:rgba(242,241,247,0.75)">{{ v.gmv }}</span>
+              <span style="width:140px;display:flex;justify-content:flex-end;align-items:center;gap:8px"><span style="{{ v.stStyle }}">{{ v.stLabel }}</span><span style="color:rgba(242,241,247,0.3);font-size:15px">›</span></span>
+            </div>
+          </sc-for>
+          <sc-if value="{{ venuesEmpty }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:34px;text-align:center;font-size:13.5px;color:rgba(242,241,247,0.45)">Ничего не найдено по этому запросу</div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <!-- ═══ МОДЕРАЦИЯ ═══ -->
+      <sc-if value="{{ isMod }}" hint-placeholder-val="{{ false }}">
+        <div style="font-size:12px;font-weight:700;letter-spacing:2px;color:rgba(242,241,247,0.5)">ЗАЯВКИ НА ПОДКЛЮЧЕНИЕ</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ conns }}" as="c" hint-placeholder-count="3">
+            <div style="{{ c.cardStyle }}">
+              <div style="width:44px;height:44px;border-radius:12px;flex:none;background:rgba(91,215,232,0.12);border:1px solid rgba(91,215,232,0.4);display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#5BD7E8">{{ c.mono }}</div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:14.5px;font-weight:600">{{ c.name }}</div>
+                <div style="font-size:12.5px;color:rgba(242,241,247,0.5)">{{ c.meta }}</div>
+              </div>
+              <div style="display:flex;gap:8px">
+                <div onClick="{{ c.reject }}" style="border:1px solid rgba(255,138,122,0.5);color:#FF8A7A;border-radius:999px;padding:9px 16px;font-size:12.5px;font-weight:600;cursor:pointer" style-hover="background:rgba(255,138,122,0.1)">Отклонить</div>
+                <div onClick="{{ c.approve }}" style="background:#5BD7E8;color:#062A30;border-radius:999px;padding:9px 18px;font-size:12.5px;font-weight:700;cursor:pointer" style-hover="filter:brightness(1.1)">Подтвердить</div>
+              </div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ connsEmpty }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#12121B;border:1px dashed rgba(255,255,255,0.14);border-radius:16px;padding:26px;text-align:center;font-size:13.5px;color:rgba(242,241,247,0.45)">Все заявки на подключение обработаны 🎉</div>
+          </sc-if>
+        </div>
+
+        <div style="margin-top:8px;font-size:12px;font-weight:700;letter-spacing:2px;color:rgba(242,241,247,0.5)">ЖАЛОБЫ НА КОНТЕНТ</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ complaints }}" as="k" hint-placeholder-count="2">
+            <div style="{{ k.cardStyle }}">
+              <div style="width:44px;height:44px;border-radius:12px;flex:none;background:rgba(255,138,122,0.1);border:1px solid rgba(255,138,122,0.4);display:flex;align-items:center;justify-content:center;font-size:18px">⚑</div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:14.5px;font-weight:600">{{ k.title }}</div>
+                <div style="font-size:12.5px;color:rgba(242,241,247,0.5)">{{ k.detail }}</div>
+              </div>
+              <div style="display:flex;gap:8px">
+                <div onClick="{{ k.dismiss }}" style="border:1px solid rgba(255,255,255,0.16);color:#F2F1F7;border-radius:999px;padding:9px 16px;font-size:12.5px;font-weight:600;cursor:pointer" style-hover="background:rgba(255,255,255,0.07)">Отклонить</div>
+                <div onClick="{{ k.remove }}" style="background:#FF8A7A;color:#2E0F0A;border-radius:999px;padding:9px 18px;font-size:12.5px;font-weight:700;cursor:pointer" style-hover="filter:brightness(1.1)">Снять трек</div>
+              </div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ complaintsEmpty }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#12121B;border:1px dashed rgba(255,255,255,0.14);border-radius:16px;padding:26px;text-align:center;font-size:13.5px;color:rgba(242,241,247,0.45)">Жалоб на контент нет</div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <!-- ═══ ФИНАНСЫ ═══ -->
+      <sc-if value="{{ isFinance }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:22px">
+          <div style="font-weight:700;font-size:15px">Как делятся деньги гостя</div>
+          <div style="margin-top:16px;display:flex;align-items:stretch;gap:2px">
+            <div style="flex:1;background:rgba(255,255,255,0.05);border-radius:12px 4px 4px 12px;padding:14px 16px">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(242,241,247,0.5)">ГОСТЬ ПЛАТИТ</div>
+              <div style="margin-top:6px;font-family:Unbounded,sans-serif;font-weight:700;font-size:20px">1 284 000 ₽</div>
+              <div style="margin-top:3px;font-size:11.5px;color:rgba(242,241,247,0.45)">6 452 заявки · СБП</div>
+            </div>
+            <div style="flex:1;background:rgba(91,215,232,0.08);border:1px solid rgba(91,215,232,0.3);padding:14px 16px">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#5BD7E8">ДОЛЯ ЗАВЕДЕНИЙ</div>
+              <div style="margin-top:6px;font-family:Unbounded,sans-serif;font-weight:700;font-size:20px">1 149 800 ₽</div>
+              <div style="margin-top:3px;font-size:11.5px;color:rgba(242,241,247,0.45)">89,5 % оборота</div>
+            </div>
+            <div style="flex:1;background:rgba(248,73,166,0.09);border:1px solid rgba(248,73,166,0.4);border-radius:4px 12px 12px 4px;padding:14px 16px">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#F849A6">КОМИССИЯ ПЛАТФОРМЫ</div>
+              <div style="margin-top:6px;font-family:Unbounded,sans-serif;font-weight:700;font-size:20px;color:#F849A6">134 200 ₽</div>
+              <div style="margin-top:3px;font-size:11.5px;color:rgba(242,241,247,0.45)">10,5 % средняя ставка</div>
+            </div>
+          </div>
+          <div style="margin-top:14px;font-size:12px;line-height:1.55;color:rgba(242,241,247,0.5)">Трекни выступает платёжным участником: собирает оплату гостей через СБП, удерживает комиссию по тарифу заведения и формирует выплаты на реквизиты заведений.</div>
+        </div>
+
+        <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:20px">
+          <div style="display:flex;align-items:baseline;justify-content:space-between">
+            <div style="font-weight:700;font-size:15px">Выплаты заведениям</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#F849A6">к выплате: {{ payoutDue }}</div>
+          </div>
+          <div style="margin-top:8px;display:flex;flex-direction:column">
+            <sc-for list="{{ payouts }}" as="p" hint-placeholder-count="4">
+              <div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.06)">
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.venue }}</div>
+                  <div style="font-size:12px;color:rgba(242,241,247,0.5)">{{ p.note }}</div>
+                </div>
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:13.5px;font-weight:600;white-space:nowrap">{{ p.sum }}</span>
+                <span style="width:150px;display:flex;justify-content:flex-end">
+                  <sc-if value="{{ p.pending }}" hint-placeholder-val="{{ true }}">
+                    <span onClick="{{ p.run }}" style="background:#F849A6;color:#17020D;border-radius:999px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap" style-hover="filter:brightness(1.1)">Провести выплату</span>
+                  </sc-if>
+                  <sc-if value="{{ p.done }}" hint-placeholder-val="{{ false }}">
+                    <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#5BD7E8;border:1px solid rgba(91,215,232,0.4);border-radius:999px;padding:5px 11px;white-space:nowrap">выплачено {{ p.date }}</span>
+                  </sc-if>
+                </span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ═══ СПОРЫ ═══ -->
+      <sc-if value="{{ isDisputes }}" hint-placeholder-val="{{ false }}">
+        <div style="font-size:13.5px;line-height:1.6;color:rgba(242,241,247,0.55);max-width:680px">Спор открывается, когда гость сообщает о проблеме с оплаченной заявкой. Решение платформы: вернуть деньги гостю или отклонить спор в пользу заведения. Возврат идёт из доли заведения.</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ disputes }}" as="d" hint-placeholder-count="3">
+            <div style="{{ d.cardStyle }}">
+              <div style="display:flex;align-items:center;gap:14px">
+                <span style="{{ d.tagStyle }}">{{ d.tag }}</span>
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:14.5px;font-weight:600">{{ d.title }}</div>
+                  <div style="font-size:12.5px;color:rgba(242,241,247,0.5)">{{ d.meta }}</div>
+                </div>
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:13.5px;font-weight:600;white-space:nowrap">{{ d.sum }}</span>
+              </div>
+              <div style="margin-top:12px;font-size:13px;line-height:1.55;color:rgba(242,241,247,0.7);background:rgba(255,255,255,0.04);border-radius:12px;padding:11px 14px">«{{ d.reason }}»</div>
+              <sc-if value="{{ d.openState }}" hint-placeholder-val="{{ true }}">
+                <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">
+                  <div onClick="{{ d.forVenue }}" style="border:1px solid rgba(255,255,255,0.16);color:#F2F1F7;border-radius:999px;padding:9px 16px;font-size:12.5px;font-weight:600;cursor:pointer" style-hover="background:rgba(255,255,255,0.07)">В пользу заведения</div>
+                  <div onClick="{{ d.refund }}" style="background:#F849A6;color:#17020D;border-radius:999px;padding:9px 18px;font-size:12.5px;font-weight:700;cursor:pointer" style-hover="filter:brightness(1.1)">Вернуть гостю {{ d.sum }}</div>
+                </div>
+              </sc-if>
+              <sc-if value="{{ d.resolved }}" hint-placeholder-val="{{ false }}">
+                <div style="margin-top:12px;display:flex;justify-content:flex-end"><span style="{{ d.resStyle }}">{{ d.resLabel }}</span></div>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+    </div>
+  </div>
+
+  <!-- VENUE DRAWER -->
+  <sc-if value="{{ hasSel }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;z-index:80">
+      <div onClick="{{ closeVenue }}" style="position:absolute;inset:0;background:rgba(4,4,8,0.55);animation:fadeIn 0.2s ease"></div>
+      <div style="position:absolute;top:0;right:0;bottom:0;width:452px;max-width:92vw;box-sizing:border-box;background:#0E0E16;border-left:1px solid rgba(255,255,255,0.1);box-shadow:-24px 0 70px rgba(0,0,0,0.55);overflow-y:auto;animation:drawerIn 0.3s cubic-bezier(0.2,0.8,0.2,1)">
+        <div style="padding:22px 24px;display:flex;flex-direction:column;gap:18px">
+          <!-- header -->
+          <div style="display:flex;align-items:flex-start;gap:14px">
+            <div style="width:52px;height:52px;border-radius:14px;flex:none;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:15px;color:#F2F1F7">{{ selMono }}</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-family:Unbounded,sans-serif;font-weight:700;font-size:18px;line-height:1.2">{{ selName }}</div>
+              <div style="margin-top:5px;font-size:12.5px;color:rgba(242,241,247,0.5)">{{ selCity }} · подключено {{ selSince }}</div>
+            </div>
+            <div onClick="{{ closeVenue }}" style="width:30px;height:30px;border-radius:99px;flex:none;background:rgba(255,255,255,0.07);color:rgba(242,241,247,0.6);display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer" style-hover="background:rgba(255,255,255,0.14)">✕</div>
+          </div>
+          <div><span style="{{ selStStyle }}">{{ selStLabel }}</span></div>
+
+          <!-- KPIs -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div style="background:#15151F;border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:14px">
+              <div style="font-size:11.5px;color:rgba(242,241,247,0.5)">Оборот за месяц</div>
+              <div style="margin-top:6px;font-family:Unbounded,sans-serif;font-weight:700;font-size:19px;white-space:nowrap">{{ selGmv }}</div>
+            </div>
+            <div style="background:#15151F;border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:14px">
+              <div style="font-size:11.5px;color:rgba(242,241,247,0.5)">Заявок за месяц</div>
+              <div style="margin-top:6px;font-family:Unbounded,sans-serif;font-weight:700;font-size:19px">{{ selOrders }}</div>
+            </div>
+            <div style="background:#15151F;border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:14px">
+              <div style="font-size:11.5px;color:rgba(242,241,247,0.5)">Средний чек</div>
+              <div style="margin-top:6px;font-family:Unbounded,sans-serif;font-weight:700;font-size:19px">{{ selAvg }}</div>
+            </div>
+            <div style="background:#15151F;border:1px solid rgba(248,73,166,0.35);border-radius:14px;padding:14px">
+              <div style="font-size:11.5px;color:rgba(242,241,247,0.5)">Комиссия платформы</div>
+              <div style="margin-top:6px;font-family:Unbounded,sans-serif;font-weight:700;font-size:19px;color:#F849A6;white-space:nowrap">{{ selCommission }}</div>
+            </div>
+          </div>
+
+          <!-- info -->
+          <div style="background:#15151F;border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:4px 16px">
+            <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.06)">
+              <span style="flex:1;font-size:13px;color:rgba(242,241,247,0.5)">Тариф</span>
+              <span style="font-size:13.5px;font-weight:600">{{ selTariff }} · {{ selRate }}</span>
+              <span onClick="{{ cycleTariff }}" style="font-size:11.5px;color:#5BD7E8;cursor:pointer;border:1px solid rgba(91,215,232,0.4);border-radius:999px;padding:4px 10px" style-hover="background:rgba(91,215,232,0.1)">сменить</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.06)">
+              <span style="flex:1;font-size:13px;color:rgba(242,241,247,0.5)">Владелец</span>
+              <span style="font-size:13.5px;font-weight:600">{{ selOwner }}</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.06)">
+              <span style="flex:1;font-size:13px;color:rgba(242,241,247,0.5)">Контакт</span>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:rgba(242,241,247,0.8)">{{ selContact }}</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:12px 0">
+              <span style="flex:1;font-size:13px;color:rgba(242,241,247,0.5)">Плейлист</span>
+              <span style="font-size:13.5px;font-weight:600">{{ selTracks }}</span>
+            </div>
+          </div>
+
+          <!-- disputes note -->
+          <div style="{{ selDispStyle }}">
+            <span style="flex:1;font-size:13px">{{ selDispText }}</span>
+            <span onClick="{{ goDisputes }}" style="font-size:12px;color:#5BD7E8;cursor:pointer;white-space:nowrap">открыть →</span>
+          </div>
+
+          <!-- actions -->
+          <div style="display:flex;flex-direction:column;gap:9px;margin-top:2px">
+            <div onClick="{{ selPrimary }}" style="{{ selPrimaryStyle }}">{{ selPrimaryLabel }}</div>
+            <sc-if value="{{ selHasSecondary }}" hint-placeholder-val="{{ false }}">
+              <div onClick="{{ selSecondary }}" style="border:1px solid rgba(255,138,122,0.5);color:#FF8A7A;border-radius:999px;padding:13px;text-align:center;font-size:13px;font-weight:600;cursor:pointer" style-hover="background:rgba(255,138,122,0.1)">{{ selSecondaryLabel }}</div>
+            </sc-if>
+            <a href="Trekni Owner Cabinet.dc.html" style="text-decoration:none;border:1px solid rgba(255,255,255,0.16);color:#F2F1F7;border-radius:999px;padding:13px;text-align:center;font-size:13px;font-weight:600" style-hover="background:rgba(255,255,255,0.07)">Открыть кабинет заведения ↗</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- TOAST -->
+  <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;right:24px;bottom:24px;z-index:90;background:#1D1D2B;border:1px solid rgba(248,73,166,0.5);border-radius:14px;padding:13px 18px;font-size:13px;font-weight:600;color:#F2F1F7;box-shadow:0 14px 40px rgba(0,0,0,0.5);animation:toastIn 0.25s ease">{{ toast }}</div>
+  </sc-if>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 1440, &quot;height&quot;: 960 }
+}">
+class Component extends DCLogic {
+  state = {
+    section: 'overview', vq: '', vfilter: 'all', toast: '', selVenue: null,
+    venues: [
+      { id: 1, name: 'Клуб «Резонанс»', mono: 'РЗ', city: 'Санкт-Петербург', tariff: 'Легал', status: 'active', gmvN: 87600, orders: 440, tracks: 210, owner: 'Марина Соколова', contact: '@rezonans_spb', since: '02.2026' },
+      { id: 2, name: 'Караоке «Ампир»', mono: 'АМ', city: 'Казань', tariff: 'Всё включено', status: 'active', gmvN: 68900, orders: 346, tracks: 480, owner: 'Тимур Хаялиев', contact: '+7 917 ···· 22', since: '11.2025' },
+      { id: 3, name: 'Гастробар «Дым»', mono: 'ДМ', city: 'Екатеринбург', tariff: 'Всё включено', status: 'active', gmvN: 52100, orders: 262, tracks: 320, owner: 'Сергей Лапин', contact: '@dym_bar', since: '01.2026' },
+      { id: 4, name: 'Бар «Соловей»', mono: 'СЛ', city: 'Москва', tariff: 'Легал', status: 'active', gmvN: 41300, orders: 207, tracks: 156, owner: 'Алина Ковалёва', contact: '@solovey_bar', since: '03.2026' },
+      { id: 5, name: 'Ресторан «Веранда»', mono: 'ВР', city: 'Краснодар', tariff: 'Легал', status: 'active', gmvN: 33400, orders: 168, tracks: 190, owner: 'Игорь Мамедов', contact: '@veranda_krd', since: '04.2026' },
+      { id: 6, name: 'Кофейня «Пар»', mono: 'ПР', city: 'Москва', tariff: 'Старт', status: 'active', gmvN: 8400, orders: 42, tracks: 88, owner: 'Дарья Ким', contact: '@par_coffee', since: '05.2026' },
+      { id: 7, name: 'Паб «Три кита»', mono: 'ТК', city: 'Новосибирск', tariff: 'Старт', status: 'moderation', gmvN: 0, orders: 0, tracks: 0, owner: 'Антон Рыбаков', contact: '+7 913 ···· 07', since: '07.2026' },
+      { id: 8, name: 'Лаунж «Вельвет»', mono: 'ВЛ', city: 'Сочи', tariff: 'Легал', status: 'blocked', gmvN: 12000, orders: 60, tracks: 130, owner: 'Рустам Азизов', contact: '@velvet_sochi', since: '12.2025' },
+    ],
+    conns: [
+      { id: 1, name: 'Бар «Гараж»', mono: 'ГР', city: 'Москва', contact: '+7 916 ···· · @garage_bar', ago: '2 часа назад' },
+      { id: 2, name: 'Караоке «Голос»', mono: 'ГО', city: 'Уфа', contact: 'golos-ufa@mail.ru', ago: '5 часов назад' },
+      { id: 3, name: 'Клуб «Пульс»', mono: 'ПЛ', city: 'Санкт-Петербург', contact: '+7 921 ···· · @pulse_spb', ago: 'вчера' },
+    ],
+    complaints: [
+      { id: 1, title: 'Трек «Хардбас 2007» — DJ Кислотный', detail: 'Клуб «Резонанс» · жалоба на нецензурную лексику' },
+      { id: 2, title: 'Плейлист заведения', detail: 'Лаунж «Вельвет» · треки вне правил площадки' },
+    ],
+    payouts: [
+      { id: 1, venue: 'Клуб «Резонанс»', note: '396 заявок за неделю', sum: '78 840 ₽', status: 'pending' },
+      { id: 2, venue: 'Караоке «Ампир»', note: '312 заявок за неделю', sum: '62 010 ₽', status: 'pending' },
+      { id: 3, venue: 'Бар «Соловей»', note: '187 заявок за неделю', sum: '37 170 ₽', status: 'done', date: '08.07' },
+      { id: 4, venue: 'Гастробар «Дым»', note: '243 заявки за неделю', sum: '48 453 ₽', status: 'done', date: '08.07' },
+    ],
+    disputes: [
+      { id: 1, tag: '#G-1247', venue: 'Бар «Соловей»', guest: 'гость', reason: 'Оплатил трек, но за весь вечер его так и не проиграли', sum: '199 ₽', status: 'open' },
+      { id: 2, tag: '#G-1233', venue: 'Караоке «Ампир»', guest: 'гость', reason: 'С карты списалось дважды за одну заявку', sum: '199 ₽', status: 'open' },
+      { id: 3, tag: '#G-1219', venue: 'Клуб «Резонанс»', guest: 'гость', reason: 'Заявку отклонили, а возврат так и не пришёл', sum: '199 ₽', status: 'open' },
+    ],
+  };
+
+  NAV = [
+    { id: 'overview', icon: '◧', label: 'Обзор' },
+    { id: 'venues', icon: '▦', label: 'Заведения' },
+    { id: 'moderation', icon: '⚑', label: 'Модерация' },
+    { id: 'finance', icon: '₽', label: 'Финансы' },
+    { id: 'disputes', icon: '⚖', label: 'Споры' },
+  ];
+  TITLES = { overview: 'Обзор платформы', venues: 'Заведения', moderation: 'Модерация', finance: 'Финансы и выплаты', disputes: 'Споры и возвраты' };
+  MONTHS = [ { m: 'фев', v: '0,71' }, { m: 'мар', v: '0,86' }, { m: 'апр', v: '0,98' }, { m: 'май', v: '1,05' }, { m: 'июн', v: '1,09' }, { m: 'июл', v: '1,28' } ];
+  MV = [0.71, 0.86, 0.98, 1.05, 1.09, 1.28];
+  FEED = [
+    { kind: 'ok', text: 'Гастробар «Дым» перешёл на тариф «Всё включено»', time: '14:02' },
+    { kind: 'new', text: 'Новая заявка на подключение — Бар «Гараж», Москва', time: '12:20' },
+    { kind: 'warn', text: 'Открыт спор #G-1247 — Бар «Соловей»', time: '11:48' },
+    { kind: 'ok', text: 'Выплата 48 453 ₽ отправлена — Гастробар «Дым»', time: 'вчера' },
+    { kind: 'warn', text: 'Жалоба на контент — Клуб «Резонанс»', time: 'вчера' },
+  ];
+  VFILTERS = [
+    { id: 'all', label: 'Все' },
+    { id: 'active', label: 'Активные' },
+    { id: 'moderation', label: 'На модерации' },
+    { id: 'blocked', label: 'Заблокированы' },
+  ];
+  ST = {
+    active: { label: 'активно', color: '#5BD7E8', border: 'rgba(91,215,232,0.4)', bg: 'rgba(91,215,232,0.08)' },
+    moderation: { label: 'на модерации', color: '#F849A6', border: 'rgba(248,73,166,0.45)', bg: 'rgba(248,73,166,0.08)' },
+    blocked: { label: 'заблокировано', color: '#FF8A7A', border: 'rgba(255,138,122,0.45)', bg: 'rgba(255,138,122,0.08)' },
+  };
+
+  RATE = { 'Старт': 20, 'Легал': 10, 'Всё включено': 7 };
+
+  fmt(x) { return String(Math.round(x)).replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
+
+  showToast(msg) {
+    clearTimeout(this._tt);
+    this.setState({ toast: msg });
+    this._tt = setTimeout(() => this.setState({ toast: '' }), 2600);
+  }
+  componentWillUnmount() { clearTimeout(this._tt); }
+
+  renderVals() {
+    const s = this.state;
+    const sec = s.section;
+    const modCount = s.conns.length + s.complaints.length;
+    const dispCount = s.disputes.filter(d => d.status === 'open').length;
+
+    const nav = this.NAV.map(n => {
+      const active = sec === n.id;
+      let badge = '';
+      if (n.id === 'moderation' && modCount) badge = String(modCount);
+      if (n.id === 'disputes' && dispCount) badge = String(dispCount);
+      return {
+        icon: n.icon, label: n.label, badge,
+        go: () => this.setState({ section: n.id }),
+        style: {
+          display: 'flex', alignItems: 'center', gap: 11, padding: '11px 12px', borderRadius: 12,
+          fontSize: 14, fontWeight: 600, cursor: 'pointer',
+          background: active ? 'rgba(248,73,166,0.11)' : 'transparent',
+          color: active ? '#F2F1F7' : 'rgba(242,241,247,0.55)',
+          border: active ? '1px solid rgba(248,73,166,0.4)' : '1px solid transparent',
+        },
+        badgeStyle: badge
+          ? { fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, fontWeight: 600, minWidth: 18, textAlign: 'center', borderRadius: 999, padding: '2px 6px', background: n.id === 'disputes' ? 'rgba(255,138,122,0.16)' : 'rgba(248,73,166,0.16)', color: n.id === 'disputes' ? '#FF8A7A' : '#F849A6', border: '1px solid ' + (n.id === 'disputes' ? 'rgba(255,138,122,0.4)' : 'rgba(248,73,166,0.4)') }
+          : { display: 'none' },
+      };
+    });
+
+    const mMax = Math.max(...this.MV);
+    const months = this.MONTHS.map((m, i) => ({
+      m: m.m, v: m.v,
+      barStyle: { width: '100%', maxWidth: 42, borderRadius: '7px 7px 3px 3px', height: Math.round(this.MV[i] / mMax * 100) + '%', minHeight: 6, background: i === this.MONTHS.length - 1 ? '#F849A6' : 'rgba(255,255,255,0.14)', boxShadow: i === this.MONTHS.length - 1 ? '0 6px 22px rgba(248,73,166,0.35)' : 'none' },
+      labStyle: { fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, color: i === this.MONTHS.length - 1 ? '#F849A6' : 'rgba(242,241,247,0.45)' },
+    }));
+
+    const FC = { ok: '#5BD7E8', new: '#B8F23C', warn: '#FF8A7A' };
+    const feed = this.FEED.map(f => ({ text: f.text, time: f.time, dotStyle: { width: 8, height: 8, borderRadius: 99, flex: 'none', background: FC[f.kind] } }));
+
+    // venues
+    const ql = s.vq.trim().toLowerCase();
+    const venuesView = s.venues.filter(v =>
+      (s.vfilter === 'all' || v.status === s.vfilter) &&
+      (!ql || (v.name + ' ' + v.city).toLowerCase().includes(ql))
+    ).map(v => ({
+      name: v.name, city: v.city, tariff: v.tariff, mono: v.mono,
+      gmv: v.gmvN ? this.fmt(v.gmvN) + ' ₽' : '—',
+      since: v.since, stLabel: this.ST[v.status].label,
+      open: () => this.setState({ selVenue: v.id }),
+      stStyle: { fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, whiteSpace: 'nowrap', color: this.ST[v.status].color, border: '1px solid ' + this.ST[v.status].border, background: this.ST[v.status].bg, borderRadius: 999, padding: '4px 11px' },
+    }));
+    const vfilters = this.VFILTERS.map(f => ({
+      label: f.label,
+      pick: () => this.setState({ vfilter: f.id }),
+      style: f.id === s.vfilter
+        ? { padding: '9px 14px', borderRadius: 999, background: '#F849A6', color: '#17020D', cursor: 'pointer', whiteSpace: 'nowrap' }
+        : { padding: '9px 14px', borderRadius: 999, border: '1px solid rgba(255,255,255,0.13)', color: 'rgba(242,241,247,0.6)', cursor: 'pointer', whiteSpace: 'nowrap' },
+    }));
+
+    const connCard = { display: 'flex', alignItems: 'center', gap: 14, background: '#12121B', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: '16px 18px' };
+    const conns = s.conns.map(c => ({
+      name: c.name, mono: c.mono, meta: c.city + ' · ' + c.contact + ' · ' + c.ago, cardStyle: connCard,
+      approve: () => {
+        const nv = { id: 1000 + c.id, name: c.name, city: c.city, tariff: 'Старт', status: 'active', gmv: '0 ₽', since: '07.2026' };
+        this.setState({ conns: s.conns.filter(x => x.id !== c.id), venues: [nv].concat(s.venues) });
+        this.showToast(c.name + ' — подключено на тарифе «Старт»');
+      },
+      reject: () => { this.setState({ conns: s.conns.filter(x => x.id !== c.id) }); this.showToast('Заявка ' + c.name + ' отклонена'); },
+    }));
+
+    const complaints = s.complaints.map(k => ({
+      title: k.title, detail: k.detail, cardStyle: connCard,
+      remove: () => { this.setState({ complaints: s.complaints.filter(x => x.id !== k.id) }); this.showToast('Трек снят, заведение уведомлено'); },
+      dismiss: () => { this.setState({ complaints: s.complaints.filter(x => x.id !== k.id) }); this.showToast('Жалоба отклонена'); },
+    }));
+
+    const payouts = s.payouts.map(p => ({
+      venue: p.venue, note: p.note, sum: p.sum, date: p.date,
+      pending: p.status === 'pending', done: p.status === 'done',
+      run: () => { this.setState({ payouts: s.payouts.map(x => x.id === p.id ? Object.assign({}, x, { status: 'done', date: '10.07' }) : x) }); this.showToast('Выплата ' + p.sum + ' — ' + p.venue + ' отправлена'); },
+    }));
+    const dueSum = s.payouts.filter(p => p.status === 'pending').reduce((a, p) => a + parseInt(p.sum.replace(/\D/g, ''), 10), 0);
+    const payoutDue = String(dueSum).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₽';
+
+    const dispCard = { background: '#12121B', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: '16px 18px' };
+    const disputes = s.disputes.map(d => {
+      const resolved = d.status !== 'open';
+      return {
+        tag: d.tag, title: d.venue, meta: 'спор ' + d.tag + ' · ' + d.guest, sum: d.sum, reason: d.reason,
+        cardStyle: Object.assign({}, dispCard, { opacity: resolved ? 0.72 : 1 }),
+        tagStyle: { fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, whiteSpace: 'nowrap', color: '#FF8A7A', border: '1px solid rgba(255,138,122,0.4)', borderRadius: 999, padding: '4px 10px', flex: 'none' },
+        openState: !resolved, resolved,
+        refund: () => { this.setState({ disputes: s.disputes.map(x => x.id === d.id ? Object.assign({}, x, { status: 'refunded' }) : x) }); this.showToast('Гостю возвращено ' + d.sum + ' из доли ' + d.venue); },
+        forVenue: () => { this.setState({ disputes: s.disputes.map(x => x.id === d.id ? Object.assign({}, x, { status: 'venue' }) : x) }); this.showToast('Спор закрыт в пользу заведения'); },
+        resLabel: d.status === 'refunded' ? 'возврат ' + d.sum + ' проведён' : 'закрыт в пользу заведения',
+        resStyle: { fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, whiteSpace: 'nowrap', color: d.status === 'refunded' ? '#5BD7E8' : 'rgba(242,241,247,0.55)', border: '1px solid ' + (d.status === 'refunded' ? 'rgba(91,215,232,0.4)' : 'rgba(255,255,255,0.16)'), borderRadius: 999, padding: '6px 13px' },
+      };
+    });
+
+    // venue drawer
+    const sel = s.venues.find(v => v.id === s.selVenue) || null;
+    let selVals = { hasSel: false };
+    if (sel) {
+      const rate = this.RATE[sel.tariff] || 10;
+      const commission = Math.round(sel.gmvN * rate / 100);
+      const stConf = this.ST[sel.status];
+      const openDisp = s.disputes.filter(d => d.venue === sel.name && d.status === 'open').length;
+      const isMod = sel.status === 'moderation', isBlocked = sel.status === 'blocked', isActive = sel.status === 'active';
+      const setStatus = (st, msg) => { this.setState({ venues: s.venues.map(v => v.id === sel.id ? Object.assign({}, v, { status: st }) : v) }); this.showToast(msg); };
+      selVals = {
+        hasSel: true,
+        selMono: sel.mono, selName: sel.name, selCity: sel.city, selSince: sel.since,
+        selStLabel: stConf.label,
+        selStStyle: { display: 'inline-block', fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, whiteSpace: 'nowrap', color: stConf.color, border: '1px solid ' + stConf.border, background: stConf.bg, borderRadius: 999, padding: '5px 12px' },
+        selGmv: sel.gmvN ? this.fmt(sel.gmvN) + ' ₽' : '—',
+        selOrders: sel.orders || '—',
+        selAvg: sel.orders ? this.fmt(sel.gmvN / sel.orders) + ' ₽' : '—',
+        selCommission: sel.gmvN ? this.fmt(commission) + ' ₽' : '—',
+        selTariff: sel.tariff, selRate: rate + ' %',
+        selOwner: sel.owner, selContact: sel.contact,
+        selTracks: sel.tracks ? sel.tracks + ' треков' : 'ещё не настроен',
+        closeVenue: () => this.setState({ selVenue: null }),
+        cycleTariff: () => {
+          const order = ['Старт', 'Легал', 'Всё включено'];
+          const next = order[(order.indexOf(sel.tariff) + 1) % 3];
+          this.setState({ venues: s.venues.map(v => v.id === sel.id ? Object.assign({}, v, { tariff: next }) : v) });
+          this.showToast(sel.name + ' → тариф «' + next + '»');
+        },
+        selDispStyle: { display: 'flex', alignItems: 'center', gap: 10, borderRadius: 12, padding: '11px 14px', background: openDisp ? 'rgba(255,138,122,0.09)' : 'rgba(255,255,255,0.04)', border: openDisp ? '1px solid rgba(255,138,122,0.35)' : '1px solid rgba(255,255,255,0.07)', color: openDisp ? '#FF8A7A' : 'rgba(242,241,247,0.55)' },
+        selDispText: openDisp ? ('открытых спора по заведению: ' + openDisp) : 'открытых споров нет',
+        selHasSecondary: isMod,
+        selSecondaryLabel: 'Отклонить заявку',
+        selSecondary: () => { this.setState({ venues: s.venues.filter(v => v.id !== sel.id), selVenue: null }); this.showToast('Заявка ' + sel.name + ' отклонена'); },
+        selPrimaryLabel: isMod ? 'Подтвердить подключение' : (isBlocked ? 'Разблокировать' : 'Заблокировать заведение'),
+        selPrimary: () => {
+          if (isMod) setStatus('active', sel.name + ' — подключено');
+          else if (isBlocked) setStatus('active', sel.name + ' — разблокировано');
+          else setStatus('blocked', sel.name + ' — заблокировано');
+        },
+        selPrimaryStyle: (isMod || isBlocked)
+          ? { background: '#5BD7E8', color: '#062A30', borderRadius: 999, padding: 14, textAlign: 'center', fontFamily: 'Unbounded, sans-serif', fontWeight: 700, fontSize: 13, cursor: 'pointer' }
+          : { border: '1px solid rgba(255,138,122,0.5)', color: '#FF8A7A', borderRadius: 999, padding: 13, textAlign: 'center', fontSize: 13, fontWeight: 600, cursor: 'pointer' },
+      };
+    }
+
+    return Object.assign({
+      nav, months, feed, venuesView, vfilters, conns, complaints, payouts, disputes,
+      sectionTitle: this.TITLES[sec],
+      isOverview: sec === 'overview', isVenues: sec === 'venues', isMod: sec === 'moderation',
+      isFinance: sec === 'finance', isDisputes: sec === 'disputes',
+      modCount, dispCount,
+      goMod: () => this.setState({ section: 'moderation' }),
+      goDisputes: () => this.setState({ section: 'disputes' }),
+      venuesEmpty: venuesView.length === 0,
+      connsEmpty: s.conns.length === 0, complaintsEmpty: s.complaints.length === 0,
+      payoutDue,
+      toast: s.toast, hasToast: !!s.toast,
+    }, selVals);
+  }
+}
+
+</script>
+</body>
+</html>

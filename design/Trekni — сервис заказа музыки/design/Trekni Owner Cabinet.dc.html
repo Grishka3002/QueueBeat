@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&amp;family=Onest:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0B0B12;font-family:Onest,sans-serif}
+a{color:#5BD7E8}a:hover{color:#A5EFF8}
+input::placeholder{color:rgba(242,241,247,0.38)}
+@keyframes toastIn{from{transform:translateY(14px);opacity:0}to{transform:translateY(0);opacity:1}}
+</style>
+</helmet>
+
+<div style="min-height:100vh;display:flex;background:#0B0B12;color:#F2F1F7;overflow-x:clip">
+
+  <!-- SIDEBAR -->
+  <div style="width:232px;flex:none;box-sizing:border-box;border-right:1px solid rgba(255,255,255,0.07);padding:22px 14px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh">
+    <div style="display:flex;align-items:baseline;gap:8px;padding:0 10px 18px">
+      <span style="font-family:Unbounded,sans-serif;font-weight:700;font-size:13px;letter-spacing:3px;color:#5BD7E8">ТРЕКНИ</span>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:rgba(242,241,247,0.45)">кабинет</span>
+    </div>
+    <sc-for list="{{ nav }}" as="n" hint-placeholder-count="5">
+      <div onClick="{{ n.go }}" style="{{ n.style }}">
+        <span style="width:18px;text-align:center;font-size:14px">{{ n.icon }}</span>
+        <span>{{ n.label }}</span>
+        <span style="{{ n.dotStyle }}"></span>
+      </div>
+    </sc-for>
+    <div style="margin-top:auto;display:flex;flex-direction:column;gap:10px">
+      <a href="Trekni Guest Flow.dc.html" style="display:block;text-decoration:none;border:1px dashed rgba(91,215,232,0.4);border-radius:12px;padding:11px 12px;font-size:12px;line-height:1.45">страница гостя ↗<br><span style="color:rgba(242,241,247,0.45)">как видят посетители</span></a>
+      <a href="Trekni Player.dc.html" style="display:block;text-decoration:none;border:1px dashed rgba(248,73,166,0.4);border-radius:12px;padding:11px 12px;font-size:12px;line-height:1.45">плеер заведения ↗<br><span style="color:rgba(242,241,247,0.45)">устройство у колонок</span></a>
+      <a href="Trekni Remote.dc.html" style="display:block;text-decoration:none;border:1px dashed rgba(248,73,166,0.4);border-radius:12px;padding:11px 12px;font-size:12px;line-height:1.45">пульт смены ↗<br><span style="color:rgba(242,241,247,0.45)">громкость и очередь с телефона</span></a>
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-top:1px solid rgba(255,255,255,0.07)">
+        <div style="width:32px;height:32px;border-radius:99px;flex:none;background:rgba(248,73,166,0.14);border:1px solid rgba(248,73,166,0.45);display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#F849A6">АК</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Алина Ковалёва</div>
+          <div style="font-size:10.5px;color:rgba(242,241,247,0.45)">владелец</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div style="flex:1;min-width:0;display:flex;flex-direction:column">
+
+    <!-- TOPBAR -->
+    <div style="display:flex;align-items:center;gap:14px;padding:16px 28px;border-bottom:1px solid rgba(255,255,255,0.07);position:sticky;top:0;background:rgba(11,11,18,0.85);backdrop-filter:blur(10px);z-index:20">
+      <div style="font-family:Unbounded,sans-serif;font-weight:700;font-size:16px">{{ sectionTitle }}</div>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:12px">
+        <span style="{{ tariffBadge }}">тариф «{{ tariffName }}» · комиссия {{ commission }} %</span>
+        <div onClick="{{ toggleOpen }}" style="{{ openPill }}">
+          <span style="{{ openPillDot }}"></span>
+          <span>{{ openPillLabel }}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:9px;border:1px solid rgba(255,255,255,0.12);border-radius:999px;padding:7px 13px;font-size:13px;font-weight:600">
+          <span style="width:7px;height:7px;border-radius:99px;background:#F849A6"></span>
+          Бар «Соловей»
+          <span style="color:rgba(242,241,247,0.4);font-size:11px">▾</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="padding:26px 28px 40px;display:flex;flex-direction:column;gap:16px;max-width:1080px;box-sizing:border-box">
+
+      <!-- ═══ ОБЗОР ═══ -->
+      <sc-if value="{{ isOverview }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:14px">
+          <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:18px">
+            <div style="font-size:12px;color:rgba(242,241,247,0.5)">Заявок сегодня</div>
+            <div style="margin-top:8px;font-family:Unbounded,sans-serif;font-weight:700;font-size:26px">27</div>
+            <div style="margin-top:5px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#5BD7E8">+28 % ко ср. четвергу</div>
+          </div>
+          <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:18px">
+            <div style="font-size:12px;color:rgba(242,241,247,0.5)">Выручка сегодня</div>
+            <div style="margin-top:8px;font-family:Unbounded,sans-serif;font-weight:700;font-size:26px;color:#F849A6">5 373 ₽</div>
+            <div style="margin-top:5px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(242,241,247,0.45)">до вычета комиссии</div>
+          </div>
+          <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:18px">
+            <div style="font-size:12px;color:rgba(242,241,247,0.5)">Сейчас в очереди</div>
+            <div style="margin-top:8px;font-family:Unbounded,sans-serif;font-weight:700;font-size:26px">3</div>
+            <div style="margin-top:5px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(242,241,247,0.45)">дальше — фоновый плейлист</div>
+          </div>
+          <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:18px">
+            <div style="font-size:12px;color:rgba(242,241,247,0.5)">Баланс к выплате</div>
+            <div style="margin-top:8px;font-family:Unbounded,sans-serif;font-weight:700;font-size:26px">12 340 ₽</div>
+            <div onClick="{{ goPayouts }}" style="margin-top:5px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#5BD7E8;cursor:pointer">к выплатам →</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:14px">
+          <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:20px">
+            <div style="display:flex;align-items:baseline;justify-content:space-between">
+              <div style="font-weight:700;font-size:15px">Заявки за неделю</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:rgba(242,241,247,0.45)">161 заявка · 32 039 ₽</div>
+            </div>
+            <div style="margin-top:18px;display:flex;align-items:flex-end;gap:12px;height:150px">
+              <sc-for list="{{ week }}" as="w" hint-placeholder-count="7">
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;height:100%;justify-content:flex-end">
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:rgba(242,241,247,0.55)">{{ w.v }}</div>
+                  <div style="{{ w.barStyle }}"></div>
+                  <div style="{{ w.dayStyle }}">{{ w.d }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:20px">
+            <div style="font-weight:700;font-size:15px">Топ треков недели</div>
+            <div style="margin-top:14px;display:flex;flex-direction:column;gap:11px">
+              <sc-for list="{{ top }}" as="tp" hint-placeholder-count="3">
+                <div style="display:flex;align-items:center;gap:11px">
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#F849A6;width:18px">{{ tp.n }}</span>
+                  <div style="flex:1;min-width:0">
+                    <div style="font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ tp.t }}</div>
+                    <div style="margin-top:4px;height:4px;border-radius:99px;background:rgba(255,255,255,0.07);overflow:hidden"><div style="{{ tp.fillStyle }}"></div></div>
+                  </div>
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:rgba(242,241,247,0.55);white-space:nowrap">{{ tp.c }}×</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.07);font-size:12px;line-height:1.55;color:rgba(242,241,247,0.5)">Пик заявок — 22:00–23:30. Подумайте о повышении цены в прайм.</div>
+          </div>
+        </div>
+
+        <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:20px">
+          <div style="display:flex;align-items:baseline;justify-content:space-between">
+            <div style="font-weight:700;font-size:15px">Последние заявки</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:rgba(242,241,247,0.45)">сегодня, 9 июля</div>
+          </div>
+          <div style="margin-top:8px;display:flex;flex-direction:column">
+            <sc-for list="{{ orders }}" as="o" hint-placeholder-count="5">
+              <div style="display:flex;align-items:center;gap:14px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,0.06)">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:rgba(242,241,247,0.45);width:44px">{{ o.time }}</span>
+                <span style="flex:1;min-width:0;font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ o.track }}</span>
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:rgba(242,241,247,0.7);width:56px;text-align:right">{{ o.sum }}</span>
+                <span style="{{ o.stStyle }}">{{ o.st }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ═══ СТАТИСТИКА ═══ -->
+      <sc-if value="{{ isStats }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:14px">
+          <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:18px">
+            <div style="font-size:12px;color:rgba(242,241,247,0.5)">Заявок за период</div>
+            <div style="margin-top:8px;font-family:Unbounded,sans-serif;font-weight:700;font-size:26px">{{ kpiReq }}</div>
+          </div>
+          <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:18px">
+            <div style="font-size:12px;color:rgba(242,241,247,0.5)">Выручка с заявок</div>
+            <div style="margin-top:8px;font-family:Unbounded,sans-serif;font-weight:700;font-size:22px;white-space:nowrap;color:#F849A6">{{ kpiRev }}</div>
+          </div>
+          <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:18px">
+            <div style="font-size:12px;color:rgba(242,241,247,0.5)">Средний чек</div>
+            <div style="margin-top:8px;font-family:Unbounded,sans-serif;font-weight:700;font-size:26px">199 ₽</div>
+          </div>
+          <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:18px">
+            <div style="font-size:12px;color:rgba(242,241,247,0.5)">Скан QR → заявка</div>
+            <div style="margin-top:8px;font-family:Unbounded,sans-serif;font-weight:700;font-size:26px">38 %</div>
+          </div>
+        </div>
+        <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:20px">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+            <div style="font-weight:700;font-size:15px">Заявки по дням</div>
+            <div style="display:flex;border:1px solid rgba(255,255,255,0.14);border-radius:999px;padding:3px">
+              <span onClick="{{ setP7 }}" style="{{ p7Style }}">7 дней</span>
+              <span onClick="{{ setP30 }}" style="{{ p30Style }}">30 дней</span>
+            </div>
+          </div>
+          <div style="margin-top:16px;display:flex;align-items:flex-end;gap:4px;height:180px">
+            <sc-for list="{{ statDays }}" as="sd" hint-placeholder-count="7">
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end;min-width:0">
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:rgba(242,241,247,0.55)">{{ sd.v }}</div>
+                <div style="{{ sd.barStyle }}"></div>
+                <div style="{{ sd.dayStyle }}">{{ sd.d }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(242,241,247,0.45)">{{ statRange }}</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:20px">
+            <div style="font-weight:700;font-size:15px">Заявки по часам</div>
+            <div style="margin-top:16px;display:flex;align-items:flex-end;gap:6px;height:120px">
+              <sc-for list="{{ statHours }}" as="sh" hint-placeholder-count="9">
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end">
+                  <div style="{{ sh.barStyle }}"></div>
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:rgba(242,241,247,0.45)">{{ sh.h }}</div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="margin-top:12px;font-size:12px;color:rgba(242,241,247,0.5)">Пик — 22:00–23:00. Хороший момент для цены прайм-тайма.</div>
+          </div>
+          <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:20px">
+            <div style="font-weight:700;font-size:15px">Сканирования по точкам</div>
+            <div style="margin-top:14px;display:flex;flex-direction:column;gap:12px">
+              <sc-for list="{{ qrStat }}" as="qs" hint-placeholder-count="3">
+                <div style="display:flex;align-items:center;gap:12px">
+                  <span style="font-size:12.5px;width:130px;flex:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:rgba(242,241,247,0.75)">{{ qs.name }}</span>
+                  <div style="flex:1;height:8px;border-radius:99px;background:rgba(255,255,255,0.07);overflow:hidden"><div style="{{ qs.wStyle }}"></div></div>
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:rgba(242,241,247,0.55);width:40px;text-align:right">{{ qs.scans }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="margin-top:14px;font-size:12px;color:rgba(242,241,247,0.5)">За 30 дней. QR-коды точек — в разделе «QR-точки».</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:20px">
+            <div style="font-weight:700;font-size:15px">Топ треков</div>
+            <div style="margin-top:14px;display:flex;flex-direction:column;gap:11px">
+              <sc-for list="{{ topStat }}" as="ts" hint-placeholder-count="5">
+                <div style="display:flex;align-items:center;gap:11px">
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#F849A6;width:18px">{{ ts.n }}</span>
+                  <div style="flex:1;min-width:0">
+                    <div style="font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ ts.t }}</div>
+                    <div style="margin-top:4px;height:4px;border-radius:99px;background:rgba(255,255,255,0.07);overflow:hidden"><div style="{{ ts.fillStyle }}"></div></div>
+                  </div>
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:rgba(242,241,247,0.55);white-space:nowrap">{{ ts.c }}×</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:20px">
+            <div style="font-weight:700;font-size:15px">Источник проигрываний</div>
+            <div style="margin-top:16px;display:flex;height:12px;border-radius:99px;overflow:hidden;gap:2px">
+              <span style="width:32%;background:#F849A6"></span>
+              <span style="width:68%;background:rgba(255,255,255,0.14)"></span>
+            </div>
+            <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px;font-size:13px">
+              <div style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:99px;background:#F849A6"></span><span style="flex:1;color:rgba(242,241,247,0.75)">Заявки гостей</span><span style="font-family:'IBM Plex Mono',monospace;color:rgba(242,241,247,0.55)">32 %</span></div>
+              <div style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:99px;background:rgba(255,255,255,0.3)"></span><span style="flex:1;color:rgba(242,241,247,0.75)">Фоновый плейлист</span><span style="font-family:'IBM Plex Mono',monospace;color:rgba(242,241,247,0.55)">68 %</span></div>
+            </div>
+            <div style="margin-top:14px;font-size:12px;color:rgba(242,241,247,0.5)">В мае заявки давали 24 % — доля растёт.</div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ═══ ПЛЕЙЛИСТ ═══ -->
+      <sc-if value="{{ isPlaylist }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="flex:1;display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.06);border-radius:999px;padding:11px 16px">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="rgba(242,241,247,0.45)" stroke-width="1.5"></circle><path d="M9.5 9.5L13 13" stroke="rgba(242,241,247,0.45)" stroke-width="1.5" stroke-linecap="round"></path></svg>
+            <input value="{{ plq }}" onChange="{{ onPlq }}" placeholder="Поиск по плейлисту" style="flex:1;min-width:0;background:transparent;border:none;outline:none;font-family:Onest,sans-serif;font-size:14px;color:#F2F1F7;padding:0">
+          </div>
+          <div onClick="{{ addTrack }}" style="background:#F849A6;color:#17020D;border-radius:999px;padding:11px 20px;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap" style-hover="filter:brightness(1.1)">+ Добавить трек</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:12.5px;color:rgba(242,241,247,0.5)">
+          <span style="font-family:'IBM Plex Mono',monospace">{{ plStats }}</span>
+          <span>· выключенные треки гость не видит</span>
+        </div>
+        <div style="background:#12121B;border:1px solid rgba(91,215,232,0.35);border-radius:18px;padding:18px 20px;display:flex;align-items:center;gap:16px">
+          <div style="width:38px;height:38px;border-radius:99px;flex:none;background:rgba(91,215,232,0.1);border:1px solid rgba(91,215,232,0.4);display:flex;align-items:center;justify-content:center;font-size:17px;color:#5BD7E8">∞</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:700;font-size:14.5px">Бесконечный фоновый режим</div>
+            <div style="margin-top:4px;font-size:12.5px;line-height:1.55;color:rgba(242,241,247,0.55)">Когда оплаченных заявок нет, плейлист играет сам в случайном порядке — музыка не останавливается. Заявка гостя вклинивается сразу после текущего трека.</div>
+          </div>
+          <div style="flex:none;display:flex;flex-direction:column;align-items:center;gap:6px">
+            <div onClick="{{ toggleBg }}" style="{{ bgTogWrap }}"><div style="width:24px;height:24px;border-radius:99px;background:#F2F1F7"></div></div>
+            <span style="{{ bgTogLabel }}">{{ bgTogText }}</span>
+          </div>
+        </div>
+        <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:6px 18px">
+          <sc-for list="{{ pl }}" as="p" hint-placeholder-count="8">
+            <div style="{{ p.rowStyle }}">
+              <div style="width:40px;height:40px;border-radius:9px;flex:none;background:repeating-linear-gradient(135deg, rgba(255,255,255,0.07) 0 3px, transparent 3px 7px), #1D1D2B;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:rgba(242,241,247,0.5)">{{ p.tag }}</div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.title }}</div>
+                <div style="font-size:12px;color:rgba(242,241,247,0.5)">{{ p.sub }}</div>
+              </div>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;border:1px solid rgba(255,255,255,0.13);color:rgba(242,241,247,0.55);border-radius:999px;padding:3px 9px;white-space:nowrap">{{ p.genre }}</span>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:rgba(242,241,247,0.45);width:64px;text-align:right;white-space:nowrap">{{ p.stat }}</span>
+              <div onClick="{{ p.toggle }}" style="{{ p.togWrap }}"><div style="width:20px;height:20px;border-radius:99px;background:#F2F1F7"></div></div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <!-- ═══ QR ═══ -->
+      <sc-if value="{{ isQr }}" hint-placeholder-val="{{ false }}">
+        <div style="font-size:13.5px;line-height:1.6;color:rgba(242,241,247,0.55);max-width:640px">Каждая точка — свой QR-код с меткой в статистике: видно, откуда заказывают чаще. Все коды ведут на одну страницу заведения.</div>
+        <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:14px">
+          <sc-for list="{{ zones }}" as="z" hint-placeholder-count="3">
+            <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:14px">
+              <div style="display:flex;align-items:center;gap:12px">
+                <div style="width:74px;height:74px;flex:none;border-radius:10px;background:#F2F1F7;padding:7px;box-sizing:border-box">
+                  <div style="width:100%;height:100%;background:repeating-linear-gradient(0deg,#17020D 0 4px,transparent 4px 8px),repeating-linear-gradient(90deg,#17020D 0 4px,#F2F1F7 4px 8px);border-radius:2px;position:relative">
+                    <span style="position:absolute;top:0;left:0;width:16px;height:16px;background:#F2F1F7;border:4px solid #17020D;box-sizing:border-box"></span>
+                    <span style="position:absolute;top:0;right:0;width:16px;height:16px;background:#F2F1F7;border:4px solid #17020D;box-sizing:border-box"></span>
+                    <span style="position:absolute;bottom:0;left:0;width:16px;height:16px;background:#F2F1F7;border:4px solid #17020D;box-sizing:border-box"></span>
+                  </div>
+                </div>
+                <div style="flex:1;min-width:0">
+                  <div style="font-weight:700;font-size:15px">{{ z.name }}</div>
+                  <div style="margin-top:4px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(242,241,247,0.5)">{{ z.scans }} сканирований · 30 дн</div>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px">
+                <div onClick="{{ z.dl }}" style="flex:1;border:1px solid rgba(255,255,255,0.16);border-radius:999px;padding:9px;text-align:center;font-size:12.5px;font-weight:600;cursor:pointer" style-hover="background:rgba(255,255,255,0.07)">Скачать PNG</div>
+                <div onClick="{{ z.print }}" style="flex:1;border:1px solid rgba(255,255,255,0.16);border-radius:999px;padding:9px;text-align:center;font-size:12.5px;font-weight:600;cursor:pointer" style-hover="background:rgba(255,255,255,0.07)">Тейбл-тент</div>
+              </div>
+            </div>
+          </sc-for>
+          <div onClick="{{ addZone }}" style="border:1px dashed rgba(255,255,255,0.2);border-radius:18px;padding:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;min-height:150px" style-hover="background:rgba(255,255,255,0.04)">
+            <div style="width:36px;height:36px;border-radius:99px;border:1px solid rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:19px">+</div>
+            <div style="font-size:13px;color:rgba(242,241,247,0.55)">Добавить точку</div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ═══ ВЫПЛАТЫ ═══ -->
+      <sc-if value="{{ isPayouts }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div style="background:#12121B;border:1px solid rgba(248,73,166,0.4);border-radius:18px;padding:22px">
+            <div style="font-size:12.5px;color:rgba(242,241,247,0.55)">Баланс к выплате</div>
+            <div style="margin-top:8px;font-family:Unbounded,sans-serif;font-weight:700;font-size:32px;color:#F849A6">12 340 ₽</div>
+            <div style="margin-top:6px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:rgba(242,241,247,0.5)">комиссия тарифа {{ commission }} % уже удержана</div>
+            <div onClick="{{ withdraw }}" style="margin-top:16px;display:inline-block;background:#F849A6;color:#17020D;border-radius:999px;padding:12px 24px;font-family:Unbounded,sans-serif;font-weight:700;font-size:12px;cursor:pointer;box-shadow:0 8px 26px rgba(248,73,166,0.3)" style-hover="filter:brightness(1.1)">Вывести сейчас</div>
+          </div>
+          <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:22px">
+            <div style="display:flex;align-items:baseline;justify-content:space-between">
+              <div style="font-size:12.5px;color:rgba(242,241,247,0.55)">Реквизиты</div>
+              <div onClick="{{ toast2 }}" style="font-size:12px;color:#5BD7E8;cursor:pointer">изменить</div>
+            </div>
+            <div style="margin-top:12px;font-family:'IBM Plex Mono',monospace;font-size:13.5px;line-height:1.7;color:rgba(242,241,247,0.8)">ООО «Соловей»<br>р/с ···· 4820 · Т-Банк<br>ИНН 7707 083893</div>
+            <div style="margin-top:10px;font-size:12px;color:rgba(242,241,247,0.45)">Автовыплата — каждый день до 12:00</div>
+          </div>
+        </div>
+        <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:20px">
+          <div style="font-weight:700;font-size:15px">История выплат</div>
+          <div style="margin-top:8px;display:flex;flex-direction:column">
+            <sc-for list="{{ payouts }}" as="po" hint-placeholder-count="4">
+              <div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.06)">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:rgba(242,241,247,0.55);width:88px">{{ po.date }}</span>
+                <span style="flex:1;font-size:13.5px;color:rgba(242,241,247,0.7)">{{ po.note }}</span>
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:13.5px;font-weight:600">{{ po.sum }}</span>
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#5BD7E8;border:1px solid rgba(91,215,232,0.4);border-radius:999px;padding:3px 9px;white-space:nowrap">выплачено</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ═══ ЮР ЧИСТОТА ═══ -->
+      <sc-if value="{{ isLegal }}" hint-placeholder-val="{{ false }}">
+        <sc-if value="{{ legalLocked }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#12121B;border:1px dashed rgba(255,255,255,0.18);border-radius:18px;padding:20px;display:flex;align-items:center;gap:18px">
+            <div style="flex:1">
+              <div style="font-weight:700;font-size:15px">Документы для РАО/ВОИС — на тарифе «Легал»</div>
+              <div style="margin-top:6px;font-size:12.5px;line-height:1.6;color:rgba(242,241,247,0.55)">Журнал воспроизведений уже ведётся автоматически. «Легал» добавит месячные отчёты, данные заведения и напоминания о сроках; «Всё включено» — подачу отчётов и платежи на нашей стороне.</div>
+            </div>
+            <div onClick="{{ upgradeLegal }}" style="flex:none;background:#F849A6;color:#17020D;border-radius:999px;padding:12px 22px;font-family:Unbounded,sans-serif;font-weight:700;font-size:11.5px;cursor:pointer" style-hover="filter:brightness(1.1)">Перейти на «Легал»</div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ legalOn }}" hint-placeholder-val="{{ true }}">
+          <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:14px">
+            <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:18px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="width:7px;height:7px;border-radius:99px;background:#5BD7E8"></span>
+                <span style="font-size:12px;color:rgba(242,241,247,0.5)">Договор РАО</span>
+              </div>
+              <div style="margin-top:8px;font-weight:700;font-size:17px">активен</div>
+              <div style="margin-top:4px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(242,241,247,0.5)">оплачено до 31.12.2026</div>
+            </div>
+            <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:18px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="width:7px;height:7px;border-radius:99px;background:#FF8A7A"></span>
+                <span style="font-size:12px;color:rgba(242,241,247,0.5)">Договор ВОИС</span>
+              </div>
+              <div style="margin-top:8px;font-weight:700;font-size:17px">активен</div>
+              <div style="margin-top:4px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#FF8A7A">платёж за III кв — до 10.08, напомним</div>
+            </div>
+            <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:18px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="width:7px;height:7px;border-radius:99px;background:#F849A6"></span>
+                <span style="font-size:12px;color:rgba(242,241,247,0.5)">Сопровождение</span>
+              </div>
+              <div style="margin-top:8px;font-weight:700;font-size:17px">{{ legalMode }}</div>
+              <div style="margin-top:4px;font-size:11px;line-height:1.5;color:rgba(242,241,247,0.5)">{{ legalModeNote }}</div>
+            </div>
+          </div>
+          <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:20px">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+              <div style="font-weight:700;font-size:15px">Отчёты для РАО/ВОИС</div>
+              <div onClick="{{ dlPack }}" style="background:#F849A6;color:#17020D;border-radius:999px;padding:10px 18px;font-family:Unbounded,sans-serif;font-weight:700;font-size:11px;cursor:pointer;white-space:nowrap" style-hover="filter:brightness(1.1)">Скачать пакет документов</div>
+            </div>
+            <div style="margin-top:6px;display:flex;flex-direction:column">
+              <sc-for list="{{ reports }}" as="r" hint-placeholder-count="3">
+                <div style="display:flex;align-items:center;gap:14px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,0.06)">
+                  <span style="font-size:13.5px;font-weight:600;width:110px">{{ r.m }}</span>
+                  <span style="flex:1;font-size:12.5px;color:rgba(242,241,247,0.55)">{{ r.note }}</span>
+                  <span style="{{ r.chipStyle }}">{{ r.chip }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+        <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:20px">
+          <div style="display:flex;align-items:baseline;justify-content:space-between">
+            <div style="font-weight:700;font-size:15px">Журнал воспроизведений</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:rgba(242,241,247,0.45)">1 214 записей в июле</div>
+          </div>
+          <div style="margin-top:6px;display:flex;flex-direction:column">
+            <sc-for list="{{ legalLog }}" as="lg" hint-placeholder-count="6">
+              <div style="display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.06)">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:rgba(242,241,247,0.45);width:44px">{{ lg.t }}</span>
+                <span style="flex:1;min-width:0;font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ lg.track }}</span>
+                <span style="{{ lg.chipStyle }}">{{ lg.src }}</span>
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:rgba(242,241,247,0.45);width:36px;text-align:right">{{ lg.dur }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="margin-top:12px;font-size:11.5px;line-height:1.5;color:rgba(242,241,247,0.4)">Фиксируется каждое публичное воспроизведение: дата, время, трек, источник (фон или заявка гостя). Журнал хранится 3 года — из него собираются отчёты и пакет для проверки.</div>
+        </div>
+      </sc-if>
+
+      <!-- ═══ НАСТРОЙКИ ═══ -->
+      <sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start">
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:22px">
+              <div style="font-weight:700;font-size:15px">Цена заявки</div>
+              <div style="margin-top:6px;font-size:12.5px;line-height:1.55;color:rgba(242,241,247,0.5)">Гость видит цену до выбора трека. Меняется мгновенно.</div>
+              <div style="margin-top:16px;display:flex;align-items:center;gap:14px">
+                <div onClick="{{ priceDown }}" style="width:40px;height:40px;border-radius:99px;border:1px solid rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:19px;cursor:pointer" style-hover="background:rgba(255,255,255,0.08)">−</div>
+                <div style="font-family:Unbounded,sans-serif;font-weight:700;font-size:26px;color:#F849A6;min-width:110px;text-align:center;white-space:nowrap">{{ price }} ₽</div>
+                <div onClick="{{ priceUp }}" style="width:40px;height:40px;border-radius:99px;border:1px solid rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:19px;cursor:pointer" style-hover="background:rgba(255,255,255,0.08)">+</div>
+              </div>
+            </div>
+            <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:22px">
+              <div style="display:flex;align-items:center;gap:16px">
+                <div style="flex:1">
+                  <div style="font-weight:700;font-size:15px">Приём заявок</div>
+                  <div style="margin-top:6px;font-size:12.5px;line-height:1.55;color:rgba(242,241,247,0.5)">{{ manualNote }}</div>
+                </div>
+                <div onClick="{{ toggleOpen }}" style="{{ setTogWrap }}"><div style="width:24px;height:24px;border-radius:99px;background:#F2F1F7"></div></div>
+              </div>
+            </div>
+            <div style="{{ schedCard }}">
+              <div style="display:flex;align-items:center;gap:16px">
+                <div style="flex:1">
+                  <div style="font-weight:700;font-size:15px">Расписание приёма</div>
+                  <div style="margin-top:6px;font-size:12.5px;line-height:1.55;color:rgba(242,241,247,0.5)">Приём будет открываться и закрываться сам. Интервалы через полночь — для ночных смен.</div>
+                </div>
+                <div onClick="{{ toggleSched }}" style="{{ schedTogWrap }}"><div style="width:24px;height:24px;border-radius:99px;background:#F2F1F7"></div></div>
+              </div>
+              <sc-if value="{{ schedOn }}" hint-placeholder-val="{{ false }}">
+                <div style="margin-top:14px;display:flex;flex-direction:column">
+                  <sc-for list="{{ schedRows }}" as="d" hint-placeholder-count="7">
+                    <div style="{{ d.rowStyle }}">
+                      <div onClick="{{ d.toggle }}" style="{{ d.togWrap }}"><div style="width:14px;height:14px;border-radius:99px;background:#F2F1F7"></div></div>
+                      <span style="{{ d.nameStyle }}">{{ d.name }}</span>
+                      <sc-if value="{{ d.on }}" hint-placeholder-val="{{ true }}">
+                        <select value="{{ d.from }}" onChange="{{ d.setFrom }}" style="background:#1D1D2B;border:1px solid rgba(255,255,255,0.13);border-radius:8px;color:#F2F1F7;font-family:'IBM Plex Mono',monospace;font-size:12px;padding:6px 8px;outline:none;cursor:pointer">
+                          <sc-for list="{{ hours }}" as="h"><option value="{{ h.v }}">{{ h.label }}</option></sc-for>
+                        </select>
+                        <span style="color:rgba(242,241,247,0.4);font-size:12px">—</span>
+                        <select value="{{ d.to }}" onChange="{{ d.setTo }}" style="background:#1D1D2B;border:1px solid rgba(255,255,255,0.13);border-radius:8px;color:#F2F1F7;font-family:'IBM Plex Mono',monospace;font-size:12px;padding:6px 8px;outline:none;cursor:pointer">
+                          <sc-for list="{{ hours }}" as="h"><option value="{{ h.v }}">{{ h.label }}</option></sc-for>
+                        </select>
+                        <span style="{{ d.nightStyle }}">ночь</span>
+                      </sc-if>
+                      <sc-if value="{{ d.off }}" hint-placeholder-val="{{ false }}">
+                        <span style="font-size:12px;color:rgba(242,241,247,0.35)">выходной — приём закрыт</span>
+                      </sc-if>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="margin-top:12px;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.04);border-radius:12px;padding:10px 13px">
+                  <span style="{{ nowDot }}"></span>
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:rgba(242,241,247,0.7)">{{ nowLine }}</span>
+                </div>
+              </sc-if>
+            </div>
+            <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:22px">
+              <div style="font-weight:700;font-size:15px">Язык страницы по умолчанию</div>
+              <div style="margin-top:12px;display:flex;border:1px solid rgba(255,255,255,0.14);border-radius:999px;padding:3px;width:fit-content;font-size:12.5px;font-weight:600">
+                <span onClick="{{ setLangRu }}" style="{{ langRu }}">Русский</span>
+                <span onClick="{{ setLangEn }}" style="{{ langEn }}">English</span>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div style="{{ brandCard }}">
+              <div style="display:flex;align-items:center;gap:10px">
+                <div style="font-weight:700;font-size:15px">Брендинг страницы</div>
+                <span style="{{ brandLockChip }}">{{ brandLockLabel }}</span>
+              </div>
+              <sc-if value="{{ brandOn }}" hint-placeholder-val="{{ true }}">
+                <div style="margin-top:14px;background:#0B0B12;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px">
+                  <div style="display:flex;align-items:center;justify-content:space-between">
+                    <span style="font-family:Unbounded,sans-serif;font-weight:700;font-size:9px;letter-spacing:3px;color:#5BD7E8">{{ brandLogo }}</span>
+                    <span style="{{ brandChip }}">трек — {{ price }} ₽</span>
+                  </div>
+                  <div style="margin-top:10px;font-family:Unbounded,sans-serif;font-weight:700;font-size:16px">Бар «Соловей»</div>
+                  <div style="{{ brandBtn }}">Заказать за {{ price }} ₽</div>
+                </div>
+                <div style="margin-top:14px;display:flex;align-items:center;gap:10px">
+                  <span style="font-size:12.5px;color:rgba(242,241,247,0.55)">Фирменный цвет:</span>
+                  <sc-for list="{{ swatches }}" as="sw" hint-placeholder-count="4">
+                    <span onClick="{{ sw.pick }}" style="{{ sw.style }}"></span>
+                  </sc-for>
+                </div>
+                <div style="margin-top:10px;display:flex;align-items:center;gap:10px">
+                  <span style="font-size:12.5px;color:rgba(242,241,247,0.55)">Логотип вместо Трекни:</span>
+                  <div onClick="{{ toggleLogo }}" style="{{ logoTogWrap }}"><div style="width:18px;height:18px;border-radius:99px;background:#F2F1F7"></div></div>
+                </div>
+              </sc-if>
+              <sc-if value="{{ brandLocked }}" hint-placeholder-val="{{ false }}">
+                <div style="margin-top:12px;font-size:13px;line-height:1.6;color:rgba(242,241,247,0.55)">Логотип, фирменный цвет и страница без упоминания Трекни — на тарифе «Всё включено».</div>
+                <div onClick="{{ upgrade }}" style="margin-top:14px;display:inline-block;background:#F849A6;color:#17020D;border-radius:999px;padding:11px 20px;font-family:Unbounded,sans-serif;font-weight:700;font-size:11.5px;cursor:pointer" style-hover="filter:brightness(1.1)">Перейти на «Всё включено»</div>
+              </sc-if>
+            </div>
+            <div style="background:#12121B;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:22px">
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <div style="font-weight:700;font-size:15px">Тариф</div>
+                <a href="Trekni Landing.dc.html" style="font-size:12px;text-decoration:none">условия ↗</a>
+              </div>
+              <div style="margin-top:12px;display:flex;gap:8px">
+                <sc-for list="{{ tariffOpts }}" as="tf" hint-placeholder-count="3">
+                  <div onClick="{{ tf.pick }}" style="{{ tf.style }}">
+                    <div style="font-weight:700;font-size:13px">{{ tf.name }}</div>
+                    <div style="margin-top:3px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:rgba(242,241,247,0.55)">{{ tf.note }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;right:24px;bottom:24px;z-index:90;background:#1D1D2B;border:1px solid rgba(248,73,166,0.5);border-radius:14px;padding:13px 18px;font-size:13px;font-weight:600;color:#F2F1F7;box-shadow:0 14px 40px rgba(0,0,0,0.5);animation:toastIn 0.25s ease">{{ toast }}</div>
+  </sc-if>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 1440, &quot;height&quot;: 960 },
+  &quot;tariff&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;Легал&quot;, &quot;options&quot;: [&quot;Старт&quot;, &quot;Легал&quot;, &quot;Всё включено&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Демо&quot; }
+}">
+class Component extends DCLogic {
+  state = {
+    section: 'overview', open: true, price: 199, plq: '', lang: 'ru', statPeriod: 30,
+    tariff: null, brand: '#F849A6', ownLogo: true, toast: '',
+    schedOn: false, bgOn: true,
+    sched: [
+      { id: 0, name: 'пн', on: true, from: 19, to: 23 },
+      { id: 1, name: 'вт', on: true, from: 19, to: 23 },
+      { id: 2, name: 'ср', on: true, from: 19, to: 23 },
+      { id: 3, name: 'чт', on: true, from: 19, to: 23 },
+      { id: 4, name: 'пт', on: true, from: 19, to: 2 },
+      { id: 5, name: 'сб', on: true, from: 19, to: 2 },
+      { id: 6, name: 'вс', on: false, from: 19, to: 23 },
+    ],
+    pl: [
+      { id: 1, tag: 'ZV', title: 'Life', artist: 'Zivert', dur: '3:07', genre: 'поп', stat: '11× / нед', on: true },
+      { id: 2, tag: 'СК', title: 'Положение', artist: 'Скриптонит', dur: '3:44', genre: 'хип-хоп', stat: '9× / нед', on: true },
+      { id: 3, tag: 'TW', title: 'Blinding Lights', artist: 'The Weeknd', dur: '3:20', genre: 'поп', stat: '7× / нед', on: true },
+      { id: 4, tag: 'РВ', title: 'Крошка моя', artist: 'Руки Вверх', dur: '3:41', genre: '2000-е', stat: '14× / нед', on: true },
+      { id: 5, tag: 'QN', title: "Don't Stop Me Now", artist: 'Queen', dur: '3:29', genre: 'рок', stat: '6× / нед', on: true },
+      { id: 6, tag: 'Б2', title: 'Компромисс', artist: 'Би-2', dur: '4:10', genre: 'рок', stat: '4× / нед', on: true },
+      { id: 7, tag: 'ХБ', title: 'Хардбас 2007', artist: 'DJ Кислотный', dur: '2:58', genre: 'клуб', stat: '—', on: false },
+      { id: 8, tag: 'МТ', title: 'Утекай', artist: 'Мумий Тролль', dur: '3:48', genre: 'рок', stat: '5× / нед', on: true },
+      { id: 9, tag: 'ГЛ', title: 'Невеста', artist: "Глюк'oZa", dur: '3:22', genre: '2000-е', stat: '3× / нед', on: true },
+    ],
+    zones: [
+      { name: 'Зал — столы 1–8', scans: 312 },
+      { name: 'Бар', scans: 141 },
+      { name: 'Веранда', scans: 87 },
+    ],
+  };
+
+  NAV = [
+    { id: 'overview', icon: '◧', label: 'Обзор' },
+    { id: 'stats', icon: '∿', label: 'Статистика' },
+    { id: 'playlist', icon: '♪', label: 'Плейлист' },
+    { id: 'qr', icon: '▦', label: 'QR-точки' },
+    { id: 'payouts', icon: '₽', label: 'Выплаты' },
+    { id: 'legal', icon: '§', label: 'Юр. чистота' },
+    { id: 'settings', icon: '⚙', label: 'Настройки' },
+  ];
+
+  TITLES = { overview: 'Обзор', stats: 'Статистика', playlist: 'Плейлист', qr: 'QR-точки', payouts: 'Выплаты', legal: 'Юридическая чистота', settings: 'Настройки' };
+  WEEK = [ { d: 'пт', v: 36 }, { d: 'сб', v: 46 }, { d: 'вс', v: 18 }, { d: 'пн', v: 10 }, { d: 'вт', v: 8 }, { d: 'ср', v: 16 }, { d: 'чт', v: 27 } ];
+  TOP = [ { t: 'Крошка моя — Руки Вверх', c: 14 }, { t: 'Life — Zivert', c: 11 }, { t: 'Положение — Скриптонит', c: 9 } ];
+  ORDERS = [
+    { time: '22:41', track: 'Life — Zivert', sum: '199 ₽', st: 'queue' },
+    { time: '22:37', track: 'Крошка моя — Руки Вверх', sum: '199 ₽', st: 'queue' },
+    { time: '22:24', track: 'Blinding Lights — The Weeknd', sum: '199 ₽', st: 'played' },
+    { time: '22:10', track: 'Хардбас 2007 — DJ Кислотный', sum: '199 ₽', st: 'refund' },
+    { time: '21:58', track: 'Компромисс — Би-2', sum: '199 ₽', st: 'played' },
+  ];
+  PAYOUTS = [
+    { date: '08.07.2026', note: '27 заявок за 7 июля', sum: '4 833 ₽' },
+    { date: '07.07.2026', note: '31 заявка за 6 июля', sum: '5 549 ₽' },
+    { date: '06.07.2026', note: '44 заявки за 5 июля (суббота)', sum: '7 876 ₽' },
+    { date: '05.07.2026', note: '38 заявок за 4 июля', sum: '6 802 ₽' },
+  ];
+  LEGALLOG = [
+    { t: '22:44', track: 'Life — Zivert', src: 'заявка', dur: '3:07' },
+    { t: '22:41', track: 'Утекай — Мумий Тролль', src: 'фон', dur: '3:48' },
+    { t: '22:37', track: 'Крошка моя — Руки Вверх', src: 'заявка', dur: '3:41' },
+    { t: '22:33', track: 'Компромисс — Би-2', src: 'фон', dur: '4:10' },
+    { t: '22:29', track: 'Blinding Lights — The Weeknd', src: 'заявка', dur: '3:20' },
+    { t: '22:25', track: 'Dancing Queen — ABBA', src: 'фон', dur: '3:50' },
+  ];
+  REPORTS = [
+    { m: 'Июль 2026', chip: 'формируется', note: 'закроется 1 августа автоматически', done: false },
+    { m: 'Июнь 2026', chip: 'отправлен', note: 'РАО + ВОИС · 01.07.2026 · 1 214 треков', done: true },
+    { m: 'Май 2026', chip: 'отправлен', note: 'РАО + ВОИС · 01.06.2026 · 1 108 треков', done: true },
+  ];
+
+  TARIFFS = { 'Старт': 20, 'Легал': 10, 'Всё включено': 7 };
+
+  // демо-время: чт 9 июля, 22:40
+  NOW = { day: 3, hour: 22 + 40 / 60 };
+
+  schedOpenNow() {
+    const s = this.state;
+    // интервал дня может уходить за полночь — тогда хвост принадлежит следующему дню
+    for (const d of s.sched) {
+      if (!d.on) continue;
+      const overnight = d.to <= d.from;
+      if (d.id === this.NOW.day) {
+        if (!overnight && this.NOW.hour >= d.from && this.NOW.hour < d.to) return true;
+        if (overnight && this.NOW.hour >= d.from) return true;
+      }
+      if (overnight && (d.id + 1) % 7 === this.NOW.day && this.NOW.hour < d.to) return true;
+    }
+    return false;
+  }
+
+  showToast(msg) {
+    clearTimeout(this._tt);
+    this.setState({ toast: msg });
+    this._tt = setTimeout(() => this.setState({ toast: '' }), 2600);
+  }
+  componentWillUnmount() { clearTimeout(this._tt); }
+
+  renderVals() {
+    const s = this.state;
+    const tariffName = s.tariff || this.props.tariff || 'Легал';
+    const commission = this.TARIFFS[tariffName] || 10;
+    const sec = s.section;
+
+    const nav = this.NAV.map(n => ({
+      icon: n.icon, label: n.label,
+      go: () => this.setState({ section: n.id }),
+      style: {
+        display: 'flex', alignItems: 'center', gap: 11, padding: '11px 12px', borderRadius: 12,
+        fontSize: 14, fontWeight: 600, cursor: 'pointer',
+        background: sec === n.id ? 'rgba(248,73,166,0.11)' : 'transparent',
+        color: sec === n.id ? '#F2F1F7' : 'rgba(242,241,247,0.55)',
+        border: sec === n.id ? '1px solid rgba(248,73,166,0.4)' : '1px solid transparent',
+      },
+      dotStyle: { marginLeft: 'auto', width: 6, height: 6, borderRadius: 99, background: '#F849A6', display: sec === n.id ? 'block' : 'none' },
+    }));
+
+    const maxW = Math.max(...this.WEEK.map(w => w.v));
+    const week = this.WEEK.map((w, i) => ({
+      d: w.d, v: w.v,
+      barStyle: {
+        width: '100%', maxWidth: 38, borderRadius: '7px 7px 3px 3px',
+        height: Math.round(w.v / maxW * 100) + '%', minHeight: 6,
+        background: i === this.WEEK.length - 1 ? '#F849A6' : (w.v === maxW ? 'rgba(91,215,232,0.75)' : 'rgba(255,255,255,0.14)'),
+        boxShadow: i === this.WEEK.length - 1 ? '0 6px 22px rgba(248,73,166,0.35)' : 'none',
+      },
+      dayStyle: { fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, color: i === this.WEEK.length - 1 ? '#F849A6' : 'rgba(242,241,247,0.45)' },
+    }));
+
+    const top = this.TOP.map((t, i) => ({
+      n: '0' + (i + 1), t: t.t, c: t.c,
+      fillStyle: { height: '100%', borderRadius: 99, width: Math.round(t.c / this.TOP[0].c * 100) + '%', background: i === 0 ? '#F849A6' : 'rgba(91,215,232,0.6)' },
+    }));
+
+    const ST = {
+      queue: { label: 'в очереди', color: '#5BD7E8', border: 'rgba(91,215,232,0.4)' },
+      played: { label: 'проиграно', color: 'rgba(242,241,247,0.45)', border: 'rgba(255,255,255,0.14)' },
+      refund: { label: 'отклонено · возврат', color: '#FF8A7A', border: 'rgba(255,138,122,0.45)' },
+    };
+    const orders = this.ORDERS.map(o => ({
+      time: o.time, track: o.track, sum: o.sum, st: ST[o.st].label,
+      stStyle: { fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, whiteSpace: 'nowrap', color: ST[o.st].color, border: '1px solid ' + ST[o.st].border, borderRadius: 999, padding: '3px 9px', width: 150, textAlign: 'center', boxSizing: 'border-box' },
+    }));
+
+    const ql = s.plq.trim().toLowerCase();
+    const plf = s.pl.filter(p => !ql || (p.title + ' ' + p.artist).toLowerCase().includes(ql));
+    const pl = plf.map(p => ({
+      tag: p.tag, title: p.title, sub: p.artist + ' · ' + p.dur, genre: p.genre, stat: p.stat,
+      rowStyle: { display: 'flex', alignItems: 'center', gap: 14, padding: '12px 0', borderBottom: '1px solid rgba(255,255,255,0.06)', opacity: p.on ? 1 : 0.45 },
+      toggle: () => {
+        this.setState({ pl: s.pl.map(x => x.id === p.id ? Object.assign({}, x, { on: !x.on }) : x) });
+        this.showToast(p.on ? '«' + p.title + '» скрыт от гостей' : '«' + p.title + '» снова в плейлисте');
+      },
+      togWrap: {
+        width: 44, height: 26, borderRadius: 99, cursor: 'pointer', padding: 3, boxSizing: 'border-box', flex: 'none',
+        background: p.on ? '#F849A6' : 'rgba(255,255,255,0.12)', transition: 'background 0.2s',
+        display: 'flex', justifyContent: p.on ? 'flex-end' : 'flex-start',
+      },
+    }));
+    const onCount = s.pl.filter(p => p.on).length;
+
+    const zones = s.zones.map(z => ({
+      name: z.name, scans: z.scans,
+      dl: () => this.showToast('QR «' + z.name + '» — PNG скачан (демо)'),
+      print: () => this.showToast('Макет тейбл-тента «' + z.name + '» готов (демо)'),
+    }));
+
+    const brandOn = tariffName === 'Всё включено';
+    const b = s.brand;
+    const SW = ['#F849A6', '#3BD6EA', '#B8F23C', '#9D6BFF'];
+    const swatches = SW.map(c => ({
+      pick: () => this.setState({ brand: c }),
+      style: { width: 24, height: 24, borderRadius: 99, background: c, cursor: 'pointer', border: '2px solid ' + (c === b ? '#F2F1F7' : 'transparent'), boxShadow: c === b ? '0 0 14px ' + c + '80' : 'none' },
+    }));
+
+    const tariffOpts = Object.keys(this.TARIFFS).map(name => ({
+      name, note: this.TARIFFS[name] + ' % комиссия',
+      pick: () => { this.setState({ tariff: name }); this.showToast('Тариф «' + name + '» включён (демо)'); },
+      style: {
+        flex: 1, borderRadius: 14, padding: '12px 14px', cursor: 'pointer',
+        border: name === tariffName ? '1px solid rgba(248,73,166,0.6)' : '1px solid rgba(255,255,255,0.1)',
+        background: name === tariffName ? 'rgba(248,73,166,0.09)' : 'transparent',
+      },
+    }));
+
+    const pillOn = s.schedOn ? this.schedOpenNow() : s.open;
+
+    const fmtN = (x) => String(Math.round(x)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    const period = s.statPeriod;
+    const WKD = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс'];
+    const WKBASE = [9, 12, 16, 23, 38, 44, 21];
+    const daysAll = [];
+    for (let i = 0; i < 30; i++) daysAll.push(Math.max(3, WKBASE[(i + 2) % 7] + ((i * 13) % 9) - 4));
+    const days = daysAll.slice(30 - period);
+    const dMax = Math.max(...days);
+    const statDays = days.map((v, j) => {
+      const abs = 30 - period + j;
+      const last = j === days.length - 1;
+      return {
+        v: period === 7 ? String(v) : '',
+        d: period === 7 ? WKD[(abs + 2) % 7] : '',
+        barStyle: { width: '100%', borderRadius: '4px 4px 2px 2px', height: Math.round(v / dMax * 100) + '%', minHeight: 4, background: last ? '#F849A6' : (v === dMax ? 'rgba(91,215,232,0.75)' : 'rgba(255,255,255,0.14)') },
+        dayStyle: { fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: last ? '#F849A6' : 'rgba(242,241,247,0.45)', display: period === 7 ? 'block' : 'none' },
+      };
+    });
+    const totReq = days.reduce((a, b) => a + b, 0);
+    const HRS = [{ h: '18', v: 4 }, { h: '19', v: 8 }, { h: '20', v: 14 }, { h: '21', v: 19 }, { h: '22', v: 23 }, { h: '23', v: 18 }, { h: '00', v: 11 }, { h: '01', v: 6 }, { h: '02', v: 2 }];
+    const hMax = Math.max(...HRS.map(x => x.v));
+    const statHours = HRS.map(x => ({ h: x.h, barStyle: { width: '100%', maxWidth: 30, borderRadius: '5px 5px 2px 2px', height: Math.round(x.v / hMax * 100) + '%', minHeight: 4, background: x.v === hMax ? '#5BD7E8' : 'rgba(91,215,232,0.28)' } }));
+    const zMax = Math.max(...s.zones.map(z => z.scans), 1);
+    const qrStat = s.zones.map(z => ({ name: z.name, scans: fmtN(z.scans), wStyle: { height: 8, borderRadius: 99, width: Math.max(2, Math.round(z.scans / zMax * 100)) + '%', background: '#F849A6' } }));
+    const TOP5 = [['Крошка моя — Руки Вверх', 14], ['Life — Zivert', 11], ['Положение — Скриптонит', 9], ['Blinding Lights — The Weeknd', 7], ['Утекай — Мумий Тролль', 5]];
+    const topStat = TOP5.map((t, i) => ({ n: '0' + (i + 1), t: t[0], c: t[1], fillStyle: { height: '100%', borderRadius: 99, width: Math.round(t[1] / TOP5[0][1] * 100) + '%', background: i === 0 ? '#F849A6' : 'rgba(91,215,232,0.6)' } }));
+    const segOn = { padding: '6px 14px', borderRadius: 999, background: 'rgba(255,255,255,0.14)', cursor: 'pointer', fontSize: 12.5, fontWeight: 600 };
+    const segOff = { padding: '6px 14px', borderRadius: 999, color: 'rgba(242,241,247,0.5)', cursor: 'pointer', fontSize: 12.5, fontWeight: 600 };
+
+    const legalLocked = tariffName === 'Старт';
+    const legalL2 = tariffName === 'Всё включено';
+    const legalLog = this.LEGALLOG.map(l => ({
+      t: l.t, track: l.track, dur: l.dur, src: l.src,
+      chipStyle: {
+        fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, borderRadius: 999, padding: '2px 8px', whiteSpace: 'nowrap',
+        color: l.src === 'заявка' ? '#F849A6' : 'rgba(242,241,247,0.55)',
+        border: l.src === 'заявка' ? '1px solid rgba(248,73,166,0.5)' : '1px solid rgba(255,255,255,0.14)',
+      },
+    }));
+    const reports = this.REPORTS.map(r => ({
+      m: r.m, note: r.note, chip: r.chip,
+      chipStyle: {
+        fontFamily: "'IBM Plex Mono', monospace", fontSize: 10.5, borderRadius: 999, padding: '3px 9px', whiteSpace: 'nowrap',
+        color: r.done ? '#5BD7E8' : 'rgba(242,241,247,0.55)',
+        border: r.done ? '1px solid rgba(91,215,232,0.4)' : '1px dashed rgba(255,255,255,0.2)',
+      },
+    }));
+
+    const HOURS = [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 0, 1, 2, 3];
+    const fmtH = (h) => (h < 10 ? '0' + h : h) + ':00';
+    const hours = HOURS.map(h => ({ v: h, label: fmtH(h) }));
+    const schedRows = s.sched.map(d => {
+      const overnight = d.on && d.to <= d.from;
+      const isToday = d.id === this.NOW.day;
+      return {
+        name: d.name, on: d.on, off: !d.on, from: d.from, to: d.to,
+        toggle: () => this.setState({ sched: s.sched.map(x => x.id === d.id ? Object.assign({}, x, { on: !x.on }) : x) }),
+        setFrom: (e) => this.setState({ sched: s.sched.map(x => x.id === d.id ? Object.assign({}, x, { from: +e.target.value }) : x) }),
+        setTo: (e) => this.setState({ sched: s.sched.map(x => x.id === d.id ? Object.assign({}, x, { to: +e.target.value }) : x) }),
+        rowStyle: { display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.05)', opacity: d.on ? 1 : 0.6 },
+        togWrap: {
+          width: 34, height: 20, borderRadius: 99, cursor: 'pointer', padding: 3, boxSizing: 'border-box', flex: 'none',
+          background: d.on ? '#F849A6' : 'rgba(255,255,255,0.12)', transition: 'background 0.2s',
+          display: 'flex', justifyContent: d.on ? 'flex-end' : 'flex-start',
+        },
+        nameStyle: { fontFamily: "'IBM Plex Mono', monospace", fontSize: 12.5, width: 26, color: isToday ? '#F849A6' : 'rgba(242,241,247,0.75)', fontWeight: isToday ? 600 : 400 },
+        nightStyle: { fontFamily: "'IBM Plex Mono', monospace", fontSize: 9.5, letterSpacing: 1, color: '#5BD7E8', border: '1px solid rgba(91,215,232,0.4)', borderRadius: 999, padding: '2px 7px', display: overnight ? 'inline-block' : 'none' },
+      };
+    });
+
+    return {
+      schedOn: s.schedOn,
+      toggleSched: () => { this.setState({ schedOn: !s.schedOn }); this.showToast(s.schedOn ? 'Расписание выключено — приём управляется вручную' : 'Расписание включено'); },
+      schedCard: { background: '#12121B', borderRadius: 18, padding: 22, border: s.schedOn ? '1px solid rgba(248,73,166,0.4)' : '1px solid rgba(255,255,255,0.07)' },
+      schedTogWrap: {
+        width: 52, height: 30, borderRadius: 99, cursor: 'pointer', padding: 3, boxSizing: 'border-box', flex: 'none',
+        background: s.schedOn ? '#F849A6' : 'rgba(255,255,255,0.12)', transition: 'background 0.2s',
+        display: 'flex', justifyContent: s.schedOn ? 'flex-end' : 'flex-start',
+      },
+      schedRows, hours,
+      manualNote: s.schedOn ? 'Сейчас приёмом управляет расписание — ручной переключатель отключён.' : 'Выключайте на живые концерты и трансляции — страница гостя покажет «приём закрыт».',
+      nowDot: { width: 7, height: 7, borderRadius: 99, flex: 'none', background: pillOn ? '#5BD7E8' : '#FF8A7A' },
+      nowLine: 'сейчас чт, 22:40 — приём ' + (pillOn ? 'открыт' : 'закрыт') + ' по расписанию',
+      nav, week, top, orders, pl, zones, swatches, tariffOpts,
+      sectionTitle: this.TITLES[sec],
+      isOverview: sec === 'overview', isPlaylist: sec === 'playlist', isQr: sec === 'qr',
+      isPayouts: sec === 'payouts', isSettings: sec === 'settings',
+      isStats: sec === 'stats',
+      statDays, statHours, qrStat, topStat,
+      kpiReq: fmtN(totReq), kpiRev: fmtN(totReq * 199) + ' ₽',
+      statRange: period === 7 ? '3 — 9 июля · +12 % к прошлой неделе' : '10 июня — 9 июля · 30 дней',
+      setP7: () => this.setState({ statPeriod: 7 }),
+      setP30: () => this.setState({ statPeriod: 30 }),
+      p7Style: period === 7 ? segOn : segOff,
+      p30Style: period === 30 ? segOn : segOff,
+      isLegal: sec === 'legal',
+      legalLocked, legalOn: !legalLocked, legalL2, legalLog, reports,
+      legalMode: legalL2 ? 'отчёты подаёт Трекни' : 'отчёты подаёте вы',
+      legalModeNote: legalL2 ? 'агентская схема: подача отчётов, платежи и акты — на нашей стороне' : 'мы готовим документы; подачу и платежи берёт «Всё включено»',
+      upgradeLegal: () => { this.setState({ tariff: 'Легал', section: 'legal' }); this.showToast('Тариф «Легал» включён (демо)'); },
+      dlPack: () => this.showToast('Пакет собран: договоры, отчёты, журнал (демо)'),
+      goPayouts: () => this.setState({ section: 'payouts' }),
+      tariffName, commission,
+      tariffBadge: { fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, whiteSpace: 'nowrap', color: 'rgba(242,241,247,0.55)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 999, padding: '6px 12px' },
+      toggleOpen: () => {
+        if (s.schedOn) { this.showToast('Приёмом управляет расписание — настройки → «Расписание приёма»'); return; }
+        this.setState({ open: !s.open });
+        this.showToast(s.open ? 'Приём заявок остановлен' : 'Приём заявок открыт');
+      },
+      openPill: {
+        display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', borderRadius: 999, padding: '7px 14px', fontSize: 12.5, fontWeight: 600, whiteSpace: 'nowrap',
+        border: pillOn ? '1px solid rgba(91,215,232,0.5)' : '1px solid rgba(255,138,122,0.5)',
+        color: pillOn ? '#5BD7E8' : '#FF8A7A',
+        background: pillOn ? 'rgba(91,215,232,0.07)' : 'rgba(255,138,122,0.07)',
+      },
+      openPillDot: { width: 7, height: 7, borderRadius: 99, background: pillOn ? '#5BD7E8' : '#FF8A7A' },
+      openPillLabel: s.schedOn ? (pillOn ? 'приём открыт · расписание' : 'приём закрыт · расписание') : (pillOn ? 'приём открыт' : 'приём закрыт'),
+      plq: s.plq, onPlq: (e) => this.setState({ plq: e.target.value }),
+      plStats: onCount + ' из ' + s.pl.length + ' треков доступно гостям',
+      addTrack: () => this.showToast('Поиск по каталогу — в следующей версии прототипа'),
+      toggleBg: () => { this.setState({ bgOn: !s.bgOn }); this.showToast(s.bgOn ? 'Фоновый режим выключен — между заявками будет тишина' : 'Фоновый режим включён — музыка не остановится'); },
+      bgTogWrap: {
+        width: 52, height: 30, borderRadius: 99, cursor: 'pointer', padding: 3, boxSizing: 'border-box', flex: 'none',
+        background: s.bgOn ? '#5BD7E8' : 'rgba(255,255,255,0.12)', transition: 'background 0.2s',
+        display: 'flex', justifyContent: s.bgOn ? 'flex-end' : 'flex-start',
+      },
+      bgTogLabel: { fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, whiteSpace: 'nowrap', color: s.bgOn ? '#5BD7E8' : 'rgba(242,241,247,0.45)' },
+      bgTogText: s.bgOn ? 'включён' : 'выключен',
+      withdraw: () => this.showToast('Заявка на выплату 12 340 ₽ создана (демо)'),
+      toast2: () => this.showToast('Редактирование реквизитов — демо'),
+      addZone: () => {
+        const n = s.zones.length - 2;
+        this.setState({ zones: s.zones.concat([{ name: 'Новая точка ' + n, scans: 0 }]) });
+        this.showToast('Точка добавлена — QR сгенерирован');
+      },
+      price: s.price,
+      priceUp: () => this.setState({ price: Math.min(999, s.price + 50) }),
+      priceDown: () => this.setState({ price: Math.max(49, s.price - 50) }),
+      setTogWrap: {
+        width: 52, height: 30, borderRadius: 99, padding: 3, boxSizing: 'border-box', flex: 'none',
+        cursor: s.schedOn ? 'not-allowed' : 'pointer', opacity: s.schedOn ? 0.35 : 1,
+        background: (s.schedOn ? pillOn : s.open) ? '#F849A6' : 'rgba(255,255,255,0.12)', transition: 'background 0.2s',
+        display: 'flex', justifyContent: (s.schedOn ? pillOn : s.open) ? 'flex-end' : 'flex-start',
+      },
+      setLangRu: () => this.setState({ lang: 'ru' }),
+      setLangEn: () => this.setState({ lang: 'en' }),
+      langRu: s.lang === 'ru' ? { padding: '6px 14px', borderRadius: 999, background: 'rgba(255,255,255,0.14)', cursor: 'pointer' } : { padding: '6px 14px', borderRadius: 999, color: 'rgba(242,241,247,0.5)', cursor: 'pointer' },
+      langEn: s.lang === 'en' ? { padding: '6px 14px', borderRadius: 999, background: 'rgba(255,255,255,0.14)', cursor: 'pointer' } : { padding: '6px 14px', borderRadius: 999, color: 'rgba(242,241,247,0.5)', cursor: 'pointer' },
+      brandOn, brandLocked: !brandOn,
+      brandCard: {
+        background: '#12121B', borderRadius: 18, padding: 22,
+        border: brandOn ? '1px solid rgba(248,73,166,0.4)' : '1px solid rgba(255,255,255,0.07)',
+      },
+      brandLockChip: {
+        fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, letterSpacing: 1, borderRadius: 999, padding: '3px 9px', whiteSpace: 'nowrap',
+        border: brandOn ? '1px solid rgba(248,73,166,0.5)' : '1px solid rgba(255,255,255,0.14)',
+        color: brandOn ? '#F849A6' : 'rgba(242,241,247,0.5)',
+      },
+      brandLockLabel: brandOn ? 'ТАРИФ «ВСЁ ВКЛЮЧЕНО»' : '🔒 ТАРИФ «ВСЁ ВКЛЮЧЕНО»',
+      brandLogo: s.ownLogo ? 'СОЛОВЕЙ' : 'ТРЕКНИ',
+      toggleLogo: () => this.setState({ ownLogo: !s.ownLogo }),
+      logoTogWrap: {
+        width: 40, height: 24, borderRadius: 99, cursor: 'pointer', padding: 3, boxSizing: 'border-box', flex: 'none',
+        background: s.ownLogo ? b : 'rgba(255,255,255,0.12)', transition: 'background 0.2s',
+        display: 'flex', justifyContent: s.ownLogo ? 'flex-end' : 'flex-start',
+      },
+      brandChip: { whiteSpace: 'nowrap', border: '1px solid ' + b + '99', color: b, borderRadius: 999, padding: '3px 9px', fontSize: 10, fontWeight: 600 },
+      brandBtn: { marginTop: 12, background: b, color: '#17020D', borderRadius: 999, padding: 10, textAlign: 'center', fontFamily: 'Unbounded, sans-serif', fontWeight: 700, fontSize: 10.5, boxShadow: '0 8px 22px ' + b + '4D', transition: 'background 0.2s' },
+      upgrade: () => { this.setState({ tariff: 'Всё включено' }); this.showToast('Тариф «Всё включено» включён (демо)'); },
+      payouts: this.PAYOUTS,
+      toast: s.toast, hasToast: !!s.toast,
+    };
+  }
+}
+
+</script>
+</body>
+</html>

@@ -33,7 +33,7 @@ export function VerifyVenueButton({
         type="button"
         disabled={isSubmitting || status === "VERIFIED"}
         onClick={() => updateStatus("VERIFIED")}
-        className="rounded-full bg-emerald-400/15 px-3 py-2 text-xs font-semibold text-emerald-200 disabled:opacity-40"
+        className="mini-action border-emerald-300/20 bg-emerald-400/15 text-emerald-200"
       >
         Проверить
       </button>
@@ -41,7 +41,7 @@ export function VerifyVenueButton({
         type="button"
         disabled={isSubmitting || status === "REJECTED"}
         onClick={() => updateStatus("REJECTED")}
-        className="rounded-full bg-rose-400/15 px-3 py-2 text-xs font-semibold text-rose-200 disabled:opacity-40"
+        className="mini-action border-rose-300/20 bg-rose-400/15 text-rose-200"
       >
         Отклонить
       </button>

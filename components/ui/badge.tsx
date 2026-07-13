@@ -9,15 +9,15 @@ export function Badge({
 }) {
   const toneClass =
     tone === "success"
-      ? "bg-emerald-500/15 text-emerald-300"
+      ? "border-emerald-300/20 bg-emerald-500/15 text-emerald-200 shadow-[0_0_28px_rgba(16,185,129,0.08)]"
       : tone === "warning"
-        ? "bg-amber-500/15 text-amber-300"
+        ? "border-amber-300/20 bg-amber-500/15 text-amber-200 shadow-[0_0_28px_rgba(245,158,11,0.08)]"
         : tone === "danger"
-          ? "bg-rose-500/15 text-rose-300"
-          : "bg-white/10 text-white/70";
+          ? "border-rose-300/20 bg-rose-500/15 text-rose-200 shadow-[0_0_28px_rgba(244,63,94,0.08)]"
+          : "border-white/10 bg-white/10 text-white/70 shadow-[0_0_24px_rgba(255,255,255,0.04)]";
 
   return (
-    <span className={cn("inline-flex rounded-full px-3 py-1 text-xs font-medium", toneClass)}>
+    <span className={cn("inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold tracking-[0.01em] backdrop-blur", toneClass)}>
       {children}
     </span>
   );

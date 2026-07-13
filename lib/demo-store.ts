@@ -1,20 +1,38 @@
 import { QueueItemStatus } from "@prisma/client";
 
+export type TrackGenre = "pop" | "rock" | "hip" | "y2k" | "club";
+
+export type VenueTariff = "start" | "legal" | "all";
+
 type DemoTrack = {
   id: string;
   title: string;
   artist: string;
   durationSec: number;
   coverUrl: string | null;
+  genre: TrackGenre;
 };
 
 type DemoVenue = {
   id: string;
   name: string;
   slug: string;
+  address: string;
+  city: string;
+  accentColor: string;
+  tariff: VenueTariff;
   requestPriceCents: number;
   isAcceptingRequests: boolean;
+  backgroundMode: boolean;
   allowedTrackIds: string[];
+};
+
+export type DemoOwner = {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+  venueIds: string[];
 };
 
 type DemoOrder = {
@@ -41,68 +59,111 @@ type DemoQueueItem = {
   removedAt: Date | null;
 };
 
+type DemoPlaybackLogEntry = {
+  id: string;
+  venueId: string;
+  trackId: string;
+  source: "request" | "background";
+  startedAt: Date;
+  durationSec: number;
+};
+
+type DemoPlayerState = {
+  venueId: string;
+  currentTrackId: string | null;
+  currentSource: "request" | "background";
+  currentQueueItemId: string | null;
+  positionSec: number;
+  lastTickAt: number;
+  playing: boolean;
+  volume: number;
+  muted: boolean;
+  bgIdx: number;
+  playedRequestsTonight: number;
+};
+
 type DemoStore = {
   venues: DemoVenue[];
   tracks: DemoTrack[];
   orders: DemoOrder[];
   queueItems: DemoQueueItem[];
+  players: Record<string, DemoPlayerState>;
+  playbackLog: DemoPlaybackLogEntry[];
 };
 
-const initialTracksSource: [string, string, string, number][] = [
-  ["track-01", "Blinding Lights", "The Weeknd", 200],
-  ["track-02", "Midnight City", "M83", 244],
-  ["track-03", "One More Time", "Daft Punk", 320],
-  ["track-04", "Levitating", "Dua Lipa", 203],
-  ["track-05", "Lose Control", "Teddy Swims", 211],
-  ["track-06", "Feel It Still", "Portugal. The Man", 163],
-  ["track-07", "Titanium", "David Guetta ft. Sia", 245],
-  ["track-08", "Flowers", "Miley Cyrus", 201],
-  ["track-09", "As It Was", "Harry Styles", 167],
-  ["track-10", "Starboy", "The Weeknd ft. Daft Punk", 230],
-  ["track-11", "Bad Guy", "Billie Eilish", 194],
-  ["track-12", "Can’t Hold Us", "Macklemore & Ryan Lewis", 258],
-  ["track-13", "On The Floor", "Jennifer Lopez", 266],
-  ["track-14", "Freed From Desire", "Gala", 214],
-  ["track-15", "Adventure of a Lifetime", "Coldplay", 264],
-  ["track-16", "Calm Down", "Rema", 239],
-  ["track-17", "Physical", "Dua Lipa", 193],
-  ["track-18", "Levels", "Avicii", 227],
-  ["track-19", "Houdini", "Dua Lipa", 185],
-  ["track-20", "Dance The Night", "Dua Lipa", 176]
+const initialTracksSource: [string, string, string, number, TrackGenre][] = [
+  ["track-01", "Life", "Zivert", 187, "pop"],
+  ["track-02", "Положение", "Скриптонит", 224, "hip"],
+  ["track-03", "Blinding Lights", "The Weeknd", 200, "pop"],
+  ["track-04", "Крошка моя", "Руки Вверх", 221, "y2k"],
+  ["track-05", "Don't Stop Me Now", "Queen", 209, "rock"],
+  ["track-06", "Компромисс", "Би-2", 250, "rock"],
+  ["track-07", "I Got Love", "Miyagi & Эндшпиль", 256, "hip"],
+  ["track-08", "Утекай", "Мумий Тролль", 228, "rock"],
+  ["track-09", "Невеста", "Глюк'oZa", 202, "y2k"],
+  ["track-10", "Dancing Queen", "ABBA", 230, "pop"],
+  ["track-11", "Плачу на техно", "Cream Soda", 192, "pop"],
+  ["track-12", "Небо", "Дискотека Авария", 235, "y2k"],
+  ["track-13", "Billie Jean", "Michael Jackson", 294, "pop"],
+  ["track-14", "Полковнику никто не пишет", "Би-2", 257, "rock"],
+  ["track-15", "Midnight City", "M83", 244, "pop"],
+  ["track-16", "Levitating", "Dua Lipa", 203, "pop"],
+  ["track-17", "Freed From Desire", "Gala", 214, "y2k"],
+  ["track-18", "Levels", "Avicii", 227, "pop"],
+  ["track-19", "Хардбас 2007", "DJ Кислотный", 178, "club"],
+  ["track-20", "As It Was", "Harry Styles", 167, "pop"]
 ];
 
-const initialTracks: DemoTrack[] = initialTracksSource.map(([id, title, artist, durationSec]) => ({
-  id,
-  title,
-  artist,
-  durationSec,
-  coverUrl: null
-}));
+const initialTracks: DemoTrack[] = initialTracksSource.map(
+  ([id, title, artist, durationSec, genre]) => ({
+    id,
+    title,
+    artist,
+    durationSec,
+    coverUrl: null,
+    genre
+  })
+);
 
 const initialVenues: DemoVenue[] = [
   {
     id: "venue-01",
-    name: "Velvet Room",
+    name: "Бар «Соловей»",
     slug: "velvet-room",
-    requestPriceCents: 90000,
+    address: "Никольская, 12",
+    city: "Москва",
+    accentColor: "#F849A6",
+    tariff: "legal",
+    requestPriceCents: 19900,
     isAcceptingRequests: true,
-    allowedTrackIds: initialTracks.slice(0, 10).map((track) => track.id)
+    backgroundMode: true,
+    allowedTrackIds: initialTracks.slice(0, 14).map((track) => track.id)
   },
   {
     id: "venue-02",
-    name: "Luna Rooftop",
+    name: "Клуб «Резонанс»",
     slug: "luna-rooftop",
-    requestPriceCents: 120000,
+    address: "Невский, 88",
+    city: "Санкт-Петербург",
+    accentColor: "#3BD6EA",
+    tariff: "all",
+    requestPriceCents: 29900,
     isAcceptingRequests: true,
-    allowedTrackIds: initialTracks.slice(5, 16).map((track) => track.id)
+    backgroundMode: true,
+    allowedTrackIds: initialTracks.slice(5, 18).map((track) => track.id)
   },
   {
     id: "venue-03",
-    name: "Noir Bar",
+    name: "Лаунж «Вельвет»",
     slug: "noir-bar",
-    requestPriceCents: 70000,
+    address: "Курортный пр., 5",
+    city: "Сочи",
+    accentColor: "#9D6BFF",
+    tariff: "start",
+    requestPriceCents: 14900,
     isAcceptingRequests: false,
-    allowedTrackIds: initialTracks.slice(10, 20).map((track) => track.id)
+    backgroundMode: true,
+    allowedTrackIds: initialTracks.slice(8, 20).map((track) => track.id)
   }
 ];
 
@@ -111,7 +172,7 @@ const initialOrders: DemoOrder[] = [
     id: "order-seed-01",
     venueId: "venue-01",
     trackId: "track-01",
-    amountCents: 90000,
+    amountCents: 19900,
     status: "PAID",
     paymentReference: "seed-1",
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 3),
@@ -121,8 +182,8 @@ const initialOrders: DemoOrder[] = [
   {
     id: "order-seed-02",
     venueId: "venue-01",
-    trackId: "track-02",
-    amountCents: 90000,
+    trackId: "track-04",
+    amountCents: 19900,
     status: "PAID",
     paymentReference: "seed-2",
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2),
@@ -132,8 +193,8 @@ const initialOrders: DemoOrder[] = [
   {
     id: "order-seed-03",
     venueId: "venue-01",
-    trackId: "track-03",
-    amountCents: 90000,
+    trackId: "track-13",
+    amountCents: 19900,
     status: "PAID",
     paymentReference: "seed-3",
     createdAt: new Date(Date.now() - 1000 * 60 * 60),
@@ -157,7 +218,7 @@ const initialQueueItems: DemoQueueItem[] = [
   {
     id: "queue-seed-02",
     venueId: "venue-01",
-    trackId: "track-02",
+    trackId: "track-04",
     orderId: "order-seed-02",
     status: QueueItemStatus.QUEUED,
     position: 2,
@@ -168,15 +229,57 @@ const initialQueueItems: DemoQueueItem[] = [
   {
     id: "queue-seed-03",
     venueId: "venue-01",
-    trackId: "track-03",
+    trackId: "track-13",
     orderId: "order-seed-03",
-    status: QueueItemStatus.PLAYED,
+    status: QueueItemStatus.QUEUED,
     position: 3,
     createdAt: new Date(Date.now() - 1000 * 60 * 60),
-    playedAt: new Date(Date.now() - 1000 * 30),
+    playedAt: null,
     removedAt: null
   }
 ];
+
+// Демо-аккаунты владельцев: email = <slug>@queuebeat.local, пароль общий демо-пароль.
+const DEMO_OWNERS: DemoOwner[] = [
+  {
+    id: "owner-01",
+    name: "Алина Ковалёва",
+    email: "velvet-room@queuebeat.local",
+    password: "queuebeat-admin",
+    venueIds: ["venue-01"]
+  },
+  {
+    id: "owner-02",
+    name: "Марина Соколова",
+    email: "luna-rooftop@queuebeat.local",
+    password: "queuebeat-admin",
+    venueIds: ["venue-02"]
+  },
+  {
+    id: "owner-03",
+    name: "Рустам Азизов",
+    email: "noir-bar@queuebeat.local",
+    password: "queuebeat-admin",
+    venueIds: ["venue-03"]
+  }
+];
+
+export function findDemoOwnerByCredentials(email: string, password: string) {
+  const normalized = email.trim().toLowerCase();
+  return (
+    DEMO_OWNERS.find(
+      (owner) => owner.email.toLowerCase() === normalized && owner.password === password
+    ) ?? null
+  );
+}
+
+export function getDemoOwnerById(ownerId: string) {
+  return DEMO_OWNERS.find((owner) => owner.id === ownerId) ?? null;
+}
+
+export function getDemoOwnerForVenue(venueId: string) {
+  return DEMO_OWNERS.find((owner) => owner.venueIds.includes(venueId)) ?? null;
+}
 
 const globalForDemo = globalThis as unknown as { queueBeatDemoStore?: DemoStore };
 
@@ -185,7 +288,9 @@ function cloneStore(): DemoStore {
     venues: structuredClone(initialVenues),
     tracks: structuredClone(initialTracks),
     orders: structuredClone(initialOrders),
-    queueItems: structuredClone(initialQueueItems)
+    queueItems: structuredClone(initialQueueItems),
+    players: {},
+    playbackLog: []
   };
 }
 
@@ -194,11 +299,29 @@ function getStore() {
     globalForDemo.queueBeatDemoStore = cloneStore();
   }
 
-  return globalForDemo.queueBeatDemoStore;
+  const store = globalForDemo.queueBeatDemoStore;
+  // хранилище могло быть создано старой версией кода без этих коллекций
+  store.players = store.players ?? {};
+  store.playbackLog = store.playbackLog ?? [];
+  return store;
 }
 
 function randomId(prefix: string) {
   return `${prefix}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function getDemoSubscriptions(venue: DemoVenue) {
+  if (venue.slug === "noir-bar") {
+    return [];
+  }
+
+  return [
+    {
+      id: `demo-sub-${venue.id}`,
+      status: "ACTIVE" as const,
+      currentPeriodEnd: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30)
+    }
+  ];
 }
 
 export function getDemoVenueBySlug(slug: string) {
@@ -210,6 +333,7 @@ export function getDemoVenueBySlug(slug: string) {
 
   return {
     ...venue,
+    subscriptions: getDemoSubscriptions(venue),
     venueTracks: venue.allowedTrackIds
       .map((trackId) => store.tracks.find((track) => track.id === trackId))
       .filter((track): track is DemoTrack => Boolean(track))
@@ -256,6 +380,7 @@ export function getDemoVenueById(venueId: string) {
   return {
     venue: {
       ...venue,
+      subscriptions: getDemoSubscriptions(venue),
       createdAt: new Date(),
       updatedAt: new Date(),
       venueTracks: venue.allowedTrackIds
@@ -365,6 +490,55 @@ export function confirmDemoOrder(orderId: string) {
   return { order };
 }
 
+export function createDemoPersonalQueueRequest(venueId: string, trackId: string) {
+  const store = getStore();
+  const venue = store.venues.find((item) => item.id === venueId);
+  if (!venue) {
+    return { error: "Заведение не найдено." as const };
+  }
+  if (!venue.isAcceptingRequests) {
+    return { error: "Плейлист сейчас не принимает заявки." as const };
+  }
+  if (!venue.allowedTrackIds.includes(trackId)) {
+    return { error: "Этот трек недоступен для выбранного плейлиста." as const };
+  }
+
+  const order: DemoOrder = {
+    id: randomId("order"),
+    venueId,
+    trackId,
+    amountCents: 0,
+    status: "PAID",
+    paymentReference: "personal-mode",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    paidAt: new Date()
+  };
+
+  const nextPosition =
+    Math.max(
+      0,
+      ...store.queueItems
+        .filter((item) => item.venueId === venueId)
+        .map((item) => item.position)
+    ) + 1;
+
+  store.orders.push(order);
+  store.queueItems.push({
+    id: randomId("queue"),
+    venueId,
+    trackId,
+    orderId: order.id,
+    status: QueueItemStatus.QUEUED,
+    position: nextPosition,
+    createdAt: new Date(),
+    playedAt: null,
+    removedAt: null
+  });
+
+  return { order, venue };
+}
+
 export function updateDemoVenueSettings(
   venueId: string,
   payload: Pick<DemoVenue, "name" | "slug" | "requestPriceCents" | "isAcceptingRequests">
@@ -406,7 +580,9 @@ export function replaceDemoVenueTracks(venueId: string, trackIds: string[]) {
 
 export function addDemoCustomTrack(
   venueId: string,
-  payload: Pick<DemoTrack, "title" | "artist" | "durationSec" | "coverUrl">
+  payload: Pick<DemoTrack, "title" | "artist" | "durationSec" | "coverUrl"> & {
+    genre?: TrackGenre;
+  }
 ) {
   const store = getStore();
   const venue = store.venues.find((item) => item.id === venueId);
@@ -416,6 +592,7 @@ export function addDemoCustomTrack(
 
   const track: DemoTrack = {
     id: randomId("track"),
+    genre: payload.genre ?? "pop",
     ...payload
   };
 
@@ -443,4 +620,387 @@ export function updateDemoQueueItem(
 
 export function getDemoTracks() {
   return structuredClone(getStore().tracks);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Плеер заведения: заявки играют первыми, затем бесконечный фон.
+   Состояние продвигается лениво по настенным часам при каждом чтении,
+   поэтому фоновых таймеров на сервере не требуется.
+   ═══════════════════════════════════════════════════════════════════ */
+
+function backgroundOrder(venue: DemoVenue) {
+  // детерминированный «случайный» порядок: перемешиваем по хэшу id
+  const ids = [...venue.allowedTrackIds];
+  ids.sort((a, b) => {
+    const ha = (a + venue.id).split("").reduce((acc, ch) => (acc * 31 + ch.charCodeAt(0)) % 9973, 7);
+    const hb = (b + venue.id).split("").reduce((acc, ch) => (acc * 31 + ch.charCodeAt(0)) % 9973, 7);
+    return ha - hb;
+  });
+  return ids;
+}
+
+function trackById(store: DemoStore, trackId: string | null) {
+  return store.tracks.find((track) => track.id === trackId) ?? null;
+}
+
+function nextQueuedItem(store: DemoStore, venueId: string) {
+  return (
+    store.queueItems
+      .filter((item) => item.venueId === venueId && item.status === QueueItemStatus.QUEUED)
+      .sort((left, right) => left.position - right.position)[0] ?? null
+  );
+}
+
+function startNextTrack(store: DemoStore, venue: DemoVenue, state: DemoPlayerState) {
+  const queued = nextQueuedItem(store, venue.id);
+  if (queued) {
+    queued.status = QueueItemStatus.PLAYED;
+    queued.playedAt = new Date();
+    state.currentTrackId = queued.trackId;
+    state.currentSource = "request";
+    state.currentQueueItemId = queued.id;
+    state.playedRequestsTonight += 1;
+    return;
+  }
+
+  const order = backgroundOrder(venue);
+  if (order.length === 0 || !venue.backgroundMode) {
+    state.currentTrackId = null;
+    state.currentQueueItemId = null;
+    state.currentSource = "background";
+    return;
+  }
+
+  state.currentTrackId = order[state.bgIdx % order.length];
+  state.bgIdx += 1;
+  state.currentSource = "background";
+  state.currentQueueItemId = null;
+}
+
+function logPlayback(store: DemoStore, state: DemoPlayerState, durationSec: number) {
+  if (!state.currentTrackId) {
+    return;
+  }
+
+  store.playbackLog.unshift({
+    id: randomId("log"),
+    venueId: state.venueId,
+    trackId: state.currentTrackId,
+    source: state.currentSource,
+    startedAt: new Date(Date.now() - durationSec * 1000),
+    durationSec
+  });
+  store.playbackLog = store.playbackLog.slice(0, 500);
+}
+
+function ensurePlayer(store: DemoStore, venue: DemoVenue): DemoPlayerState {
+  let state = store.players[venue.id];
+  if (!state) {
+    state = {
+      venueId: venue.id,
+      currentTrackId: null,
+      currentSource: "background",
+      currentQueueItemId: null,
+      positionSec: 0,
+      lastTickAt: Date.now(),
+      playing: true,
+      volume: 65,
+      muted: false,
+      bgIdx: 0,
+      playedRequestsTonight: 0
+    };
+    startNextTrack(store, venue, state);
+    store.players[venue.id] = state;
+  }
+
+  return state;
+}
+
+function advancePlayer(store: DemoStore, venue: DemoVenue) {
+  const state = ensurePlayer(store, venue);
+  const now = Date.now();
+
+  if (!state.playing) {
+    state.lastTickAt = now;
+    return state;
+  }
+
+  state.positionSec += (now - state.lastTickAt) / 1000;
+  state.lastTickAt = now;
+
+  // защита от вечного цикла на пустом плейлисте
+  for (let hops = 0; hops < 50; hops += 1) {
+    const current = trackById(store, state.currentTrackId);
+    if (!current) {
+      startNextTrack(store, venue, state);
+      if (!state.currentTrackId) {
+        state.positionSec = 0;
+        return state;
+      }
+      continue;
+    }
+
+    if (state.positionSec < current.durationSec) {
+      return state;
+    }
+
+    logPlayback(store, state, current.durationSec);
+    state.positionSec -= current.durationSec;
+    startNextTrack(store, venue, state);
+    if (!state.currentTrackId) {
+      state.positionSec = 0;
+      return state;
+    }
+  }
+
+  return state;
+}
+
+export type DemoPlayerSnapshot = {
+  venue: {
+    id: string;
+    name: string;
+    slug: string;
+    address: string;
+    city: string;
+    accentColor: string;
+    requestPriceCents: number;
+    isAcceptingRequests: boolean;
+    backgroundMode: boolean;
+  };
+  playing: boolean;
+  volume: number;
+  muted: boolean;
+  playedRequestsTonight: number;
+  nowPlaying: {
+    trackId: string;
+    title: string;
+    artist: string;
+    durationSec: number;
+    elapsedSec: number;
+    source: "request" | "background";
+  } | null;
+  queue: {
+    id: string;
+    orderId: string;
+    trackId: string;
+    title: string;
+    artist: string;
+    durationSec: number;
+    position: number;
+  }[];
+};
+
+export function getDemoPlayerSnapshot(venueId: string): DemoPlayerSnapshot | null {
+  const store = getStore();
+  const venue = store.venues.find((item) => item.id === venueId);
+  if (!venue) {
+    return null;
+  }
+
+  const state = advancePlayer(store, venue);
+  const current = trackById(store, state.currentTrackId);
+
+  return {
+    venue: {
+      id: venue.id,
+      name: venue.name,
+      slug: venue.slug,
+      address: venue.address,
+      city: venue.city,
+      accentColor: venue.accentColor,
+      requestPriceCents: venue.requestPriceCents,
+      isAcceptingRequests: venue.isAcceptingRequests,
+      backgroundMode: venue.backgroundMode
+    },
+    playing: state.playing,
+    volume: state.volume,
+    muted: state.muted,
+    playedRequestsTonight: state.playedRequestsTonight,
+    nowPlaying: current
+      ? {
+          trackId: current.id,
+          title: current.title,
+          artist: current.artist,
+          durationSec: current.durationSec,
+          elapsedSec: Math.min(Math.floor(state.positionSec), current.durationSec),
+          source: state.currentSource
+        }
+      : null,
+    queue: store.queueItems
+      .filter((item) => item.venueId === venue.id && item.status === QueueItemStatus.QUEUED)
+      .sort((left, right) => left.position - right.position)
+      .map((item, index) => {
+        const track = trackById(store, item.trackId);
+        return {
+          id: item.id,
+          orderId: item.orderId,
+          trackId: item.trackId,
+          title: track?.title ?? "—",
+          artist: track?.artist ?? "—",
+          durationSec: track?.durationSec ?? 0,
+          position: index + 1
+        };
+      })
+  };
+}
+
+export type DemoPlayerCommand =
+  | { action: "toggle" }
+  | { action: "skip" }
+  | { action: "restart" }
+  | { action: "volume"; value: number }
+  | { action: "mute" }
+  | { action: "moveUp"; queueItemId: string }
+  | { action: "playNow"; queueItemId: string }
+  | { action: "remove"; queueItemId: string }
+  | { action: "accept"; value: boolean };
+
+export function applyDemoPlayerCommand(venueId: string, command: DemoPlayerCommand) {
+  const store = getStore();
+  const venue = store.venues.find((item) => item.id === venueId);
+  if (!venue) {
+    return { error: "Заведение не найдено." as const };
+  }
+
+  const state = advancePlayer(store, venue);
+
+  switch (command.action) {
+    case "toggle": {
+      state.playing = !state.playing;
+      state.lastTickAt = Date.now();
+      break;
+    }
+    case "skip": {
+      const current = trackById(store, state.currentTrackId);
+      if (current) {
+        logPlayback(store, state, Math.min(Math.floor(state.positionSec), current.durationSec));
+      }
+      state.positionSec = 0;
+      startNextTrack(store, venue, state);
+      break;
+    }
+    case "restart": {
+      state.positionSec = 0;
+      state.lastTickAt = Date.now();
+      break;
+    }
+    case "volume": {
+      state.volume = Math.max(0, Math.min(100, Math.round(command.value)));
+      state.muted = false;
+      break;
+    }
+    case "mute": {
+      state.muted = !state.muted;
+      break;
+    }
+    case "moveUp": {
+      const queued = store.queueItems
+        .filter((item) => item.venueId === venueId && item.status === QueueItemStatus.QUEUED)
+        .sort((left, right) => left.position - right.position);
+      const index = queued.findIndex((item) => item.id === command.queueItemId);
+      if (index > 0) {
+        const positions = [queued[index - 1].position, queued[index].position];
+        queued[index].position = positions[0];
+        queued[index - 1].position = positions[1];
+      }
+      break;
+    }
+    case "playNow": {
+      const item = store.queueItems.find(
+        (entry) =>
+          entry.id === command.queueItemId &&
+          entry.venueId === venueId &&
+          entry.status === QueueItemStatus.QUEUED
+      );
+      if (!item) {
+        return { error: "Элемент очереди не найден." as const };
+      }
+
+      const current = trackById(store, state.currentTrackId);
+      if (current) {
+        logPlayback(store, state, Math.min(Math.floor(state.positionSec), current.durationSec));
+      }
+
+      item.status = QueueItemStatus.PLAYED;
+      item.playedAt = new Date();
+      state.currentTrackId = item.trackId;
+      state.currentSource = "request";
+      state.currentQueueItemId = item.id;
+      state.positionSec = 0;
+      state.lastTickAt = Date.now();
+      state.playedRequestsTonight += 1;
+      break;
+    }
+    case "remove": {
+      const item = store.queueItems.find(
+        (entry) =>
+          entry.id === command.queueItemId &&
+          entry.venueId === venueId &&
+          entry.status === QueueItemStatus.QUEUED
+      );
+      if (!item) {
+        return { error: "Элемент очереди не найден." as const };
+      }
+
+      item.status = QueueItemStatus.REMOVED;
+      item.removedAt = new Date();
+      const order = store.orders.find((entry) => entry.id === item.orderId);
+      if (order) {
+        order.status = "FAILED";
+        order.updatedAt = new Date();
+      }
+      break;
+    }
+    case "accept": {
+      venue.isAcceptingRequests = command.value;
+      break;
+    }
+  }
+
+  return { snapshot: getDemoPlayerSnapshot(venueId)! };
+}
+
+export function updateDemoVenueBranding(venueId: string, accentColor: string) {
+  const store = getStore();
+  const venue = store.venues.find((item) => item.id === venueId);
+  if (!venue) {
+    return { error: "Заведение не найдено." as const };
+  }
+
+  venue.accentColor = accentColor;
+  return { venue };
+}
+
+export function updateDemoVenueTariff(venueId: string, tariff: VenueTariff) {
+  const store = getStore();
+  const venue = store.venues.find((item) => item.id === venueId);
+  if (!venue) {
+    return { error: "Заведение не найдено." as const };
+  }
+
+  venue.tariff = tariff;
+  return { venue };
+}
+
+export function getDemoVenueOrders(venueId: string) {
+  const store = getStore();
+  return store.orders
+    .filter((order) => order.venueId === venueId)
+    .sort((left, right) => right.createdAt.getTime() - left.createdAt.getTime())
+    .map((order) => ({
+      ...order,
+      track: store.tracks.find((track) => track.id === order.trackId) ?? null
+    }));
+}
+
+export function getDemoPlaybackLog(venueId: string, limit = 50) {
+  const store = getStore();
+  return store.playbackLog
+    .filter((entry) => entry.venueId === venueId)
+    .slice(0, limit)
+    .map((entry) => ({
+      ...entry,
+      track: trackById(store, entry.trackId)
+    }));
 }

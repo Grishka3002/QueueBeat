@@ -123,7 +123,7 @@ export async function POST(request: Request) {
                   orderId: order.id,
                   type: "PLATFORM_FEE",
                   amountCents: -platformFeeCents,
-                  description: "Комиссия платформы QueueBeat"
+                  description: "Комиссия платформы Трекни"
                 }
               ]
             });

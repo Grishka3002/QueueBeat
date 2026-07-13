@@ -52,7 +52,7 @@ export function AddTrackForm({ venueId }: { venueId: string }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3 rounded-[1.4rem] border border-white/10 bg-black/20 p-4">
+    <form onSubmit={handleSubmit} className="surface-tile space-y-3 rounded-[1.5rem] p-4">
       <div>
         <h3 className="font-semibold text-white">Добавить свой трек</h3>
         <p className="mt-1 text-sm leading-6 text-white/45">
@@ -64,33 +64,33 @@ export function AddTrackForm({ venueId }: { venueId: string }) {
           value={title}
           onChange={(event) => setTitle(event.target.value)}
           placeholder="Название трека"
-          className="rounded-[1.1rem] border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-white/25"
+          className="soft-input rounded-[1.1rem] px-4 py-3 text-sm"
         />
         <input
           value={artist}
           onChange={(event) => setArtist(event.target.value)}
           placeholder="Исполнитель"
-          className="rounded-[1.1rem] border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-white/25"
+          className="soft-input rounded-[1.1rem] px-4 py-3 text-sm"
         />
         <input
           value={duration}
           onChange={(event) => setDuration(event.target.value)}
           placeholder="Длительность, например 3:30"
-          className="rounded-[1.1rem] border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-white/25"
+          className="soft-input rounded-[1.1rem] px-4 py-3 text-sm tabular-nums"
         />
         <input
           value={coverUrl}
           onChange={(event) => setCoverUrl(event.target.value)}
           placeholder="Ссылка на обложку, необязательно"
-          className="rounded-[1.1rem] border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-white/25"
+          className="soft-input rounded-[1.1rem] px-4 py-3 text-sm"
         />
       </div>
-      {error ? <div className="text-sm text-rose-300">{error}</div> : null}
-      {message ? <div className="text-sm text-emerald-300">{message}</div> : null}
+      {error ? <div className="status-message border border-rose-500/20 bg-rose-500/10 text-sm text-rose-200">{error}</div> : null}
+      {message ? <div className="status-message border border-emerald-500/20 bg-emerald-500/10 text-sm text-emerald-200">{message}</div> : null}
       <button
         type="submit"
         disabled={isSubmitting}
-        className="rounded-full bg-white/10 px-5 py-3 text-sm font-semibold text-white hover:bg-white/15 disabled:opacity-60"
+        className="secondary-action px-5 py-3 text-sm"
       >
         {isSubmitting ? "Добавляем..." : "Добавить в каталог"}
       </button>

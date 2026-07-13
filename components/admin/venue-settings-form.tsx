@@ -66,7 +66,7 @@ export function VenueSettingsForm({ venue }: VenueSettingsFormProps) {
         <input
           value={name}
           onChange={(event) => setName(event.target.value)}
-          className="rounded-[1.2rem] border border-white/10 bg-white/5 px-4 py-3 text-white outline-none focus:border-white/25"
+          className="soft-input rounded-[1.2rem] px-4 py-3"
         />
       </label>
       <label className="grid gap-2 text-sm text-white/70">
@@ -74,7 +74,7 @@ export function VenueSettingsForm({ venue }: VenueSettingsFormProps) {
         <input
           value={slug}
           onChange={(event) => setSlug(event.target.value.toLowerCase())}
-          className="rounded-[1.2rem] border border-white/10 bg-white/5 px-4 py-3 text-white outline-none focus:border-white/25"
+          className="soft-input rounded-[1.2rem] px-4 py-3"
         />
       </label>
       <label className="grid gap-2 text-sm text-white/70">
@@ -84,27 +84,27 @@ export function VenueSettingsForm({ venue }: VenueSettingsFormProps) {
           min={1}
           value={priceRub}
           onChange={(event) => setPriceRub(event.target.value)}
-          className="rounded-[1.2rem] border border-white/10 bg-white/5 px-4 py-3 text-white outline-none focus:border-white/25"
+          className="soft-input rounded-[1.2rem] px-4 py-3 tabular-nums"
         />
       </label>
-      <label className="flex items-center gap-3 rounded-[1.2rem] border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/75">
+      <label className="surface-tile flex min-h-14 cursor-pointer items-center gap-3 rounded-[1.2rem] px-4 py-3 text-sm text-white/75">
         <input
           checked={isAcceptingRequests}
           onChange={(event) => setIsAcceptingRequests(event.target.checked)}
           type="checkbox"
-          className="h-4 w-4"
+          className="h-4 w-4 accent-fuchsia-400"
         />
         Принимать оплаченные заявки
       </label>
-      <div className="rounded-[1.2rem] border border-white/10 bg-black/25 px-4 py-3 text-sm text-white/55">
+      <div className="surface-tile rounded-[1.2rem] px-4 py-3 text-sm text-white/55 tabular-nums">
         Текущая цена на сервере: {formatPrice(venue.requestPriceCents)}
       </div>
-      {error ? <div className="text-sm text-rose-300">{error}</div> : null}
-      {status ? <div className="text-sm text-emerald-300">{status}</div> : null}
+      {error ? <div className="status-message border border-rose-500/20 bg-rose-500/10 text-sm text-rose-200">{error}</div> : null}
+      {status ? <div className="status-message border border-emerald-500/20 bg-emerald-500/10 text-sm text-emerald-200">{status}</div> : null}
       <button
         type="submit"
         disabled={isSubmitting}
-        className="rounded-full bg-gradient-to-r from-accent to-accentBlue px-5 py-3 text-sm font-semibold text-white disabled:opacity-60"
+        className="primary-action px-5 py-3 text-sm"
       >
         {isSubmitting ? "Сохраняем..." : "Сохранить настройки"}
       </button>

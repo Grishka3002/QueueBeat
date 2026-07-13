@@ -51,7 +51,7 @@ export function QueueControls({ venueId, itemId, status }: QueueControlsProps) {
             type="button"
             onClick={() => update("PLAYED")}
             disabled={isBusy}
-            className="rounded-full bg-emerald-500/15 px-3 py-2 text-xs font-medium text-emerald-300"
+            className="mini-action border-emerald-300/20 bg-emerald-500/15 text-emerald-200"
           >
             Отметить как проигранный
           </button>
@@ -59,14 +59,14 @@ export function QueueControls({ venueId, itemId, status }: QueueControlsProps) {
             type="button"
             onClick={() => update("REMOVED")}
             disabled={isBusy}
-            className="rounded-full bg-rose-500/15 px-3 py-2 text-xs font-medium text-rose-300"
+            className="mini-action border-rose-300/20 bg-rose-500/15 text-rose-200"
           >
             Удалить из очереди
           </button>
         </>
       ) : null}
-      {message ? <div className="text-xs text-emerald-300">{message}</div> : null}
-      {error ? <div className="text-xs text-rose-300">{error}</div> : null}
+      {message ? <div className="text-xs text-emerald-200">{message}</div> : null}
+      {error ? <div className="text-xs text-rose-200">{error}</div> : null}
     </div>
   );
 }

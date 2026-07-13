@@ -85,6 +85,11 @@ model Venue {
   slug                String      @unique
   requestPriceCents   Int
   isAcceptingRequests Boolean     @default(true)
+  address             String      @default("")
+  city                String      @default("")
+  accentColor         String      @default("#F849A6")
+  backgroundMode      Boolean     @default(true)
+  tariff              String      @default("start")
   verificationStatus  VenueVerificationStatus @default(PENDING)
   platformFeeBps      Int         @default(2000)
   trialEndsAt          DateTime?
@@ -127,16 +132,19 @@ model BusinessProfile {
 }
 
 model Track {
-  id          String      @id @default(cuid())
-  title       String
-  artist      String
-  durationSec Int
-  coverUrl    String?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  venueTracks VenueTrack[]
-  orders      Order[]
-  queueItems  QueueItem[]
+  id               String      @id @default(cuid())
+  title            String
+  artist           String
+  durationSec      Int
+  coverUrl         String?
+  genre            String      @default("pop")
+  libraryTrackId   String?     @unique
+  librarySyncedAt  DateTime?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  venueTracks      VenueTrack[]
+  orders           Order[]
+  queueItems       QueueItem[]
   presetTracks PlaylistPresetTrack[]
 }
 

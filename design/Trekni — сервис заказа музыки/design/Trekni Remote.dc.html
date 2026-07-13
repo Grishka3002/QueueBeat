@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&amp;family=Onest:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0F0F15;font-family:Onest,sans-serif}
+a{color:#5BD7E8}a:hover{color:#A5EFF8}
+input[type=range]{-webkit-appearance:none;appearance:none;height:6px;border-radius:99px;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:26px;height:26px;border-radius:99px;background:#F2F1F7;border:3px solid #0B0B12;box-shadow:0 2px 8px rgba(0,0,0,0.5);cursor:pointer}
+@keyframes eqr{from{transform:scaleY(0.28)}to{transform:scaleY(1)}}
+@keyframes flashR{0%{background:rgba(248,73,166,0.3)}100%{background:transparent}}
+@keyframes toastIn{from{transform:translateY(14px);opacity:0}to{transform:translateY(0);opacity:1}}
+</style>
+</helmet>
+
+<div style="min-height:100vh;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:16px;padding:32px 24px 44px">
+  <div style="display:flex;align-items:center;gap:14px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(255,255,255,0.5)">
+    <span>ТРЕКНИ · ПУЛЬТ СМЕНЫ · МОБИЛЬНЫЙ</span>
+    <a href="Trekni Owner Cabinet.dc.html" style="text-decoration:none">← кабинет</a>
+  </div>
+
+  <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+    <div style="position:relative;min-height:100%;box-sizing:border-box;display:flex;flex-direction:column;padding:70px 0 0;background:radial-gradient(120% 44% at 50% -6%, color-mix(in srgb, var(--acc) 16%, transparent), transparent 58%), #0B0B12;font-family:Onest,sans-serif;--acc:{{ acc }}">
+
+      <!-- header -->
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 20px 0">
+        <a href="Trekni Owner Cabinet.dc.html" style="width:34px;height:34px;flex:none;border-radius:99px;background:rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;font-size:18px;color:#F2F1F7;text-decoration:none">‹</a>
+        <div style="flex:1;min-width:0">
+          <div style="font-family:Unbounded,sans-serif;font-weight:700;font-size:15px;color:#F2F1F7">Пульт</div>
+          <div style="font-size:11.5px;color:rgba(242,241,247,0.5)">Бар «Соловей» · быстрое управление</div>
+        </div>
+        <div style="display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--acc);border:1px solid color-mix(in srgb, var(--acc) 50%, transparent);border-radius:999px;padding:5px 10px">
+          <span style="width:6px;height:6px;border-radius:99px;background:var(--acc)"></span>плеер онлайн
+        </div>
+      </div>
+
+      <!-- NOW PLAYING -->
+      <div style="margin:16px 20px 0;background:#15151F;border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:16px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="display:flex;align-items:flex-end;gap:2.5px;height:15px">
+            <span style="{{ eq1 }}"></span><span style="{{ eq2 }}"></span><span style="{{ eq3 }}"></span>
+          </div>
+          <span style="{{ srcChip }}">{{ srcLabel }}</span>
+        </div>
+        <div style="margin-top:14px;display:flex;align-items:center;gap:14px">
+          <div style="width:64px;height:64px;flex:none;border-radius:13px;background:repeating-linear-gradient(135deg, rgba(255,255,255,0.07) 0 4px, transparent 4px 9px), #1D1D2B;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:12px;color:rgba(242,241,247,0.5)">{{ curTag }}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:18px;font-weight:700;color:#F2F1F7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ curTitle }}</div>
+            <div style="margin-top:3px;font-size:13.5px;color:rgba(242,241,247,0.55);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ curArtist }}</div>
+          </div>
+        </div>
+        <div style="margin-top:14px;height:5px;border-radius:99px;background:rgba(255,255,255,0.1);overflow:hidden"><div style="{{ progStyle }}"></div></div>
+        <div style="margin-top:7px;display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:rgba(242,241,247,0.5)">
+          <span>{{ curElapsed }}</span><span>-{{ curRemain }}</span>
+        </div>
+        <!-- transport -->
+        <div style="margin-top:14px;display:flex;align-items:center;justify-content:center;gap:22px">
+          <div onClick="{{ restart }}" style="width:48px;height:48px;border-radius:99px;border:1px solid rgba(255,255,255,0.18);display:flex;align-items:center;justify-content:center;font-size:17px;color:#F2F1F7;cursor:pointer" style-hover="background:rgba(255,255,255,0.08)">↺</div>
+          <div onClick="{{ togglePlay }}" style="{{ playBtnStyle }}">{{ playGlyph }}</div>
+          <div onClick="{{ skip }}" style="width:48px;height:48px;border-radius:99px;border:1px solid rgba(255,255,255,0.18);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#F2F1F7;cursor:pointer" style-hover="background:rgba(255,255,255,0.08)">▸▸</div>
+        </div>
+      </div>
+
+      <!-- VOLUME -->
+      <div style="margin:12px 20px 0;background:#15151F;border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:15px 16px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:12px;font-weight:700;letter-spacing:1.5px;color:rgba(242,241,247,0.55)">ГРОМКОСТЬ</span>
+          <span style="margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;color:var(--acc)">{{ volPct }}</span>
+        </div>
+        <div style="margin-top:12px;display:flex;align-items:center;gap:13px">
+          <div onClick="{{ toggleMute }}" style="width:34px;flex:none;display:flex;justify-content:center;cursor:pointer">{{ spk }}</div>
+          <input type="range" min="0" max="100" step="1" value="{{ vol }}" onChange="{{ onVol }}" style="flex:1;background:{{ volTrack }}">
+        </div>
+        <div style="margin-top:12px;display:flex;gap:7px">
+          <sc-for list="{{ presets }}" as="p" hint-placeholder-count="4">
+            <span onClick="{{ p.set }}" style="{{ p.style }}">{{ p.label }}</span>
+          </sc-for>
+        </div>
+      </div>
+
+      <!-- QUEUE -->
+      <div style="margin:12px 20px 0;flex:1;min-height:0;display:flex;flex-direction:column">
+        <div style="display:flex;align-items:baseline;gap:8px;padding:0 2px 8px">
+          <span style="font-size:12px;font-weight:700;letter-spacing:1.5px;color:rgba(242,241,247,0.55)">ОЧЕРЕДЬ</span>
+          <span style="{{ qCountStyle }}">{{ qCountLabel }}</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:7px">
+          <sc-for list="{{ queue }}" as="q" hint-placeholder-count="4">
+            <div style="{{ q.rowStyle }}">
+              <div style="flex:1;min-width:0">
+                <div style="font-size:14.5px;font-weight:600;color:#F2F1F7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ q.title }}</div>
+                <div style="display:flex;align-items:center;gap:7px;margin-top:2px">
+                  <span style="{{ q.tagStyle }}">{{ q.badge }}</span>
+                  <span style="font-size:11.5px;color:rgba(242,241,247,0.5);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ q.artist }}</span>
+                </div>
+              </div>
+              <div onClick="{{ q.up }}" style="{{ q.upStyle }}">↑</div>
+              <div onClick="{{ q.playNow }}" style="width:34px;height:34px;flex:none;border-radius:99px;background:color-mix(in srgb, var(--acc) 16%, transparent);border:1px solid color-mix(in srgb, var(--acc) 45%, transparent);color:var(--acc);display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer" style-hover="filter:brightness(1.2)">▶</div>
+              <div onClick="{{ q.remove }}" style="width:34px;height:34px;flex:none;border-radius:99px;border:1px solid rgba(255,255,255,0.16);color:rgba(242,241,247,0.6);display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer" style-hover="border-color:rgba(255,138,122,0.6);color:#FF8A7A">✕</div>
+            </div>
+          </sc-for>
+          <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;opacity:0.65">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:#5BD7E8;flex:none">∞</span>
+            <span style="flex:1;font-size:12.5px;color:rgba(242,241,247,0.55)">Фоновый плейлист — играет сам</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- accept toggle -->
+      <div style="margin:8px 20px 0;padding:13px 16px 40px;display:flex;align-items:center;gap:14px;border-top:1px solid rgba(255,255,255,0.07)">
+        <div style="flex:1">
+          <div style="font-size:13.5px;font-weight:600;color:#F2F1F7">Приём заявок</div>
+          <div style="font-size:11.5px;color:rgba(242,241,247,0.5)">{{ acceptNote }}</div>
+        </div>
+        <div onClick="{{ toggleAccept }}" style="{{ acceptTog }}"><div style="width:24px;height:24px;border-radius:99px;background:#F2F1F7"></div></div>
+      </div>
+
+      <!-- toast -->
+      <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;left:20px;right:20px;bottom:46px;z-index:20;background:#1D1D2B;border:1px solid color-mix(in srgb, var(--acc) 50%, transparent);border-radius:14px;padding:12px 16px;font-size:12.5px;font-weight:600;color:#F2F1F7;box-shadow:0 14px 40px rgba(0,0,0,0.5);animation:toastIn 0.25s ease">{{ toast }}</div>
+      </sc-if>
+    </div>
+  </x-import>
+
+  <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:rgba(255,255,255,0.32);text-align:center;max-width:520px;line-height:1.6">Пульт для смены: открывается из кабинета заведения. Громкость, пауза/скип и управление очередью «на телефоне» — не подходя к плееру. Всё кликабельно; удаление заявки гостя возвращает оплату.</div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 460, &quot;height&quot;: 900 },
+  &quot;accent&quot;: { &quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#F849A6&quot;, &quot;options&quot;: [&quot;#F849A6&quot;, &quot;#3BD6EA&quot;, &quot;#B8F23C&quot;, &quot;#9D6BFF&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Брендинг&quot; }
+}">
+class Component extends DCLogic {
+  BG = [
+    { tag: 'AB', title: 'Dancing Queen', artist: 'ABBA', dur: 230 },
+    { tag: 'QN', title: "Don't Stop Me Now", artist: 'Queen', dur: 209 },
+    { tag: 'ГЛ', title: 'Невеста', artist: "Глюк'oZa", dur: 202 },
+    { tag: 'Б2', title: 'Компромисс', artist: 'Би-2', dur: 250 },
+  ];
+
+  state = {
+    playing: true, vol: 65, muted: false, elapsed: 52, accept: true, toast: '', flashId: null,
+    cur: { tag: 'МТ', title: 'Утекай', artist: 'Мумий Тролль', dur: 228, req: false },
+    queue: [
+      { id: 1, tag: 'ZV', title: 'Life', artist: 'Zivert', dur: 187, req: true },
+      { id: 2, tag: 'РВ', title: 'Крошка моя', artist: 'Руки Вверх', dur: 221, req: true },
+      { id: 3, tag: 'СК', title: 'Положение', artist: 'Скриптонит', dur: 224, req: true },
+      { id: 4, tag: 'TW', title: 'Blinding Lights', artist: 'The Weeknd', dur: 200, req: false },
+    ],
+  };
+  _seq = 100; bgIdx = 0;
+
+  componentDidMount() { this.tick(); }
+  componentWillUnmount() { clearTimeout(this.timer); clearTimeout(this._tt); }
+
+  tick() {
+    this.timer = setTimeout(() => {
+      const s = this.state;
+      if (s.playing) {
+        if (s.elapsed + 1 >= s.cur.dur) this.advance();
+        else this.setState({ elapsed: s.elapsed + 1 });
+      }
+      this.tick();
+    }, 1000);
+  }
+
+  nextBg() { const t = this.BG[this.bgIdx % this.BG.length]; this.bgIdx++; return Object.assign({}, t, { req: false }); }
+
+  advance() {
+    const s = this.state;
+    let q = s.queue.slice();
+    const next = q.length ? q.shift() : this.nextBg();
+    while (q.length < 4) q.push(Object.assign({ id: ++this._seq }, this.nextBg()));
+    this.setState({ cur: next, elapsed: 0, queue: q });
+  }
+
+  showToast(m) { clearTimeout(this._tt); this.setState({ toast: m }); this._tt = setTimeout(() => this.setState({ toast: '' }), 2400); }
+  fmt(s) { s = Math.max(0, Math.round(s)); const m = Math.floor(s / 60), r = s % 60; return m + ':' + (r < 10 ? '0' + r : r); }
+
+  speakerSvg(level) {
+    // level: 0 muted, 1 low, 2 high
+    const wave1 = level >= 1 ? 1 : 0.18;
+    const wave2 = level >= 2 ? 1 : 0.18;
+    const acc = this._acc;
+    return React.createElement('svg', { width: 22, height: 22, viewBox: '0 0 22 22', fill: 'none' },
+      React.createElement('path', { d: 'M3 8.5V13.5H6.5L11 17V5L6.5 8.5H3Z', fill: '#F2F1F7' }),
+      level === 0
+        ? React.createElement('path', { d: 'M14 8L19 14M19 8L14 14', stroke: '#FF8A7A', strokeWidth: 1.6, strokeLinecap: 'round' })
+        : React.createElement('g', null,
+            React.createElement('path', { d: 'M14 8.5C15 9.5 15 12.5 14 13.5', stroke: acc, strokeWidth: 1.6, strokeLinecap: 'round', opacity: wave1 }),
+            React.createElement('path', { d: 'M16.5 6.5C18.5 8.5 18.5 13.5 16.5 15.5', stroke: acc, strokeWidth: 1.6, strokeLinecap: 'round', opacity: wave2 })
+          )
+    );
+  }
+
+  renderVals() {
+    const s = this.state;
+    const acc = this.props.accent ?? '#F849A6';
+    this._acc = acc;
+    const cur = s.cur;
+    const pct = Math.min(100, s.elapsed / cur.dur * 100);
+    const effVol = s.muted ? 0 : s.vol;
+    const level = effVol === 0 ? 0 : (effVol < 50 ? 1 : 2);
+    const playing = s.playing;
+
+    const eqBar = (h, delay, dur, op) => ({
+      width: 3, height: h, borderRadius: 2, background: acc, opacity: op, transformOrigin: 'bottom',
+      animation: playing ? ('eqr ' + dur + 's ease-in-out ' + delay + 's infinite alternate') : 'none',
+      transform: playing ? 'none' : 'scaleY(0.4)',
+    });
+
+    const reqCount = s.queue.filter(q => q.req).length;
+
+    const queue = s.queue.map((q, i) => ({
+      title: q.title, artist: q.artist, badge: q.req ? 'заявка гостя' : 'фон',
+      rowStyle: {
+        display: 'flex', alignItems: 'center', gap: 8, padding: '9px 10px 9px 12px', borderRadius: 14,
+        background: q.req ? 'color-mix(in srgb, ' + acc + ' 9%, transparent)' : 'rgba(255,255,255,0.04)',
+        border: q.req ? '1px solid color-mix(in srgb, ' + acc + ' 40%, transparent)' : '1px solid rgba(255,255,255,0.06)',
+        animation: q.id === s.flashId ? 'flashR 1s ease' : 'none',
+      },
+      tagStyle: {
+        fontFamily: "'IBM Plex Mono', monospace", fontSize: 9.5, letterSpacing: 0.5, whiteSpace: 'nowrap', borderRadius: 999, padding: '2px 7px', flex: 'none',
+        color: q.req ? acc : 'rgba(242,241,247,0.5)',
+        border: q.req ? '1px solid color-mix(in srgb, ' + acc + ' 45%, transparent)' : '1px solid rgba(255,255,255,0.13)',
+      },
+      up: () => {
+        if (i === 0) return;
+        const nq = s.queue.slice();
+        [nq[i - 1], nq[i]] = [nq[i], nq[i - 1]];
+        this.setState({ queue: nq, flashId: q.id });
+        clearTimeout(this._fl); this._fl = setTimeout(() => this.setState({ flashId: null }), 1000);
+      },
+      upStyle: {
+        width: 34, height: 34, flex: 'none', borderRadius: 99, border: '1px solid rgba(255,255,255,0.16)',
+        color: i === 0 ? 'rgba(242,241,247,0.25)' : 'rgba(242,241,247,0.7)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14,
+        cursor: i === 0 ? 'default' : 'pointer',
+      },
+      playNow: () => {
+        const item = s.queue[i];
+        const rest = s.queue.filter((_, j) => j !== i);
+        while (rest.length < 4) rest.push(Object.assign({ id: ++this._seq }, this.nextBg()));
+        this.setState({ cur: item, elapsed: 0, queue: rest });
+        this.showToast('Играет сейчас: ' + item.title);
+      },
+      remove: () => {
+        this.setState({ queue: s.queue.filter((_, j) => j !== i) });
+        this.showToast(q.req ? 'Заявка удалена — гостю возвращено 199 ₽' : 'Трек убран из очереди');
+      },
+    }));
+
+    const PRESETS = [ { label: '25 %', v: 25 }, { label: '50 %', v: 50 }, { label: '75 %', v: 75 }, { label: 'Макс', v: 100 } ];
+    const presets = PRESETS.map(p => ({
+      label: p.label,
+      set: () => this.setState({ vol: p.v, muted: false }),
+      style: (!s.muted && s.vol === p.v)
+        ? { padding: '7px 12px', borderRadius: 999, background: acc, color: '#17020D', fontSize: 12, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }
+        : { padding: '7px 12px', borderRadius: 999, border: '1px solid rgba(255,255,255,0.14)', color: 'rgba(242,241,247,0.6)', fontSize: 12, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' },
+    }));
+
+    const fillPct = effVol;
+    return {
+      acc,
+      eq1: eqBar(13, -0.2, 0.7, 1), eq2: eqBar(13, -0.5, 0.9, 1), eq3: eqBar(13, -0.35, 0.8, 0.7),
+      srcLabel: cur.req ? 'ЗАЯВКА ГОСТЯ' : 'ФОНОВЫЙ ПЛЕЙЛИСТ',
+      srcChip: {
+        fontFamily: "'IBM Plex Mono', monospace", fontSize: 9.5, letterSpacing: 1, borderRadius: 999, padding: '3px 8px',
+        color: cur.req ? acc : 'rgba(242,241,247,0.5)',
+        border: cur.req ? '1px solid color-mix(in srgb, ' + acc + ' 45%, transparent)' : '1px solid rgba(255,255,255,0.14)',
+      },
+      curTag: cur.tag, curTitle: cur.title, curArtist: cur.artist,
+      curElapsed: this.fmt(s.elapsed), curRemain: this.fmt(cur.dur - s.elapsed),
+      progStyle: { height: '100%', borderRadius: 99, width: pct + '%', background: acc, transition: 'width 0.3s linear' },
+      playGlyph: playing ? '❚❚' : '▶',
+      playBtnStyle: {
+        width: 64, height: 64, borderRadius: 99, flex: 'none', cursor: 'pointer',
+        background: acc, color: '#17020D', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontSize: playing ? 19 : 22, fontWeight: 800, paddingLeft: playing ? 0 : 4, boxSizing: 'border-box',
+        boxShadow: '0 10px 30px ' + acc + '66',
+      },
+      togglePlay: () => this.setState({ playing: !playing }),
+      restart: () => { this.setState({ elapsed: 0 }); this.showToast('Трек сначала'); },
+      skip: () => { this.advance(); this.showToast('Следующий трек'); },
+      vol: effVol, volPct: (s.muted ? 0 : s.vol) + ' %',
+      volTrack: 'linear-gradient(90deg, ' + acc + ' ' + fillPct + '%, rgba(255,255,255,0.12) ' + fillPct + '%)',
+      onVol: (e) => this.setState({ vol: +e.target.value, muted: false }),
+      toggleMute: () => this.setState({ muted: !s.muted }),
+      spk: this.speakerSvg(level),
+      presets,
+      queue,
+      qCountLabel: reqCount ? (reqCount + ' заявк' + (reqCount === 1 ? 'а' : (reqCount < 5 ? 'и' : ''))) : 'только фон',
+      qCountStyle: { fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, color: reqCount ? acc : 'rgba(242,241,247,0.45)' },
+      accept: s.accept,
+      acceptNote: s.accept ? 'гости могут заказывать треки' : 'новые заказы приостановлены',
+      toggleAccept: () => { this.setState({ accept: !s.accept }); this.showToast(s.accept ? 'Приём заявок остановлен' : 'Приём заявок открыт'); },
+      acceptTog: {
+        width: 52, height: 30, borderRadius: 99, cursor: 'pointer', padding: 3, boxSizing: 'border-box', flex: 'none',
+        background: s.accept ? acc : 'rgba(255,255,255,0.12)', transition: 'background 0.2s',
+        display: 'flex', justifyContent: s.accept ? 'flex-end' : 'flex-start',
+      },
+      toast: s.toast, hasToast: !!s.toast,
+    };
+  }
+}
+
+</script>
+</body>
+</html>
