@@ -2,6 +2,8 @@ import { QueueItemStatus } from "@prisma/client";
 
 export type TrackGenre = "pop" | "rock" | "hip" | "y2k" | "club";
 
+export type VenueTariff = "start" | "legal" | "all";
+
 type DemoTrack = {
   id: string;
   title: string;
@@ -18,10 +20,19 @@ type DemoVenue = {
   address: string;
   city: string;
   accentColor: string;
+  tariff: VenueTariff;
   requestPriceCents: number;
   isAcceptingRequests: boolean;
   backgroundMode: boolean;
   allowedTrackIds: string[];
+};
+
+export type DemoOwner = {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+  venueIds: string[];
 };
 
 type DemoOrder = {
@@ -122,6 +133,7 @@ const initialVenues: DemoVenue[] = [
     address: "Никольская, 12",
     city: "Москва",
     accentColor: "#F849A6",
+    tariff: "legal",
     requestPriceCents: 19900,
     isAcceptingRequests: true,
     backgroundMode: true,
@@ -134,6 +146,7 @@ const initialVenues: DemoVenue[] = [
     address: "Невский, 88",
     city: "Санкт-Петербург",
     accentColor: "#3BD6EA",
+    tariff: "all",
     requestPriceCents: 29900,
     isAcceptingRequests: true,
     backgroundMode: true,
@@ -146,6 +159,7 @@ const initialVenues: DemoVenue[] = [
     address: "Курортный пр., 5",
     city: "Сочи",
     accentColor: "#9D6BFF",
+    tariff: "start",
     requestPriceCents: 14900,
     isAcceptingRequests: false,
     backgroundMode: true,
@@ -224,6 +238,48 @@ const initialQueueItems: DemoQueueItem[] = [
     removedAt: null
   }
 ];
+
+// Демо-аккаунты владельцев: email = <slug>@queuebeat.local, пароль общий демо-пароль.
+const DEMO_OWNERS: DemoOwner[] = [
+  {
+    id: "owner-01",
+    name: "Алина Ковалёва",
+    email: "velvet-room@queuebeat.local",
+    password: "queuebeat-admin",
+    venueIds: ["venue-01"]
+  },
+  {
+    id: "owner-02",
+    name: "Марина Соколова",
+    email: "luna-rooftop@queuebeat.local",
+    password: "queuebeat-admin",
+    venueIds: ["venue-02"]
+  },
+  {
+    id: "owner-03",
+    name: "Рустам Азизов",
+    email: "noir-bar@queuebeat.local",
+    password: "queuebeat-admin",
+    venueIds: ["venue-03"]
+  }
+];
+
+export function findDemoOwnerByCredentials(email: string, password: string) {
+  const normalized = email.trim().toLowerCase();
+  return (
+    DEMO_OWNERS.find(
+      (owner) => owner.email.toLowerCase() === normalized && owner.password === password
+    ) ?? null
+  );
+}
+
+export function getDemoOwnerById(ownerId: string) {
+  return DEMO_OWNERS.find((owner) => owner.id === ownerId) ?? null;
+}
+
+export function getDemoOwnerForVenue(venueId: string) {
+  return DEMO_OWNERS.find((owner) => owner.venueIds.includes(venueId)) ?? null;
+}
 
 const globalForDemo = globalThis as unknown as { queueBeatDemoStore?: DemoStore };
 
@@ -903,6 +959,39 @@ export function applyDemoPlayerCommand(venueId: string, command: DemoPlayerComma
   }
 
   return { snapshot: getDemoPlayerSnapshot(venueId)! };
+}
+
+export function updateDemoVenueBranding(venueId: string, accentColor: string) {
+  const store = getStore();
+  const venue = store.venues.find((item) => item.id === venueId);
+  if (!venue) {
+    return { error: "Заведение не найдено." as const };
+  }
+
+  venue.accentColor = accentColor;
+  return { venue };
+}
+
+export function updateDemoVenueTariff(venueId: string, tariff: VenueTariff) {
+  const store = getStore();
+  const venue = store.venues.find((item) => item.id === venueId);
+  if (!venue) {
+    return { error: "Заведение не найдено." as const };
+  }
+
+  venue.tariff = tariff;
+  return { venue };
+}
+
+export function getDemoVenueOrders(venueId: string) {
+  const store = getStore();
+  return store.orders
+    .filter((order) => order.venueId === venueId)
+    .sort((left, right) => right.createdAt.getTime() - left.createdAt.getTime())
+    .map((order) => ({
+      ...order,
+      track: store.tracks.find((track) => track.id === order.trackId) ?? null
+    }));
 }
 
 export function getDemoPlaybackLog(venueId: string, limit = 50) {

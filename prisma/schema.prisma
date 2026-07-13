@@ -89,6 +89,7 @@ model Venue {
   city                String      @default("")
   accentColor         String      @default("#F849A6")
   backgroundMode      Boolean     @default(true)
+  tariff              String      @default("start")
   verificationStatus  VenueVerificationStatus @default(PENDING)
   platformFeeBps      Int         @default(2000)
   trialEndsAt          DateTime?

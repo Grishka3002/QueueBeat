@@ -1,24 +1,17 @@
 import type { Route } from "next";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 
-import { AdminShell } from "@/components/admin/admin-shell";
 import { QueueControls } from "@/components/admin/queue-controls";
 import { RevenueChart } from "@/components/admin/revenue-chart";
-import { VenueNav } from "@/components/admin/venue-nav";
-import { Badge } from "@/components/ui/badge";
-import { SectionCard } from "@/components/ui/section-card";
-import { canManageVerifiedVenue } from "@/lib/auth";
 import { isSubscriptionUsable } from "@/lib/commercial";
 import { getAdminVenueById } from "@/lib/data";
-import { env } from "@/lib/env";
 import { formatDateTime, formatPrice } from "@/lib/utils";
 
 function formatQueueStatus(status: "QUEUED" | "PLAYED" | "REMOVED") {
   const labels = {
-    QUEUED: "В очереди",
-    PLAYED: "Проигран",
-    REMOVED: "Удалён"
+    QUEUED: "в очереди",
+    PLAYED: "проиграно",
+    REMOVED: "снято"
   };
 
   return labels[status];
@@ -30,10 +23,6 @@ export default async function AdminVenuePage({
   params: Promise<{ venueId: string }>;
 }) {
   const { venueId } = await params;
-  if (!env.demoMode && !(await canManageVerifiedVenue(venueId))) {
-    redirect("/admin/login");
-  }
-
   const data = await getAdminVenueById(venueId);
   const { venue } = data;
   const analytics =
@@ -52,121 +41,106 @@ export default async function AdminVenuePage({
   const queuedItems = venue.queueItems.filter((item) => item.status === "QUEUED");
 
   return (
-    <AdminShell
-      badge="Заведение"
-      title={venue.name}
-      description="Короткий обзор денег, заявок и текущей очереди. Основное управление вынесено в настройки заведения."
-      homeHref="/admin"
-      homeLabel="Мои заведения"
-      previewHref={`/v/${venue.slug}` as Route}
-    >
-      <VenueNav baseHref={baseHref} active="overview" />
-
-      <div className="grid gap-5 md:grid-cols-4">
-        <SectionCard className="md:col-span-2" interactive>
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <div className="text-sm text-white/45">Баланс к выплате</div>
-              <div className="mt-2 text-4xl font-semibold text-gradient tabular-nums">
-                {formatPrice(analytics.balanceCents)}
-              </div>
-              <div className="mt-2 text-sm text-white/45">Доля заведения после комиссии платформы.</div>
-            </div>
-            <Badge tone={subscriptionActive ? "success" : "danger"}>
-              {subscriptionActive ? "QR активен" : "QR заблокирован"}
-            </Badge>
+    <>
+      <div className="grid gap-3.5 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="rounded-[18px] border border-line bg-panel p-[18px]">
+          <div className="text-xs text-white/50">Оплаченные заявки</div>
+          <div className="mt-2 font-display text-[26px] font-bold text-white">
+            {analytics.paidOrdersCount}
           </div>
-        </SectionCard>
-
-        <SectionCard interactive>
-          <div className="text-sm text-white/45">Оплаченные заявки</div>
-          <div className="mt-2 text-3xl font-semibold tabular-nums">{analytics.paidOrdersCount}</div>
-          <div className="mt-2 text-xs text-white/40">За последние 14 дней</div>
-        </SectionCard>
-
-        <SectionCard interactive>
-          <div className="text-sm text-white/45">Оборот</div>
-          <div className="mt-2 text-3xl font-semibold tabular-nums">{formatPrice(grossCents)}</div>
-          <div className="mt-2 text-xs text-white/40">До разделения комиссии</div>
-        </SectionCard>
+          <div className="mt-1 font-mono text-[11px] text-white/45">за последние 14 дней</div>
+        </div>
+        <div className="rounded-[18px] border border-line bg-panel p-[18px]">
+          <div className="text-xs text-white/50">Оборот</div>
+          <div className="mt-2 font-display text-[22px] font-bold text-accent">
+            {formatPrice(grossCents)}
+          </div>
+          <div className="mt-1 font-mono text-[11px] text-white/45">до вычета комиссии</div>
+        </div>
+        <div className="rounded-[18px] border border-line bg-panel p-[18px]">
+          <div className="text-xs text-white/50">Сейчас в очереди</div>
+          <div className="mt-2 font-display text-[26px] font-bold text-white">{queuedItems.length}</div>
+          <div className="mt-1 font-mono text-[11px] text-white/45">дальше — фоновый плейлист</div>
+        </div>
+        <div className="rounded-[18px] border border-line bg-panel p-[18px]">
+          <div className="text-xs text-white/50">Баланс к выплате</div>
+          <div className="mt-2 font-display text-[22px] font-bold text-white">
+            {formatPrice(analytics.balanceCents)}
+          </div>
+          <Link href={`${baseHref}/payouts` as Route} className="mt-1 inline-block font-mono text-[11px] text-cyan">
+            к выплатам →
+          </Link>
+        </div>
       </div>
 
-      <div className="grid gap-5 xl:grid-cols-[1.2fr_0.8fr]">
-        <SectionCard>
+      <div className="grid gap-3.5 xl:grid-cols-[1.5fr_1fr]">
+        <div className="rounded-[18px] border border-line bg-panel p-5">
           <RevenueChart dailyOrders={analytics.dailyOrders} />
-        </SectionCard>
-
-        <SectionCard>
-          <div className="flex h-full flex-col justify-between gap-5">
-            <div>
-              <h2 className="text-xl font-semibold">Что важно сейчас</h2>
-              <div className="mt-4 space-y-3">
-                <div className="surface-tile rounded-[1.2rem] p-4">
-                  <div className="text-sm text-white/45">Приём заявок</div>
-                  <div className="mt-1 font-semibold">
-                    {venue.isAcceptingRequests ? "Включён" : "На паузе"}
-                  </div>
-                </div>
-                <div className="surface-tile rounded-[1.2rem] p-4">
-                  <div className="text-sm text-white/45">Цена заявки</div>
-                  <div className="mt-1 font-semibold tabular-nums">{formatPrice(venue.requestPriceCents)}</div>
-                </div>
-                <div className="surface-tile rounded-[1.2rem] p-4">
-                  <div className="text-sm text-white/45">Разрешено треков</div>
-                  <div className="mt-1 font-semibold tabular-nums">{venue.venueTracks.length}</div>
-                </div>
+        </div>
+        <div className="flex flex-col gap-3.5">
+          <div className="rounded-[18px] border border-line bg-panel p-5">
+            <div className="text-[15px] font-bold text-white">Что важно сейчас</div>
+            <div className="mt-3.5 flex flex-col gap-2.5 text-sm">
+              <div className="flex items-center justify-between rounded-xl bg-white/[0.04] px-3.5 py-3">
+                <span className="text-white/55">Приём заявок</span>
+                <span className={venue.isAcceptingRequests ? "font-semibold text-cyan" : "font-semibold text-warn"}>
+                  {venue.isAcceptingRequests ? "включён" : "на паузе"}
+                </span>
+              </div>
+              <div className="flex items-center justify-between rounded-xl bg-white/[0.04] px-3.5 py-3">
+                <span className="text-white/55">Цена заявки</span>
+                <span className="font-mono font-semibold text-white">{formatPrice(venue.requestPriceCents)}</span>
+              </div>
+              <div className="flex items-center justify-between rounded-xl bg-white/[0.04] px-3.5 py-3">
+                <span className="text-white/55">Треков доступно гостям</span>
+                <span className="font-mono font-semibold text-white">{venue.venueTracks.length}</span>
+              </div>
+              <div className="flex items-center justify-between rounded-xl bg-white/[0.04] px-3.5 py-3">
+                <span className="text-white/55">QR-код</span>
+                <span className={subscriptionActive ? "font-semibold text-cyan" : "font-semibold text-warn"}>
+                  {subscriptionActive ? "активен" : "заблокирован"}
+                </span>
               </div>
             </div>
-            <Link href={`${baseHref}/settings` as Route} className="primary-action px-5 py-3 text-sm">
+            <Link href={`${baseHref}/settings` as Route} className="primary-action mt-4 w-full px-5 py-3 text-sm">
               Перейти в настройки
             </Link>
           </div>
-        </SectionCard>
+        </div>
       </div>
 
-      <SectionCard>
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h2 className="text-xl font-semibold">Текущая очередь</h2>
-            <p className="mt-1 text-sm text-white/45">Только активные заявки, которые ещё нужно проиграть.</p>
-          </div>
-          <Badge>{queuedItems.length} в очереди</Badge>
+      <div className="rounded-[18px] border border-line bg-panel p-5">
+        <div className="flex items-baseline justify-between">
+          <div className="text-[15px] font-bold text-white">Текущая очередь</div>
+          <span className="font-mono text-[11.5px] text-white/45">{queuedItems.length} активных заявок</span>
         </div>
 
         {queuedItems.length === 0 ? (
-          <div className="mt-5 rounded-[1.4rem] border border-dashed border-white/10 bg-white/[0.02] p-5 text-sm text-white/45">
-            Очередь пока пустая. Новые оплаченные заявки появятся здесь.
+          <div className="mt-4 rounded-2xl border border-dashed border-white/10 bg-white/[0.02] p-5 text-sm text-white/45">
+            Очередь пока пустая — играет фоновый плейлист. Новые оплаченные заявки появятся здесь.
           </div>
         ) : (
-          <div className="mt-5 overflow-hidden rounded-[1.5rem] shadow-[0_0_0_1px_rgba(255,255,255,0.08)]">
-            <div className="grid grid-cols-[1.4fr_0.7fr_0.9fr_1fr] gap-3 bg-white/5 px-4 py-3 text-xs uppercase tracking-[0.2em] text-white/35">
-              <span>Трек</span>
-              <span>Позиция</span>
-              <span>Добавлен</span>
-              <span>Действие</span>
-            </div>
-            <div className="divide-y divide-white/10">
-              {queuedItems.map((item) => (
-                <div
-                  key={item.id}
-                  className="grid grid-cols-1 gap-3 px-4 py-4 text-sm text-white/75 transition-[background-color] duration-150 hover:bg-white/[0.035] md:grid-cols-[1.4fr_0.7fr_0.9fr_1fr]"
-                >
-                  <div>
-                    <div className="font-medium text-white">{item.track.title}</div>
-                    <div className="text-white/45">{item.track.artist}</div>
-                  </div>
-                  <div>
-                    <Badge>{formatQueueStatus(item.status)}</Badge>
-                    <div className="mt-2 text-white/45 tabular-nums">#{item.position}</div>
-                  </div>
-                  <div className="text-white/45 tabular-nums">{formatDateTime(item.createdAt)}</div>
-                  <QueueControls venueId={venue.id} itemId={item.id} status={item.status} />
+          <div className="mt-2 flex flex-col">
+            {queuedItems.map((item) => (
+              <div
+                key={item.id}
+                className="flex flex-col gap-3 border-b border-hairline py-3.5 last:border-none md:flex-row md:items-center"
+              >
+                <span className="w-8 flex-none font-mono text-xs text-white/40">
+                  #{item.position}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="truncate text-sm font-semibold text-white">{item.track.title}</div>
+                  <div className="text-xs text-white/45">{item.track.artist}</div>
                 </div>
-              ))}
-            </div>
+                <span className="mono-chip">{formatQueueStatus(item.status)}</span>
+                <span className="w-36 font-mono text-xs text-white/45">{formatDateTime(item.createdAt)}</span>
+                <QueueControls venueId={venue.id} itemId={item.id} status={item.status} />
+              </div>
+            ))}
           </div>
         )}
-      </SectionCard>
-    </AdminShell>
+      </div>
+    </>
   );
 }
